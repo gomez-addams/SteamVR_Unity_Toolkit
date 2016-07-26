@@ -24,9 +24,11 @@
             Application_Menu
         }
 
-        public ButtonAlias pointerToggleButton = ButtonAlias.Grip;
-        public ButtonAlias grabToggleButton = ButtonAlias.Trigger;
+        public ButtonAlias pointerToggleButton = ButtonAlias.Touchpad_Press;
+        public ButtonAlias pointerSetButton = ButtonAlias.Touchpad_Press;
+        public ButtonAlias grabToggleButton = ButtonAlias.Grip;
         public ButtonAlias useToggleButton = ButtonAlias.Trigger;
+        public ButtonAlias uiClickButton = ButtonAlias.Trigger;
         public ButtonAlias menuToggleButton = ButtonAlias.Application_Menu;
 
         public int axisFidelity = 1;
@@ -42,6 +44,7 @@
         public bool pointerPressed = false;
         public bool grabPressed = false;
         public bool usePressed = false;
+        public bool uiClickPressed = false;
         public bool menuPressed = false;
 
         public event ControllerInteractionEventHandler TriggerPressed;
@@ -65,6 +68,7 @@
 
         public event ControllerInteractionEventHandler AliasPointerOn;
         public event ControllerInteractionEventHandler AliasPointerOff;
+        public event ControllerInteractionEventHandler AliasPointerSet;
 
         public event ControllerInteractionEventHandler AliasGrabOn;
         public event ControllerInteractionEventHandler AliasGrabOff;
@@ -75,12 +79,18 @@
         public event ControllerInteractionEventHandler AliasMenuOn;
         public event ControllerInteractionEventHandler AliasMenuOff;
 
+        public event ControllerInteractionEventHandler AliasUIClickOn;
+        public event ControllerInteractionEventHandler AliasUIClickOff;
+
         private uint controllerIndex;
         private SteamVR_TrackedObject trackedController;
         private SteamVR_Controller.Device device;
 
         private Vector2 touchpadAxis = Vector2.zero;
         private Vector2 triggerAxis = Vector2.zero;
+
+        private Vector3 controllerVelocity = Vector3.zero;
+        private Vector3 controllerAngularVelocity = Vector3.zero;
 
         public virtual void OnTriggerPressed(ControllerInteractionEventArgs e)
         {
@@ -166,6 +176,12 @@
                 AliasPointerOff(this, e);
         }
 
+        public virtual void OnAliasPointerSet(ControllerInteractionEventArgs e)
+        {
+            if (AliasPointerSet != null)
+                AliasPointerSet(this, e);
+        }
+
         public virtual void OnAliasGrabOn(ControllerInteractionEventArgs e)
         {
             if (AliasGrabOn != null)
@@ -190,6 +206,18 @@
                 AliasUseOff(this, e);
         }
 
+        public virtual void OnAliasUIClickOn(ControllerInteractionEventArgs e)
+        {
+            if (AliasUIClickOn != null)
+                AliasUIClickOn(this, e);
+        }
+
+        public virtual void OnAliasUIClickOff(ControllerInteractionEventArgs e)
+        {
+            if (AliasUIClickOff != null)
+                AliasUIClickOff(this, e);
+        }
+
         public virtual void OnAliasMenuOn(ControllerInteractionEventArgs e)
         {
             if (AliasMenuOn != null)
@@ -202,36 +230,69 @@
                 AliasMenuOff(this, e);
         }
 
-        ControllerInteractionEventArgs SetButtonEvent(ref bool buttonBool, bool value, float buttonPressure)
+        public Vector3 GetVelocity()
+        {
+            SetVelocity();
+            return controllerVelocity;
+        }
+
+        public Vector3 GetAngularVelocity()
+        {
+            SetVelocity();
+            return controllerAngularVelocity;
+        }
+
+        public Vector2 GetTouchpadAxis()
+        {
+            return touchpadAxis;
+        }
+
+        public float GetTouchpadAxisAngle()
+        {
+            return CalculateTouchpadAxisAngle(touchpadAxis);
+        }
+
+        public bool AnyButtonPressed()
+        {
+            return (triggerPressed || gripPressed || touchpadPressed || applicationMenuPressed);
+        }
+
+        private ControllerInteractionEventArgs SetButtonEvent(ref bool buttonBool, bool value, float buttonPressure)
         {
             buttonBool = value;
             ControllerInteractionEventArgs e;
             e.controllerIndex = controllerIndex;
             e.buttonPressure = buttonPressure;
             e.touchpadAxis = device.GetAxis();
-
-            float angle = Mathf.Atan2(e.touchpadAxis.y, e.touchpadAxis.x) * Mathf.Rad2Deg;
-            angle = 90.0f - angle;
-            if (angle < 0)
-                angle += 360.0f;
-
-            e.touchpadAngle = angle;
+            e.touchpadAngle = CalculateTouchpadAxisAngle(e.touchpadAxis);
 
             return e;
         }
 
-        void Awake()
+        private void Awake()
         {
             trackedController = GetComponent<SteamVR_TrackedObject>();
+            this.gameObject.layer = LayerMask.NameToLayer("Ignore Raycast");
         }
 
-        void Start()
+        private void Start()
         {
             controllerIndex = (uint)trackedController.index;
             device = SteamVR_Controller.Input((int)controllerIndex);
         }
 
-        void EmitAlias(ButtonAlias type, bool touchDown, float buttonPressure, ref bool buttonBool)
+        private float CalculateTouchpadAxisAngle(Vector2 axis)
+        {
+            float angle = Mathf.Atan2(axis.y, axis.x) * Mathf.Rad2Deg;
+            angle = 90.0f - angle;
+            if (angle < 0)
+            {
+                angle += 360.0f;
+            }
+            return angle;
+        }
+
+        private void EmitAlias(ButtonAlias type, bool touchDown, float buttonPressure, ref bool buttonBool)
         {
             if (pointerToggleButton == type)
             {
@@ -244,6 +305,14 @@
                 {
                     pointerPressed = false;
                     OnAliasPointerOff(SetButtonEvent(ref buttonBool, false, buttonPressure));
+                }
+            }
+
+            if (pointerSetButton == type)
+            {
+                if (! touchDown)
+                {
+                    OnAliasPointerSet(SetButtonEvent(ref buttonBool, false, buttonPressure));
                 }
             }
 
@@ -275,6 +344,20 @@
                 }
             }
 
+            if (uiClickButton == type)
+            {
+                if (touchDown)
+                {
+                    uiClickPressed = true;
+                    OnAliasUIClickOn(SetButtonEvent(ref buttonBool, true, buttonPressure));
+                }
+                else
+                {
+                    uiClickPressed = false;
+                    OnAliasUIClickOff(SetButtonEvent(ref buttonBool, false, buttonPressure));
+                }
+            }
+
             if (menuToggleButton == type)
             {
                 if (touchDown)
@@ -290,13 +373,13 @@
             }
         }
 
-        bool Vector2ShallowEquals(Vector2 vectorA, Vector2 vectorB)
+        private bool Vector2ShallowEquals(Vector2 vectorA, Vector2 vectorB)
         {
             return (vectorA.x.ToString("F" + axisFidelity) == vectorB.x.ToString("F" + axisFidelity) &&
                     vectorA.y.ToString("F" + axisFidelity) == vectorB.y.ToString("F" + axisFidelity));
         }
 
-        void Update()
+        private void Update()
         {
             controllerIndex = (uint)trackedController.index;
             device = SteamVR_Controller.Input((int)controllerIndex);
@@ -390,6 +473,21 @@
             // Save current touch and trigger settings to detect next change.
             touchpadAxis = new Vector2(currentTouchpadAxis.x, currentTouchpadAxis.y);
             triggerAxis = new Vector2(currentTriggerAxis.x, currentTriggerAxis.y);
+        }
+
+        private void SetVelocity()
+        {
+            var origin = trackedController.origin ? trackedController.origin : trackedController.transform.parent;
+            if (origin != null)
+            {
+                controllerVelocity = origin.TransformDirection(device.velocity);
+                controllerAngularVelocity = origin.TransformDirection(device.angularVelocity);
+            }
+            else
+            {
+                controllerVelocity = device.velocity;
+                controllerAngularVelocity = device.angularVelocity;
+            }
         }
     }
 }

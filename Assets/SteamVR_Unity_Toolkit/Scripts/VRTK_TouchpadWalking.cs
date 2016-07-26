@@ -3,6 +3,7 @@
     using UnityEngine;
     using System.Collections;
 
+    [RequireComponent(typeof(VRTK_PlayerPresence))]
     public class VRTK_TouchpadWalking : MonoBehaviour
     {
         [SerializeField]
@@ -64,7 +65,7 @@
 
         private void Start()
         {
-            this.name = "PlayerObject_" + this.name;
+            Utilities.SetPlayerObject(this.gameObject, VRTK_PlayerObject.ObjectTypes.CameraRig);
 
             var controllerManager = GameObject.FindObjectOfType<SteamVR_ControllerManager>();
 

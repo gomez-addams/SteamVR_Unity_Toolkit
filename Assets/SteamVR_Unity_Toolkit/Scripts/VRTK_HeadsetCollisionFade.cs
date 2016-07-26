@@ -15,6 +15,7 @@
     {
         public float blinkTransitionSpeed = 0.1f;
         public Color fadeColor = Color.black;
+        public string ignoreTargetWithTagOrClass;
 
         public event HeadsetCollisionEventHandler HeadsetCollisionDetect;
         public event HeadsetCollisionEventHandler HeadsetCollisionEnded;
@@ -41,12 +42,14 @@
 
         protected void Start()
         {
+            Utilities.AddCameraFade();
             if (gameObject.GetComponentInChildren<SteamVR_Fade>() == null)
             {
                 Debug.LogWarning("This 'VRTK_HeadsetCollisionFade' script needs a SteamVR_Fade script on the camera eye.");
             }
 
-            this.name = "PlayerObject_" + this.name;
+            Utilities.SetPlayerObject(this.gameObject, VRTK_PlayerObject.ObjectTypes.Headset);
+
             BoxCollider collider = this.gameObject.AddComponent<BoxCollider>();
             collider.isTrigger = true;
             collider.size = new Vector3(0.1f, 0.1f, 0.1f);
@@ -56,9 +59,14 @@
             rb.useGravity = false;
         }
 
+        protected virtual bool ValidTarget(Transform target)
+        {
+            return (target && target.tag != ignoreTargetWithTagOrClass && target.GetComponent(ignoreTargetWithTagOrClass) == null);
+        }
+
         protected void OnTriggerStay(Collider collider)
         {
-            if (!collider.name.Contains("PlayerObject_"))
+            if (!collider.GetComponent<VRTK_PlayerObject>() && ValidTarget(collider.transform))
             {
                 OnHeadsetCollisionDetect(SetHeadsetCollisionEvent(collider, this.transform));
                 SteamVR_Fade.Start(fadeColor, blinkTransitionSpeed);
@@ -67,7 +75,7 @@
 
         protected void OnTriggerExit(Collider collider)
         {
-            if (!collider.name.Contains("PlayerObject_"))
+            if (!collider.GetComponent<VRTK_PlayerObject>())
             {
                 OnHeadsetCollisionEnded(SetHeadsetCollisionEvent(collider, this.transform));
                 SteamVR_Fade.Start(Color.clear, blinkTransitionSpeed);

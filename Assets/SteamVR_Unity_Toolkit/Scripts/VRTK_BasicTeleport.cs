@@ -23,6 +23,7 @@ namespace VRTK
         public float distanceBlinkDelay = 0f;
         public bool headsetPositionCompensation = true;
         public string ignoreTargetWithTagOrClass;
+        public bool limitToNavMesh = false;
 
         public event TeleportEventHandler Teleporting;
         public event TeleportEventHandler Teleported;
@@ -36,41 +37,43 @@ namespace VRTK
         private float maxBlinkTransitionSpeed = 1.5f;
         private float maxBlinkDistance = 33f;
 
-        protected void OnTeleporting(object sender, DestinationMarkerEventArgs e) {
-            if (Teleporting != null)
-                Teleporting(this, e);
-        }
-
-        protected void OnTeleported(object sender, DestinationMarkerEventArgs e) {
-            if (Teleported != null)
-                Teleported(this, e);
-        }
-
         public void InitDestinationSetListener(GameObject markerMaker)
         {
             if (markerMaker)
             {
-                var worldMarker = markerMaker.GetComponent<VRTK_DestinationMarker>();
-                if (worldMarker)
+                foreach (var worldMarker in markerMaker.GetComponents<VRTK_DestinationMarker>())
                 {
                     worldMarker.DestinationMarkerSet += new DestinationMarkerEventHandler(DoTeleport);
                     worldMarker.SetInvalidTarget(ignoreTargetWithTagOrClass);
+                    worldMarker.SetNavMeshCheck(limitToNavMesh);
+                    worldMarker.SetHeadsetPositionCompensation(headsetPositionCompensation);
                 }
             }
         }
 
         protected virtual void Start()
         {
-            this.name = "PlayerObject_" + this.name;
-            adjustYForTerrain = false;
-            eyeCamera = GameObject.FindObjectOfType<SteamVR_Camera>().GetComponent<Transform>();
+            Utilities.SetPlayerObject(this.gameObject, VRTK_PlayerObject.ObjectTypes.CameraRig);
 
-            var controllerManager = GameObject.FindObjectOfType<SteamVR_ControllerManager>();
-            InitDestinationSetListener(controllerManager.left);
-            InitDestinationSetListener(controllerManager.right);
+            adjustYForTerrain = false;
+            eyeCamera = Utilities.AddCameraFade();
+
+            InitDestinationMarkerListeners();
             InitHeadsetCollisionListener();
 
             enableTeleport = true;
+        }
+
+        protected void OnTeleporting(object sender, DestinationMarkerEventArgs e)
+        {
+            if (Teleporting != null)
+                Teleporting(this, e);
+        }
+
+        protected void OnTeleported(object sender, DestinationMarkerEventArgs e)
+        {
+            if (Teleported != null)
+                Teleported(this, e);
         }
 
         protected virtual void Blink(float transitionSpeed)
@@ -82,7 +85,24 @@ namespace VRTK
 
         protected virtual bool ValidLocation(Transform target)
         {
-            return (target && target.tag != ignoreTargetWithTagOrClass && target.GetComponent(ignoreTargetWithTagOrClass) == null);
+            //If the target is one of the player objects or a UI Canvas then it's never a valid location
+            if(target.GetComponent<VRTK_PlayerObject>() || target.GetComponent<VRTK_UIGraphicRaycaster>())
+            {
+                return false;
+            }
+
+            bool validNavMeshLocation = false;
+            if (target)
+            {
+                NavMeshHit hit;
+                validNavMeshLocation = NavMesh.SamplePosition(target.position, out hit, 1.0f, NavMesh.AllAreas);
+            }
+            if (!limitToNavMesh)
+            {
+                validNavMeshLocation = true;
+            }
+
+            return (validNavMeshLocation && target && target.tag != ignoreTargetWithTagOrClass && target.GetComponent(ignoreTargetWithTagOrClass) == null);
         }
 
         protected virtual void DoTeleport(object sender, DestinationMarkerEventArgs e)
@@ -116,7 +136,8 @@ namespace VRTK
         {
             if (adjustYForTerrain && target.GetComponent<Terrain>())
             {
-                position.y = Terrain.activeTerrain.SampleHeight(position);
+                var terrainHeight = Terrain.activeTerrain.SampleHeight(position);
+                position.y = (terrainHeight > position.y ? position.y : terrainHeight);
             }
             return position;
         }
@@ -136,6 +157,21 @@ namespace VRTK
         {
             SteamVR_Fade.Start(Color.clear, fadeInTime);
             fadeInTime = 0f;
+        }
+
+        private void InitDestinationMarkerListeners()
+        {
+            var controllerManager = GameObject.FindObjectOfType<SteamVR_ControllerManager>();
+            InitDestinationSetListener(controllerManager.left);
+            InitDestinationSetListener(controllerManager.right);
+
+            foreach (var destinationMarker in GameObject.FindObjectsOfType<VRTK_DestinationMarker>())
+            {
+                if (destinationMarker.gameObject != controllerManager.left && destinationMarker.gameObject != controllerManager.right)
+                {
+                    InitDestinationSetListener(destinationMarker.gameObject);
+                }
+            }
         }
 
         private void InitHeadsetCollisionListener()
