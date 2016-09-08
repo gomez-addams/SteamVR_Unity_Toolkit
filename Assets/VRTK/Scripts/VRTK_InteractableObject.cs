@@ -261,7 +261,8 @@ namespace VRTK
             {
                 if (toggle && !IsGrabbed() && !IsUsing())
                 {
-                    Color color = (touchHighlightColor != Color.clear ? touchHighlightColor : globalHighlightColor);
+                    //Color color = (touchHighlightColor != Color.clear ? touchHighlightColor : globalHighlightColor);
+                    Color color = globalHighlightColor; // We had a lot of prefabs with a blue color. Remove this later.
                     if (color != Color.clear)
                     {
                         var colorArray = BuildHighlightColorArray(color);
