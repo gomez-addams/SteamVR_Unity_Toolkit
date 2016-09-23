@@ -9,37 +9,6 @@ Unity Project**
   * Compatible SDKs
    * [SteamVR Plugin]
 
-## Games, Apps and Experiences that use this Toolkit
-
- * Games
-  * QuiVR | [Steam Store Page](http://store.steampowered.com/app/489380/)
-  * Left-Hand Path | [Steam Store Page](http://store.steampowered.com/app/488760/)
-  * Holodaze | [Steam Store Page](http://store.steampowered.com/app/475520/)
-  * ViveSpray | [Steam Store Page](http://store.steampowered.com/app/494830/)
-  * VeeR Pong | [Steam Store Page](http://store.steampowered.com/app/494850)
-  * Emergence Fractal Universe | [Steam Store Page](http://store.steampowered.com/app/500470)
-  * Ocarina of Vive | [Itch.io Store Page](https://tomcat94.itch.io/ocarina-of-vive-shooting-gallery)
-  * Danc<R | [Itch.io Store Page](https://tomcat94.itch.io/dancr-alpha)
-  * Tower Island: Explore, Discover and Disassemble | [Steam Store Page](http://store.steampowered.com/app/487740/)
-  * Virtual Warfighter | [Game website](http://virtual-warfighter.com/)
-  * VR Regatta | [Steam Store Page](http://store.steampowered.com/app/468240/)
-  * Car Car Crash Hands | [Steam Store Page](http://store.steampowered.com/app/472720)
-  * MegaPolice | [Youtube Trailer](https://www.youtube.com/watch?v=d6hCgfMxldY)
-  * The Crystal Nebula | [Steam Store Page](http://store.steampowered.com/app/505660)
-  * Drone Training VR | [Youtube Trailer](https://www.youtube.com/watch?v=A5MFT2JsySc)
-  * Cogs and Cowboys | [Steam Store Page](http://store.steampowered.com/app/510410)
-  * Frantic Freighter | [Steam Store Page](http://store.steampowered.com/app/503150)
-  * Redswood VR | [Steam Store Page](http://store.steampowered.com/app/499760)
-  * Wrath Of The Fire God | [Steam Store Page](http://store.steampowered.com/app/511370)
-  * Coinvault | [Itch.io Store Page](https://ldvr.itch.io/ldvrs-coinvault-for-the-vive)
-  * VR Explosive Kitten Toss | [Itch.io Store Page](https://ldvr.itch.io/ldvrs-kitten-toss)
-  * Zika VR | [Itch.io Store Page](https://ldvr.itch.io/ldvr-presents-zika-vr)
-  * Domino VR | [Steam Store Page](http://store.steampowered.com/app/508680)
-  * One Of The Last | [Game website](http://oneofthelast.com/)
-  * The Days After | [Game website](http://www.fivefingerstudios.com/thedaysafter)
-  * Quantized | [Steam Greenlight Page](https://steamcommunity.com/sharedfiles/filedetails/?id=195344075)
-  * Caketomino | [Steam Store Page](http://store.steampowered.com/app/517770)
-
 ## Quick Start for SteamVR
 
   * Clone this repository `git clone https://github.com/thestonefox/SteamVR_Unity_Toolkit.git`
@@ -82,6 +51,46 @@ documentation for this GitHub repository. Alternatively, the
 stable versions of the documentation can be viewed online at
 [http://docs.vrtk.io](http://docs.vrtk.io).
 
+## Examples
+
+A collection of example scenes have been created to aid with
+understanding the different aspects of the toolkit. A list
+of the examples can be viewed within this repository in
+[EXAMPLES.md] which includes an up to date list of examples.
+
+## Games, Apps and Experiences that use this Toolkit
+
+| Name | Link |
+|-------------------------------------------------|-------------------------------------------------------------------------------------------|
+| QuiVR | [Steam Store Page](http://store.steampowered.com/app/489380/) |
+| Left-Hand Path | [Steam Store Page](http://store.steampowered.com/app/488760/) |
+| Holodaze | [Steam Store Page](http://store.steampowered.com/app/475520/) |
+| ViveSpray | [Steam Store Page](http://store.steampowered.com/app/494830/) |
+| VeeR Pong | [Steam Store Page](http://store.steampowered.com/app/494850) |
+| Emergence Fractal Universe | [Steam Store Page](http://store.steampowered.com/app/500470) |
+| Ocarina of Vive | [Itch.io Store Page](https://tomcat94.itch.io/ocarina-of-vive-shooting-gallery) |
+| Danc<R | [Itch.io Store Page](https://tomcat94.itch.io/dancr-alpha) |
+| Tower Island: Explore, Discover and Disassemble | [Steam Store Page](http://store.steampowered.com/app/487740/) |
+| Virtual Warfighter | [Game website](http://virtual-warfighter.com/) |
+| VR Regatta | [Steam Store Page](http://store.steampowered.com/app/468240/) |
+| Car Car Crash Hands | [Steam Store Page](http://store.steampowered.com/app/472720) |
+| MegaPolice | [Youtube Trailer](https://www.youtube.com/watch?v=d6hCgfMxldY) |
+| The Crystal Nebula | [Steam Store Page](http://store.steampowered.com/app/505660) |
+| Drone Training VR | [Youtube Trailer](https://www.youtube.com/watch?v=A5MFT2JsySc) |
+| Cogs and Cowboys | [Steam Store Page](http://store.steampowered.com/app/510410) |
+| Frantic Freighter | [Steam Store Page](http://store.steampowered.com/app/503150) |
+| Redswood VR | [Steam Store Page](http://store.steampowered.com/app/499760) |
+| Wrath Of The Fire God | [Steam Store Page](http://store.steampowered.com/app/511370) |
+| Coinvault | [Itch.io Store Page](https://ldvr.itch.io/ldvrs-coinvault-for-the-vive) |
+| VR Explosive Kitten Toss | [Itch.io Store Page](https://ldvr.itch.io/ldvrs-kitten-toss) |
+| Zika VR | [Itch.io Store Page](https://ldvr.itch.io/ldvr-presents-zika-vr) |
+| Domino VR | [Steam Store Page](http://store.steampowered.com/app/508680) |
+| One Of The Last | [Game website](http://oneofthelast.com/) |
+| The Days After | [Game website](http://www.fivefingerstudios.com/thedaysafter) |
+| Quantized | [Steam Greenlight Page](https://steamcommunity.com/sharedfiles/filedetails/?id=195344075) |
+| Caketomino | [Steam Store Page](http://store.steampowered.com/app/517770) |
+| Escape Station | [Steam Store Page](http://store.steampowered.com/app/527360) |
+
 ## Contributing
 
 I would love to get contributions from you! Follow the instructions
@@ -108,5 +117,6 @@ Code released under the [MIT License].
 [MIT License]: https://github.com/thestonefox/SteamVR_Unity_Toolkit/blob/master/LICENSE
 [Contribution Document]: https://github.com/thestonefox/SteamVR_Unity_Toolkit/blob/master/CONTRIBUTING.md
 [DOCUMENTATION.md]: https://github.com/thestonefox/SteamVR_Unity_Toolkit/blob/master/DOCUMENTATION.md
+[EXAMPLES.md]: https://github.com/thestonefox/SteamVR_Unity_Toolkit/blob/master/EXAMPLES.md
 [Fork]: http://help.github.com/fork-a-repo/
 [Open a Pull Request]: https://help.github.com/articles/using-pull-requests/
