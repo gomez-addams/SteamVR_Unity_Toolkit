@@ -169,7 +169,7 @@ namespace VRTK
             if (controllerAttachPoint == null)
             {
                 //attempt to find the attach point on the controller
-                var defaultAttachPoint = transform.Find(VRTK_SDK_Bridge.defaultAttachPointPath);
+                var defaultAttachPoint = transform.Find(VRTK_SDK_Bridge.GetControllerElementPath(SDK_Base.ControllerElelements.AttachPoint, VRTK_DeviceFinder.GetControllerHand(gameObject)));
                 if (defaultAttachPoint != null)
                 {
                     controllerAttachPoint = defaultAttachPoint.GetComponent<Rigidbody>();
@@ -323,7 +323,7 @@ namespace VRTK
 
             if (origin != null)
             {
-                rb.velocity = origin.TransformDirection(velocity) * (throwMultiplier * objectThrowMultiplier);
+                rb.velocity = origin.TransformVector(velocity) * (throwMultiplier * objectThrowMultiplier);
                 rb.angularVelocity = origin.TransformDirection(angularVelocity);
             }
             else

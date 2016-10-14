@@ -40,9 +40,16 @@ namespace VRTK.Highlighters
             originalSharedRendererMaterials = new Dictionary<string, Material[]>();
             originalRendererMaterials = new Dictionary<string, Material[]>();
             faderRoutines = new Dictionary<string, Coroutine>();
-            StoreOriginalMaterials();
-
             resetMainTexture = GetOption<bool>(options, "resetMainTexture");
+            Reset();
+        }
+
+        /// <summary>
+        /// The Reset method stores the object's materials and shared materials prior to highlighting.
+        /// </summary>
+        public override void Reset()
+        {
+            StoreOriginalMaterials();
         }
 
         /// <summary>
@@ -77,7 +84,7 @@ namespace VRTK.Highlighters
             }
             faderRoutines.Clear();
 
-            foreach (Renderer renderer in GetComponentsInChildren<Renderer>())
+            foreach (Renderer renderer in GetComponentsInChildren<Renderer>(true))
             {
                 var objectReference = renderer.gameObject.GetInstanceID().ToString();
                 if (!originalRendererMaterials.ContainsKey(objectReference))
@@ -94,7 +101,7 @@ namespace VRTK.Highlighters
         {
             originalSharedRendererMaterials.Clear();
             originalRendererMaterials.Clear();
-            foreach (Renderer renderer in GetComponentsInChildren<Renderer>())
+            foreach (Renderer renderer in GetComponentsInChildren<Renderer>(true))
             {
                 var objectReference = renderer.gameObject.GetInstanceID().ToString();
                 originalSharedRendererMaterials[objectReference] = renderer.sharedMaterials;
@@ -105,7 +112,7 @@ namespace VRTK.Highlighters
 
         private void ChangeToHighlightColor(Color color, float duration = 0f)
         {
-            foreach (Renderer renderer in GetComponentsInChildren<Renderer>())
+            foreach (Renderer renderer in GetComponentsInChildren<Renderer>(true))
             {
                 for (int i = 0; i < renderer.materials.Length; i++)
                 {
@@ -136,7 +143,7 @@ namespace VRTK.Highlighters
                             material.color = color;
                             if (material.HasProperty("_EmissionColor"))
                             {
-                                material.SetColor("_EmissionColor", Darken(color, emissionDarken));
+                                material.SetColor("_EmissionColor", Utilities.ColorDarken(color, emissionDarken));
                             }
                         }
                     }
@@ -156,21 +163,10 @@ namespace VRTK.Highlighters
                 }
                 if (material.HasProperty("_EmissionColor"))
                 {
-                    material.SetColor("_EmissionColor", Color.Lerp(startColor, Darken(endColor, emissionDarken), (elapsedTime / duration)));
+                    material.SetColor("_EmissionColor", Color.Lerp(startColor, Utilities.ColorDarken(endColor, emissionDarken), (elapsedTime / duration)));
                 }
                 yield return null;
             }
-        }
-
-        private Color Darken(Color color, float percent)
-        {
-            return new Color(ColorPercent(color.r, percent), ColorPercent(color.g, percent), ColorPercent(color.b, percent), color.a);
-        }
-
-        private float ColorPercent(float value, float percent)
-        {
-            percent = Mathf.Clamp(percent, 0f, 100f);
-            return (percent == 0f ? value : (value - (percent / 100f)));
         }
     }
 }
