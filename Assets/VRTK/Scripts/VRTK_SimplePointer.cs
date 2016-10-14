@@ -16,23 +16,26 @@ namespace VRTK
     /// </example>
     public class VRTK_SimplePointer : VRTK_WorldPointer
     {
+        [Header("Simple Pointer Settings", order = 3)]
         [Tooltip("The thickness and length of the beam can also be set on the script as well as the ability to toggle the sphere beam tip that is displayed at the end of the beam (to represent a cursor).")]
         public float pointerThickness = 0.002f;
         [Tooltip("The distance the beam will project before stopping.")]
         public float pointerLength = 100f;
         [Tooltip("Toggle whether the cursor is shown on the end of the pointer beam.")]
         public bool showPointerTip = true;
+        [Header("Custom Appearance Settings", order = 4)]
         [Tooltip("A custom Game Object can be applied here to use instead of the default sphere for the pointer cursor.")]
         public GameObject customPointerCursor;
-        [Tooltip("The layers to ignore when raycasting.")]
-        public LayerMask layersToIgnore = Physics.IgnoreRaycastLayer;
+        [Tooltip("Rotate the pointer cursor to match the normal of the target surface (or the pointer direction if no target was hit).")]
+        public bool pointerCursorMatchTargetNormal = false;
+        [Tooltip("Rescale the pointer cursor proportionally to the distance from this game object (useful when used as a gaze pointer).")]
+        public bool pointerCursorRescaledAlongDistance = false;
 
         private GameObject pointerHolder;
         private GameObject pointer;
         private GameObject pointerTip;
         private Vector3 pointerTipScale = new Vector3(0.05f, 0.05f, 0.05f);
-        // material of customPointerCursor (if defined)
-        private Material customPointerMaterial;
+        private Vector3 pointerCursorOriginalScale = Vector3.one;
 
         protected override void OnEnable()
         {
@@ -59,70 +62,89 @@ namespace VRTK
                 var rayHit = Physics.Raycast(pointerRaycast, out pointerCollidedWith, pointerLength, ~layersToIgnore);
                 var pointerBeamLength = GetPointerBeamLength(rayHit, pointerCollidedWith);
                 SetPointerTransform(pointerBeamLength, pointerThickness);
+                if (rayHit)
+                {
+                    if (pointerCursorMatchTargetNormal)
+                    {
+                        pointerTip.transform.forward = -pointerCollidedWith.normal;
+                    }
+                    if (pointerCursorRescaledAlongDistance)
+                    {
+                        float collisionDistance = Vector3.Distance(pointerCollidedWith.point, transform.position);
+                        pointerTip.transform.localScale = pointerCursorOriginalScale * collisionDistance;
+                    }
+                }
+                else
+                {
+                    if (pointerCursorMatchTargetNormal)
+                    {
+                        pointerTip.transform.forward = transform.forward;
+                    }
+                }
             }
         }
 
         protected override void InitPointer()
         {
             pointerHolder = new GameObject(string.Format("[{0}]WorldPointer_SimplePointer_Holder", gameObject.name));
-            Utilities.SetPlayerObject(pointerHolder, VRTK_PlayerObject.ObjectTypes.Pointer);
             pointerHolder.transform.parent = transform;
             pointerHolder.transform.localPosition = Vector3.zero;
+            Utilities.SetPlayerObject(pointerHolder, VRTK_PlayerObject.ObjectTypes.Pointer);
 
             pointer = GameObject.CreatePrimitive(PrimitiveType.Cube);
             pointer.transform.name = string.Format("[{0}]WorldPointer_SimplePointer_Pointer", gameObject.name);
-            Utilities.SetPlayerObject(pointer, VRTK_PlayerObject.ObjectTypes.Pointer);
             pointer.transform.parent = pointerHolder.transform;
-
             pointer.GetComponent<BoxCollider>().isTrigger = true;
             pointer.AddComponent<Rigidbody>().isKinematic = true;
             pointer.layer = LayerMask.NameToLayer("Ignore Raycast");
 
-            if (customPointerCursor == null)
+            var pointerRenderer = pointer.GetComponent<MeshRenderer>();
+            pointerRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            pointerRenderer.receiveShadows = false;
+            pointerRenderer.material = pointerMaterial;
+
+            Utilities.SetPlayerObject(pointer, VRTK_PlayerObject.ObjectTypes.Pointer);
+
+            if (customPointerCursor)
             {
-                pointerTip = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                pointerTip.transform.localScale = pointerTipScale;
+                pointerTip = Instantiate(customPointerCursor);
             }
             else
             {
-                Renderer renderer = customPointerCursor.GetComponentInChildren<MeshRenderer>();
-                if (renderer)
-                {
-                    customPointerMaterial = Instantiate(renderer.sharedMaterial);
-                }
-                pointerTip = Instantiate(customPointerCursor);
-                foreach (Renderer mr in pointerTip.GetComponentsInChildren<Renderer>())
-                {
-                    mr.material = customPointerMaterial;
-                }
+                pointerTip = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                pointerTip.transform.localScale = pointerTipScale;
+
+                var pointerTipRenderer = pointerTip.GetComponent<MeshRenderer>();
+                pointerTipRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                pointerTipRenderer.receiveShadows = false;
+                pointerTipRenderer.material = pointerMaterial;
             }
 
+            pointerCursorOriginalScale = pointerTip.transform.localScale;
             pointerTip.transform.name = string.Format("[{0}]WorldPointer_SimplePointer_PointerTip", gameObject.name);
-            Utilities.SetPlayerObject(pointerTip, VRTK_PlayerObject.ObjectTypes.Pointer);
             pointerTip.transform.parent = pointerHolder.transform;
-
             pointerTip.GetComponent<Collider>().isTrigger = true;
             pointerTip.AddComponent<Rigidbody>().isKinematic = true;
             pointerTip.layer = LayerMask.NameToLayer("Ignore Raycast");
+            Utilities.SetPlayerObject(pointerTip, VRTK_PlayerObject.ObjectTypes.Pointer);
 
             base.InitPointer();
+
+            if (showPointerTip && objectInteractor)
+            {
+                objectInteractor.transform.localScale = pointerTip.transform.localScale * 1.05f;
+            }
 
             SetPointerTransform(pointerLength, pointerThickness);
             TogglePointer(false);
         }
 
-        protected override void SetPointerMaterial()
+        protected override void SetPointerMaterial(Color color)
         {
-            base.SetPointerMaterial();
-            pointer.GetComponent<Renderer>().material = pointerMaterial;
-            if (customPointerMaterial != null)
-            {
-                customPointerMaterial.color = pointerMaterial.color;
-            }
-            else
-            {
-                pointerTip.GetComponent<Renderer>().material = pointerMaterial;
-            }
+            base.SetPointerMaterial(color);
+
+            base.ChangeMaterialColor(pointer, color);
+            base.ChangeMaterialColor(pointerTip, color);
         }
 
         protected override void TogglePointer(bool state)
@@ -149,7 +171,7 @@ namespace VRTK
             pointer.transform.localPosition = new Vector3(0f, 0f, beamPosition);
             pointerTip.transform.localPosition = new Vector3(0f, 0f, setLength - (pointerTip.transform.localScale.z / 2));
             pointerHolder.transform.localRotation = Quaternion.identity;
-            base.SetPlayAreaCursorTransform(pointerTip.transform.position);
+            base.UpdateDependencies(pointerTip.transform.position);
         }
 
         private float GetPointerBeamLength(bool hasRayHit, RaycastHit collidedWith)
