@@ -1,18 +1,19 @@
-# [VRTK] VR Toolkit - [![Slack](https://vrtk-slack-invite.herokuapp.com/badge.svg)](http://invite.vrtk.io) [![Waffle](https://img.shields.io/badge/waffle-tracker-blue.svg?style=flat-square)](http://tracker.vrtk.io)
+![vrtk logo](https://raw.githubusercontent.com/thestonefox/VRTK/master/Assets/VRTK/Examples/Resources/Images/logos/vrtk-capsule-clear.png)
+> ### VRTK - Virtual Reality Toolkit
+> A collection of useful scripts and prefabs for building VR titles in Unity 5.
 
-A collection of useful scripts and prefabs for building VR titles in
-Unity 5.
+[![Slack](http://sysdia2.co.uk/badge.svg)](http://invite.vrtk.io)
+[![Waffle](https://img.shields.io/badge/waffle-tracker-blue.svg?style=flat-square)](http://tracker.vrtk.io)
 
-**This Toolkit requires a compatible VR SDK to be imported into your
-Unity Project**
+**This Toolkit requires a compatible VR SDK to be imported into your Unity Project**
 
   * Compatible SDKs
    * [SteamVR Plugin]
 
 ## Quick Start for SteamVR
 
-  * Clone this repository `git clone https://github.com/thestonefox/SteamVR_Unity_Toolkit.git`
-  * Open `SteamVR_Unity_Toolkit` within Unity3d
+  * Clone this repository `git clone https://github.com/thestonefox/VRTK.git`
+  * Open `VRTK` within Unity3d
   * Import the [SteamVR Plugin] from the Unity Asset Store
   * Browse the `Examples` scenes for example usage of the scripts
 
@@ -85,13 +86,15 @@ of the examples can be viewed within this repository in
 | VR Explosive Kitten Toss | [Itch.io Store Page](https://ldvr.itch.io/ldvrs-kitten-toss) |
 | Zika VR | [Itch.io Store Page](https://ldvr.itch.io/ldvr-presents-zika-vr) |
 | Domino VR | [Steam Store Page](http://store.steampowered.com/app/508680) |
-| One Of The Last | [Game website](http://oneofthelast.com) |
+| One Of The Last | [Steam Store Page](http://store.steampowered.com/app/550360) |
 | The Days After | [Game website](http://www.fivefingerstudios.com/thedaysafter) |
 | Quantized | [Steam Greenlight Page](https://steamcommunity.com/sharedfiles/filedetails/?id=195344075) |
 | Caketomino | [Steam Store Page](http://store.steampowered.com/app/517770) |
 | Escape Station | [Steam Store Page](http://store.steampowered.com/app/527360) |
 | Outrageous Grounds: The Maze | [Steam Store Page](http://store.steampowered.com/app/513050) |
 | Draco Dux | [Steam Store Page](http://store.steampowered.com/app/460730) |
+| Deisim | [Steam Store Page](http://store.steampowered.com/app/525680) |
+| Potioneer: The VR Gardening Simulator | [Steam Store Page](http://store.steampowered.com/app/544410) |
 
 ## Contributing
 
