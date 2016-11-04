@@ -178,9 +178,13 @@ A scene that demonstrates the concept of extending the physical room scale space
 
 A scene that demonstrates adding tooltips to game objects and to the controllers using the prefabs `ObjectTooltip` and `ControllerTooltips`.
 
+  > [View Example Tour on YouTube](https://www.youtube.com/watch?v=5bgJ5inm404)
+
 ### 030_Controls_RadialTouchpadMenu
 
 A scene that demonstrates adding dynamic radial menus to controllers and other objects using the prefab `RadialMenu`.
+
+  > [View Example Tour on YouTube](https://www.youtube.com/watch?v=9X1BJeomnPM)
 
 ### 031_CameraRig_HeadsetGazePointer
 
@@ -223,3 +227,7 @@ A scene displays the frames per second in the centre of the headset view. The de
 ### 040_Controls_Panel_Menu
 
 A scene that demonstrates how to attach interactable panel prefabs to game objects to provide additional settings.
+
+### 041_Controller_ObjectSnappingToDropZones
+
+A scene that uses the `VRTK_SnapDropZone` prefab to set up pre-determined snap zones for a range of objects and demonstrates how only objects of certain types can be snapped into certain areas.

@@ -213,7 +213,7 @@ namespace VRTK
         public override GameObject GetControllerRenderModel(GameObject controller)
         {
             var renderModel = (controller.GetComponent<SteamVR_RenderModel>() ? controller.GetComponent<SteamVR_RenderModel>() : controller.GetComponentInChildren<SteamVR_RenderModel>());
-            return renderModel.gameObject;
+            return (renderModel ? renderModel.gameObject : null);
         }
 
         public override void SetControllerRenderModelWheel(GameObject renderModel, bool state)
@@ -468,9 +468,15 @@ namespace VRTK
 
         private SteamVR_ControllerManager GetControllerManager()
         {
-            if (cachedControllerManager == null)
+            if (cachedControllerManager == null || !cachedControllerManager.isActiveAndEnabled)
             {
-                cachedControllerManager = FindObjectOfType<SteamVR_ControllerManager>();
+                foreach (var manager in FindObjectsOfType<SteamVR_ControllerManager>())
+                {
+                    if (manager.left && manager.right)
+                    {
+                        cachedControllerManager = manager;
+                    }
+                }
             }
             return cachedControllerManager;
         }

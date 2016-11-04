@@ -58,6 +58,7 @@ namespace VRTK
         private int grabEnabledState = 0;
         private float grabPrecognitionTimer = 0f;
         private GameObject undroppableGrabbedObject;
+        private bool controllerVisibilityState = true;
 
         public virtual void OnControllerGrabInteractableObject(ObjectInteractEventArgs e)
         {
@@ -107,6 +108,15 @@ namespace VRTK
             return grabbedObject;
         }
 
+        /// <summary>
+        /// The GetControllerVisibilityState method returns the current expected controller visibility state from the grabbed action.
+        /// </summary>
+        /// <returns>Returns true if the expected grabbed state of the controller visibility should be visible, and returns false if the expected state should be hidden.</returns>
+        public bool GetControllerVisibilityState()
+        {
+            return controllerVisibilityState;
+        }
+
         private void Awake()
         {
             if (GetComponent<VRTK_InteractTouch>() == null)
@@ -149,7 +159,7 @@ namespace VRTK
         {
             if (undroppableGrabbedObject)
             {
-                if (undroppableGrabbedObject.GetComponent<VRTK_InteractableObject>().isDroppable)
+                if (undroppableGrabbedObject.GetComponent<VRTK_InteractableObject>().IsDroppable())
                 {
                     undroppableGrabbedObject = null;
                 }
@@ -275,7 +285,7 @@ namespace VRTK
                 }
                 controllerAttachJoint = tempSpringJoint;
             }
-            controllerAttachJoint.breakForce = (objectScript.isDroppable ? objectScript.detachThreshold : Mathf.Infinity);
+            controllerAttachJoint.breakForce = (objectScript.IsDroppable() ? objectScript.detachThreshold : Mathf.Infinity);
             controllerAttachJoint.connectedBody = controllerAttachPoint;
         }
 
@@ -331,6 +341,8 @@ namespace VRTK
                 rb.velocity = velocity * (throwMultiplier * objectThrowMultiplier);
                 rb.angularVelocity = angularVelocity;
             }
+
+            rb.velocity = rb.GetPointVelocity(rb.position + (rb.position - transform.position));
         }
 
         private bool GrabInteractedObject()
@@ -418,6 +430,7 @@ namespace VRTK
             if (grabbedObject != null)
             {
                 controllerActions.ToggleControllerModel(false, grabbedObject);
+                controllerVisibilityState = false;
             }
         }
 
@@ -462,6 +475,7 @@ namespace VRTK
             if (updatedHideControllerOnGrab)
             {
                 controllerActions.ToggleControllerModel(true, grabbedObject);
+                controllerVisibilityState = true;
             }
 
             grabEnabledState = 0;
@@ -513,7 +527,7 @@ namespace VRTK
                     initialGrabAttempt = GrabInteractedObject();
                 }
 
-                undroppableGrabbedObject = (grabbedObject && grabbedObject.GetComponent<VRTK_InteractableObject>() && !grabbedObject.GetComponent<VRTK_InteractableObject>().isDroppable ? grabbedObject : null);
+                undroppableGrabbedObject = (grabbedObject && grabbedObject.GetComponent<VRTK_InteractableObject>() && !grabbedObject.GetComponent<VRTK_InteractableObject>().IsDroppable() ? grabbedObject : null);
 
                 if (grabbedObject && initialGrabAttempt)
                 {
@@ -532,7 +546,7 @@ namespace VRTK
 
         private bool CanRelease()
         {
-            return (grabbedObject && grabbedObject.GetComponent<VRTK_InteractableObject>().isDroppable);
+            return (grabbedObject && grabbedObject.GetComponent<VRTK_InteractableObject>().IsDroppable());
         }
 
         private void AttemptReleaseObject()
@@ -573,7 +587,7 @@ namespace VRTK
 
             if (createRigidBodyWhenNotTouching && grabbedObject == null)
             {
-                if (interactTouch.IsRigidBodyActive() != controllerEvents.grabPressed)
+                if (!interactTouch.IsRigidBodyForcedActive() && interactTouch.IsRigidBodyActive() != controllerEvents.grabPressed)
                 {
                     interactTouch.ToggleControllerRigidBody(controllerEvents.grabPressed);
                 }

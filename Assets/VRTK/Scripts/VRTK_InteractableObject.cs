@@ -82,6 +82,19 @@ namespace VRTK
             OverrideDontHide,
         }
 
+        /// <summary>
+        /// The types of valid situations that the object can be released from grab.
+        /// </summary>
+        /// <param name="No_Drop">The object cannot be dropped via the controller</param>
+        /// <param name="Drop_Anywhere">The object can be dropped anywhere in the scene via the controller.</param>
+        /// <param name="Drop_ValidSnapDropZone">The object can only be dropped when it is hovering over a valid snap drop zone.</param>
+        public enum ValidDropTypes
+        {
+            No_Drop,
+            Drop_Anywhere,
+            Drop_ValidSnapDropZone
+        }
+
         [Header("Touch Interactions", order = 1)]
 
         [Tooltip("The object will only highlight when a controller touches it if this is checked.")]
@@ -99,8 +112,8 @@ namespace VRTK
 
         [Tooltip("Determines if the object can be grabbed.")]
         public bool isGrabbable = false;
-        [Tooltip("Determines if the object can be dropped by the controller grab button being used. If this is unchecked then it's not possible to drop the item once it's picked up using the controller button.")]
-        public bool isDroppable = true;
+        [Tooltip("Determines in what situation the object can be dropped by the controller grab button.")]
+        public ValidDropTypes validDrop = ValidDropTypes.Drop_Anywhere;
         [Tooltip("Determines if the object can be swapped between controllers when it is picked up. If it is unchecked then the object must be dropped before it can be picked up by the other controller.")]
         public bool isSwappable = true;
         [Tooltip("If this is checked then the grab button on the controller needs to be continually held down to keep grabbing. If this is unchecked the grab button toggles the grab action with one button press to grab and another to release.")]
@@ -203,6 +216,10 @@ namespace VRTK
         protected bool forceDisabled;
         protected VRTK_BaseHighlighter objectHighlighter;
         protected bool autoHighlighter = false;
+        protected bool hoveredOverSnapDropZone = false;
+        protected bool snappedInSnapDropZone = false;
+        protected VRTK_SnapDropZone storedSnapDropZone;
+        protected Vector3 previousLocalScale = Vector3.zero;
 
         public virtual void OnInteractableObjectTouched(InteractableObjectEventArgs e)
         {
@@ -289,18 +306,28 @@ namespace VRTK
         /// <summary>
         /// The IsGrabbed method is used to determine if the object is currently being grabbed.
         /// </summary>
+        /// <param name="grabbedBy">An optional GameObject to check if the Interactable Object is grabbed by that specific GameObject. Defaults to `null`</param>
         /// <returns>Returns `true` if the object is currently being grabbed.</returns>
-        public bool IsGrabbed()
+        public bool IsGrabbed(GameObject grabbedBy = null)
         {
+            if (grabbingObject && grabbedBy != null)
+            {
+                return (grabbingObject == grabbedBy);
+            }
             return (grabbingObject != null);
         }
 
         /// <summary>
         /// The IsUsing method is used to determine if the object is currently being used.
         /// </summary>
+        /// <param name="usedBy">An optional GameObject to check if the Interactable Object is used by that specific GameObject. Defaults to `null`</param>
         /// <returns>Returns `true` if the object is currently being used.</returns>
-        public bool IsUsing()
+        public bool IsUsing(GameObject usedBy = null)
         {
+            if (usingObject && usedBy != null)
+            {
+                return (usingObject == usedBy);
+            }
             return (usingObject != null);
         }
 
@@ -325,11 +352,8 @@ namespace VRTK
         {
             if (touchingObjects.Contains(previousTouchingObject))
             {
+                ResetUseState(previousTouchingObject);
                 OnInteractableObjectUntouched(SetInteractableObjectEvent(previousTouchingObject));
-                if (gameObject.activeInHierarchy)
-                {
-                    StartCoroutine(StopUsingOnControllerChange(previousTouchingObject));
-                }
                 touchingObjects.Remove(previousTouchingObject);
             }
         }
@@ -340,6 +364,10 @@ namespace VRTK
         /// <param name="currentGrabbingObject">The game object that is currently grabbing this object.</param>
         public virtual void Grabbed(GameObject currentGrabbingObject)
         {
+            if (snappedInSnapDropZone)
+            {
+                ToggleSnapDropZone(storedSnapDropZone, false);
+            }
             OnInteractableObjectGrabbed(SetInteractableObjectEvent(currentGrabbingObject));
             ForceReleaseGrab();
             RemoveTrackPoint();
@@ -358,15 +386,12 @@ namespace VRTK
         /// <param name="previousGrabbingObject">The game object that was previously grabbing this object.</param>
         public virtual void Ungrabbed(GameObject previousGrabbingObject)
         {
-            OnInteractableObjectUngrabbed(SetInteractableObjectEvent(previousGrabbingObject));
             RemoveTrackPoint();
+            ResetUseState(previousGrabbingObject);
+            OnInteractableObjectUngrabbed(SetInteractableObjectEvent(previousGrabbingObject));
             grabbedSnapHandle = null;
             grabbingObject = null;
             LoadPreviousState();
-            if (gameObject.activeInHierarchy)
-            {
-                StartCoroutine(StopUsingOnControllerChange(previousGrabbingObject));
-            }
         }
 
         /// <summary>
@@ -375,6 +400,10 @@ namespace VRTK
         /// <param name="currentUsingObject">The game object that is currently using this object.</param>
         public virtual void StartUsing(GameObject currentUsingObject)
         {
+            if (IsUsing() && !IsUsing(currentUsingObject))
+            {
+                usingObject.GetComponent<VRTK_InteractUse>().ForceResetUsing();
+            }
             OnInteractableObjectUsed(SetInteractableObjectEvent(currentUsingObject));
             usingObject = currentUsingObject;
         }
@@ -409,7 +438,7 @@ namespace VRTK
             {
                 InitialiseHighlighter();
             }
-            if (highlightOnTouch)
+            if (objectHighlighter && highlightOnTouch)
             {
                 if (toggle && !IsGrabbed())
                 {
@@ -503,7 +532,7 @@ namespace VRTK
         /// </summary>
         public void SaveCurrentState()
         {
-            if (grabbingObject == null)
+            if (grabbingObject == null && !snappedInSnapDropZone)
             {
                 previousParent = transform.parent;
 
@@ -527,12 +556,43 @@ namespace VRTK
         }
 
         /// <summary>
+        /// the IsKinematic method returns whether the rigidbody is set to kinematic or not.
+        /// </summary>
+        /// <returns>Returns true if the rigidbody is set to kinematic and returns false if it's not.</returns>
+        public bool IsKinematic()
+        {
+            if (rb)
+            {
+                return rb.isKinematic;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// The GetTouchingObjects method is used to return the collecetion of valid game objects that are currently touching this object.
+        /// </summary>
+        /// <returns>A list of game object of that are currently touching the current object.</returns>
+        public List<GameObject> GetTouchingObjects()
+        {
+            return touchingObjects;
+        }
+
+        /// <summary>
         /// The GetGrabbingObject method is used to return the game object that is currently grabbing this object.
         /// </summary>
         /// <returns>The game object of what is grabbing the current object.</returns>
         public GameObject GetGrabbingObject()
         {
             return grabbingObject;
+        }
+
+        /// <summary>
+        /// The GetUsingObject method is used to return the game object that is currently using this object.
+        /// </summary>
+        /// <returns>The game object of what is using the current object.</returns>
+        public GameObject GetUsingObject()
+        {
+            return usingObject;
         }
 
         /// <summary>
@@ -585,6 +645,77 @@ namespace VRTK
         public void RegisterTeleporters()
         {
             StartCoroutine(RegisterTeleportersAtEndOfFrame());
+        }
+
+        /// <summary>
+        /// the StoreLocalScale method saves the current transform local scale values.
+        /// </summary>
+        public void StoreLocalScale()
+        {
+            previousLocalScale = transform.localScale;
+        }
+
+        /// <summary>
+        /// The ToggleSnapDropZone method is used to set the state of whether the interactable object is in a Snap Drop Zone or not.
+        /// </summary>
+        /// <param name="snapDropZone">The Snap Drop Zone object that is being interacted with.</param>
+        /// <param name="state">The state of whether the interactable object is fixed in or removed from the Snap Drop Zone. True denotes the interactable object is fixed to the Snap Drop Zone and false denotes it has been removed from the Snap Drop Zone.</param>
+        public void ToggleSnapDropZone(VRTK_SnapDropZone snapDropZone, bool state)
+        {
+            snappedInSnapDropZone = state;
+            if (state)
+            {
+                storedSnapDropZone = snapDropZone;
+            }
+            else
+            {
+                ResetDropSnapType();
+            }
+        }
+
+        /// <summary>
+        /// The IsInSnapDropZone method determines whether the interactable object is currently snapped to a drop zone.
+        /// </summary>
+        /// <returns>Returns true if the interactable object is currently snapped in a drop zone and returns false if it is not.</returns>
+        public bool IsInSnapDropZone()
+        {
+            return snappedInSnapDropZone;
+        }
+
+        /// <summary>
+        /// The SetSnapDropZoneHover method sets whether the interactable object is currently being hovered over a valid Snap Drop Zone.
+        /// </summary>
+        /// <param name="state">The state of whether the object is being hovered or not.</param>
+        public void SetSnapDropZoneHover(bool state)
+        {
+            hoveredOverSnapDropZone = state;
+        }
+
+        /// <summary>
+        /// The GetStoredSnapDropZone method returns the snap drop zone that the interactable object is currently snapped to.
+        /// </summary>
+        /// <returns>The SnapDropZone that the interactable object is currently snapped to.</returns>
+        public VRTK_SnapDropZone GetStoredSnapDropZone()
+        {
+            return storedSnapDropZone;
+        }
+
+        /// <summary>
+        /// The IsDroppable method returns whether the item can be dropped or not in it's current situation.
+        /// </summary>
+        /// <returns>Returns true if the item can currently be dropped and returns false if it is not currently possible to drop.</returns>
+        public bool IsDroppable()
+        {
+            switch (validDrop)
+            {
+                case ValidDropTypes.No_Drop:
+                    return false;
+                case ValidDropTypes.Drop_Anywhere:
+                    return true;
+                case ValidDropTypes.Drop_ValidSnapDropZone:
+                    return hoveredOverSnapDropZone;
+            }
+            return false;
         }
 
         protected virtual void Awake()
@@ -715,7 +846,7 @@ namespace VRTK
 
         private void CheckBreakDistance()
         {
-            if (trackPoint && isDroppable)
+            if (trackPoint && IsDroppable())
             {
                 float distance = Vector3.Distance(trackPoint.position, originalControllerAttachPoint.position);
                 if (distance > (detachThreshold / 1000))
@@ -847,19 +978,14 @@ namespace VRTK
             }
         }
 
-        private IEnumerator StopUsingOnControllerChange(GameObject previousController)
+        private void ResetUseState(GameObject checkObject)
         {
-            yield return new WaitForEndOfFrame();
-            var usingObject = previousController.GetComponent<VRTK_InteractUse>();
-            if (usingObject)
+            var usingObjectCheck = checkObject.GetComponent<VRTK_InteractUse>();
+            if (usingObjectCheck)
             {
                 if (holdButtonToUse)
                 {
-                    usingObject.ForceStopUsing();
-                }
-                else
-                {
-                    usingObject.ForceResetUsing();
+                    usingObjectCheck.ForceStopUsing();
                 }
             }
         }
@@ -901,6 +1027,32 @@ namespace VRTK
                 usingObject.GetComponent<VRTK_InteractUse>().ForceStopUsing();
                 forcedDropped = true;
             }
+        }
+
+        private void ResetDropSnapType()
+        {
+            switch (storedSnapDropZone.snapType)
+            {
+                case VRTK_SnapDropZone.SnapTypes.Use_Kinematic:
+                case VRTK_SnapDropZone.SnapTypes.Use_Parenting:
+                    LoadPreviousState();
+                    break;
+                case VRTK_SnapDropZone.SnapTypes.Use_Joint:
+                    var snapDropZoneJoint = storedSnapDropZone.GetComponent<Joint>();
+                    if (snapDropZoneJoint)
+                    {
+                        snapDropZoneJoint.connectedBody = null;
+                    }
+                    break;
+            }
+
+            if (!previousLocalScale.Equals(Vector3.zero))
+            {
+                transform.localScale = previousLocalScale;
+            }
+
+            storedSnapDropZone.OnObjectUnsnappedFromDropZone(storedSnapDropZone.SetSnapDropZoneEvent(gameObject));
+            storedSnapDropZone = null;
         }
     }
 }

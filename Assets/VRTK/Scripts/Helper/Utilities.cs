@@ -122,7 +122,7 @@
                 Vector3.Dot(v1, v2)) * Mathf.Rad2Deg;
         }
 
-        public static bool TagOrScriptCheck(GameObject obj, VRTK_TagOrScriptPolicyList tagOrScriptList, string ignoreString)
+        public static bool TagOrScriptCheck(GameObject obj, VRTK_TagOrScriptPolicyList tagOrScriptList, string ignoreString, bool ignoreStringIsInclude = false)
         {
             if (tagOrScriptList)
             {
@@ -130,7 +130,14 @@
             }
             else
             {
-                return (obj.tag == ignoreString || obj.GetComponent(ignoreString) != null);
+                if (!ignoreStringIsInclude)
+                {
+                    return (obj.tag == ignoreString || obj.GetComponent(ignoreString) != null);
+                }
+                else
+                {
+                    return (obj.tag != ignoreString && obj.GetComponent(ignoreString) == null);
+                }
             }
         }
 
@@ -168,6 +175,11 @@
         {
             percent = Mathf.Clamp(percent, 0f, 100f);
             return (percent == 0f ? value : (value - (percent / 100f)));
+        }
+
+        public static bool IsEditTime()
+        {
+            return (Application.isEditor && !Application.isPlaying);
         }
     }
 }

@@ -17,6 +17,8 @@ A collection of pre-defined usable prefabs have been included to allow for each 
  * [Frames Per Second Canvas](#frames-per-second-canvas-vrtk_framespersecondviewer)
  * [Object Tooltip](#object-tooltip-vrtk_objecttooltip)
  * [Controller Tooltips](#controller-tooltips-vrtk_controllertooltips)
+ * [Controller Rigidbody Activator](#controller-rigidbody-activator-vrtk_controllerrigidbodyactivator)
+ * [Snap Drop Zone](#snap-drop-zone-vrtk_snapdropzone)
  * [Radial Menu](#radial-menu-radialmenu)
  * [Independent Radial Menu Controller](#independent-radial-menu-controller-vrtk_independentradialmenucontroller)
  * [Console Viewer Canvas](#console-viewer-canvas-vrtk_consoleviewer)
@@ -74,16 +76,27 @@ There are a number of parameters that can be set on the Prefab which are provide
 
 ### Class Methods
 
-#### Reset/0
+#### ResetTooltip/0
 
-  > `public void Reset()`
+  > `public void ResetTooltip()`
 
   * Parameters
    * _none_
   * Returns
    * _none_
 
-The Reset method resets the tooltip back to its initial state
+The ResetTooltip method resets the tooltip back to its initial state.
+
+#### UpdateText/1
+
+  > `public void UpdateText(string newText)`
+
+  * Parameters
+   * `string newText` - A string containing the text to update the tooltip to display.
+  * Returns
+   * _none_
+
+The UpdateText method allows the tooltip text to be updated at runtime.
 
 ### Example
 
@@ -117,6 +130,29 @@ There are a number of parameters that can be set on the Prefab which are provide
 
 ### Class Methods
 
+#### ResetTooltip/0
+
+  > `public void ResetTooltip()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * _none_
+
+The Reset method reinitalises the tooltips on all of the controller elements.
+
+#### UpdateText/2
+
+  > `public void UpdateText(TooltipButtons element, string newText)`
+
+  * Parameters
+   * `TooltipButtons element` - The specific controller element to change the tooltip text on.
+   * `string newText` - A string containing the text to update the tooltip to display.
+  * Returns
+   * _none_
+
+The UpdateText method allows the tooltip text on a specific controller element to be updated at runtime.
+
 #### ToggleTips/2
 
   > `public void ToggleTips(bool state, TooltipButtons element = TooltipButtons.None)`
@@ -132,6 +168,120 @@ The ToggleTips method will display the controller tooltips if the state is `true
 ### Example
 
 `VRTK/Examples/029_Controller_Tooltips` displays two cubes that have an object tooltip added to them along with tooltips that have been added to the controllers.
+
+---
+
+## Controller Rigidbody Activator (VRTK_ControllerRigidbodyActivator)
+
+### Overview
+
+This adds a simple trigger collider volume that when a controller enters will enable the rigidbody on the controller.
+
+The prefab game object should be placed in the scene where another interactable game object (such as a button control) is located to turn the controller rigidbody on at the appropriate time for interaction with the control without needing to manually activate by pressing the grab.
+
+If the prefab is placed as a child of the target interactable game object then the collider volume on the prefab will trigger collisions on the interactable object.
+
+The sphere collider on the prefab can have the radius adjusted to determine how close the controller needs to be to the object before the rigidbody is activated.
+
+It's also possible to replace the sphere trigger collider with an alternative trigger collider for customised collision detection.
+
+---
+
+## Snap Drop Zone (VRTK_SnapDropZone)
+
+### Overview
+
+This sets up a predefined zone where an existing interactable object can be dropped and upon dropping it snaps to the set snap drop zone transform position, rotation and scale.
+
+The position, rotation and scale of the `SnapDropZone` Game Object will be used to determine the final position of the dropped interactable object if it is dropped within the drop zone collider volume.
+
+The provided Highlight Object Prefab is used to create the highlighting object (also within the Editor for easy placement) and by default the standard Material Color Swap highlighter is used.
+
+An alternative highlighter can also be added to the `SnapDropZone` Game Object and this new highlighter component will be used to show the interactable object position on release.
+
+The prefab is a pre-built game object that contains a default trigger collider (Sphere Collider) and a kinematic rigidbody (to ensure collisions occur).
+
+If an alternative collider is required, then the default Sphere Collider can be removed and another collider added.
+
+If the `Use Joint` Snap Type is selected then a custom Joint component is required to be added to the `SnapDropZone` Game Object and upon release the interactable object's rigidbody will be linked to this joint as the `Connected Body`.
+
+### Inspector Parameters
+
+ * **Highlight Object Prefab:** A game object that is used to draw the highlighted destination for within the drop zone. This object will also be created in the Editor for easy placement.
+ * **Snap Type:** The Snap Type to apply when a valid interactable object is dropped within the snap zone.
+ * **Snap Duration:** The amount of time it takes for the object being snapped to move into the new snapped position, rotation and scale.
+ * **Apply Scaling On Snap:** If this is checked then the scaled size of the snap drop zone will be applied to the object that is snapped to it.
+ * **Highlight Color:** The colour to use when showing the snap zone is active.
+ * **Highlight Always Active:** The highlight object will always be displayed when the snap drop zone is available even if a valid item isn't being hovered over.
+ * **Valid Object With Tag Or Class:** A string that specifies an object Tag or the name of a Script attached to an object and notifies the snap drop zone that this is a valid object for snapping on release.
+ * **Valid Object Tag Or Script List Policy:** A specified VRTK_TagOrScriptPolicyList to use to determine which interactable objects will be snapped to the snap drop zone on release. If a list is provided then the 'Valid Object With Tag Or Class' parameter will be ignored.
+ * **Display Drop Zone In Editor:** If this is checked then the drop zone highlight section will be displayed in the scene editor window.
+
+### Class Variables
+
+ * `public enum SnapTypes` - The types of snap on release available.
+  * `Use_Kinematic` - Will set the interactable object rigidbody to `isKinematic = true`.
+  * `Use_Joint` - Will attach the interactable object's rigidbody to the provided joint as it's `Connected Body`.
+  * `Use_Parenting` - Will set the SnapDropZone as the interactable object's parent and set it's rigidbody to `isKinematic = true`.
+
+### Class Events
+
+ * `ObjectEnteredSnapDropZone` - Emitted when a valid interactable object enters the snap drop zone trigger collider.
+ * `ObjectExitedSnapDropZone` - Emitted when a valid interactable object exists the snap drop zone trigger collider.
+ * `ObjectSnappedToDropZone` - Emitted when an interactable object is successfully snapped into a drop zone.
+ * `ObjectUnsnappedFromDropZone` - Emitted when an interactable object is removed from a snapped drop zone.
+
+### Unity Events
+
+Adding the `VRTK_SnapDropZone_UnityEvents` component to `VRTK_SnapDropZone` object allows access to `UnityEvents` that will react identically to the Class Events.
+
+ * `OnObjectEnteredSnapDropZone` - Emits the ObjectEnteredSnapDropZone class event.
+ * `OnObjectExitedSnapDropZone` - Emits the ObjectExitedSnapDropZone class event.
+ * `OnObjectSnappedToDropZone` - Emits the ObjectSnappedToDropZone class event.
+ * `OnObjectUnsnappedFromDropZone` - Emits the ObjectUnsnappedFromDropZone class event.
+
+### Event Payload
+
+ * `GameObject snappedObject` - The interactable object that is dealing with the snap drop zone.
+
+### Class Methods
+
+#### InitaliseHighlightObject/1
+
+  > `public void InitaliseHighlightObject(bool removeOldObject = false)`
+
+  * Parameters
+   * `bool removeOldObject` - If this is set to true then it attempts to delete the old highlight object if it exists. Defaults to `false`
+  * Returns
+   * _none_
+
+The InitaliseHighlightObject method sets up the highlight object based on the given Highlight Object Prefab.
+
+#### ForceSnap/1
+
+  > `public void ForceSnap(GameObject objectToSnap)`
+
+  * Parameters
+   * `GameObject objectToSnap` - The GameObject to attempt to snap.
+  * Returns
+   * _none_
+
+the ForceSnap method attempts to automatically attach a valid game object to the snap drop zone.
+
+#### ForceUnsnap/0
+
+  > `public void ForceUnsnap()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * _none_
+
+The ForceUnsnap method attempts to automatically remove the current snapped game object from the snap drop zone.
+
+### Example
+
+`VRTK/Examples/041_Controller_ObjectSnappingToDropZones` uses the `VRTK_SnapDropZone` prefab to set up pre-determined snap zones for a range of objects and demonstrates how only objects of certain types can be snapped into certain areas.
 
 ---
 
@@ -390,9 +540,10 @@ The play area collider does not work well with terrains as they are uneven and c
 ### Inspector Parameters
 
  * **Controller:** The controller that will be used to toggle the pointer. If the script is being applied onto a controller then this parameter can be left blank as it will be auto populated by the controller the script is on at runtime.
+ * **Pointer Origin Transform:** A custom transform to use as the origin of the pointer. If no pointer origin transform is provided then the transform the script is attached to is used.
  * **Pointer Material:** The material to use on the rendered version of the pointer. If no material is selected then the default `WorldPointer` material will be used.
- * **Interact With Objects:** If this is checked then the pointer will be an extension of the controller and able to interact with Interactable Objects.
  * **Hold Button To Activate:** If this is checked then the pointer beam will be activated on first press of the pointer alias button and will stay active until the pointer alias button is pressed again. The destination set event is emitted when the beam is deactivated on the second button press.
+ * **Interact With Objects:** If this is checked then the pointer will be an extension of the controller and able to interact with Interactable Objects.
  * **Activate Delay:** The time in seconds to delay the pointer beam being able to be active again. Useful for preventing constant teleportation.
  * **Pointer Visibility:** Determines when the pointer beam should be displayed.
  * **Layers To Ignore:** The layers to ignore when raycasting.
@@ -477,16 +628,16 @@ As this is an abstract class, it cannot be applied directly to a game object and
 
 The Initalise method is used to set up the state of the highlighter.
 
-#### Reset/0
+#### ResetHighlighter/0
 
-  > `public abstract void Reset();`
+  > `public abstract void ResetHighlighter();`
 
   * Parameters
    * _none_
   * Returns
    * _none_
 
-The Reset method is used to reset the highlighter if anything on the object has changed. It should be called by any scripts changing object materials or colours.
+The ResetHighlighter method is used to reset the highlighter if anything on the object has changed. It should be called by any scripts changing object materials or colours.
 
 #### Highlight/2
 
@@ -526,6 +677,17 @@ The Unhighlight method is used to initiate the logic that returns an object back
 
 The GetOption method is used to return a value from the options array if the given key exists.
 
+#### UsesClonedObject/0
+
+  > `public virtual bool UsesClonedObject()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * `bool` - Returns true if the highlighter creates a cloned object to apply the highlighter on, returns false if no additional object is created.
+
+The UsesClonedObject method is used to return whether the current highlighter creates a cloned object to do the highlighting with.
+
 ---
 
 ## Material Colour Swap (VRTK_MaterialColorSwapHighlighter)
@@ -544,6 +706,7 @@ This is the default highlighter that is applied to any script that requires a hi
 ### Inspector Parameters
 
  * **Emission Darken:** The emission colour of the texture will be the highlight colour but this percent darker.
+ * **Custom Material:** A custom material to use on the highlighted object.
 
 ### Class Methods
 
@@ -560,16 +723,16 @@ This is the default highlighter that is applied to any script that requires a hi
 
 The Initialise method sets up the highlighter for use.
 
-#### Reset/0
+#### ResetHighlighter/0
 
-  > `public override void Reset()`
+  > `public override void ResetHighlighter()`
 
   * Parameters
    * _none_
   * Returns
    * _none_
 
-The Reset method stores the object's materials and shared materials prior to highlighting.
+The ResetHighlighter method stores the object's materials and shared materials prior to highlighting.
 
 #### Highlight/2
 
@@ -633,16 +796,16 @@ The Outline Object Copy Highlighter works by making a copy of a mesh and adding 
 
 The Initialise method sets up the highlighter for use.
 
-#### Reset/0
+#### ResetHighlighter/0
 
-  > `public override void Reset()`
+  > `public override void ResetHighlighter()`
 
   * Parameters
    * _none_
   * Returns
    * _none_
 
-The Reset method creates the additional model to use as the outline highlighted object.
+The ResetHighlighter method creates the additional model to use as the outline highlighted object.
 
 #### Highlight/2
 
@@ -687,15 +850,21 @@ This directory contains all of the toolkit scripts that add VR functionality to 
  * [Bezier Pointer](#bezier-pointer-vrtk_bezierpointer)
  * [Play Area Cursor](#play-area-cursor-vrtk_playareacursor)
  * [UI Pointer](#ui-pointer-vrtk_uipointer)
+ * [UI Canvas](#ui-canvas-vrtk_uicanvas)
+ * [UI Draggable Item](#ui-draggable-item-vrtk_uidraggableitem)
+ * [UI Drop Zone](#ui-drop-zone-vrtk_uidropzone)
  * [Basic Teleport](#basic-teleport-vrtk_basicteleport)
  * [Height Adjust Teleport](#height-adjust-teleport-vrtk_heightadjustteleport)
  * [Headset Collision](#headset-collision-vrtk_headsetcollision)
  * [Headset Fade](#headset-fade-vrtk_headsetfade)
  * [Headset Collision Fade](#headset-collision-fade-vrtk_headsetcollisionfade)
+ * [Headset Controller Aware](#headset-controller-aware-vrtk_headsetcontrolleraware)
  * [Teleport Disable On Headset Collision](#teleport-disable-on-headset-collision-vrtk_teleportdisableonheadsetcollision)
+ * [Teleport Disable On Controller Obscured](#teleport-disable-on-controller-obscured-vrtk_teleportdisableoncontrollerobscured)
  * [Player Presence](#player-presence-vrtk_playerpresence)
- * [Hip Tracking](#hip-tracking-vrtk_hip_tracking)
+ * [Hip Tracking](#hip-tracking-vrtk_hiptracking)
  * [Touchpad Walking](#touchpad-walking-vrtk_touchpadwalking)
+ * [Move In Place](#move-in-place-vrtk_moveinplace)
  * [Room Extender](#room-extender-vrtk_roomextender)
  * [Interactable Object](#interactable-object-vrtk_interactableobject)
  * [Interact Touch](#interact-touch-vrtk_interacttouch)
@@ -1506,8 +1675,6 @@ The ToggleState method enables or disables the visibility of the play area curso
 
 The UI Pointer provides a mechanism for interacting with Unity UI elements on a world canvas. The UI Pointer can be attached to any game object the same way in which a World Pointer can be and the UI Pointer also requires a controller to initiate the pointer activation and pointer click states.
 
-It's possible to prevent a world canvas from being interactable with a UI Pointer by setting a tag or applying a class to the canvas and then entering the tag or class name for the UI Pointer to ignore on the UI Pointer inspector parameters.
-
 The simplest way to use the UI Pointer is to attach the script to a game controller within the `[CameraRig]` along with a Simple Pointer as this provides visual feedback as to where the UI ray is pointing.
 
 The UI pointer is activated via the `Pointer` alias on the `Controller Events` and the UI pointer click state is triggered via the `UI Click` alias on the `Controller Events`.
@@ -1515,10 +1682,10 @@ The UI pointer is activated via the `Pointer` alias on the `Controller Events` a
 ### Inspector Parameters
 
  * **Controller:** The controller that will be used to toggle the pointer. If the script is being applied onto a controller then this parameter can be left blank as it will be auto populated by the controller the script is on at runtime.
+ * **Pointer Origin Transform:** A custom transform to use as the origin of the pointer. If no pointer origin transform is provided then the transform the script is attached to is used.
  * **Activation Mode:** Determines when the UI pointer should be active.
- * **Attempt Click On Deactivate:** Determines whether the UI click action should be triggered when the pointer is deactivated. If the pointer is hovering over a clickable element then it will invoke the click action on that element.
- * **Ignore Canvas With Tag Or Class:** A string that specifies a canvas Tag or the name of a Script attached to a canvas and denotes that any world canvases that contain this tag or script will be ignored by the UI Pointer.
- * **Canvas Tag Or Script List Policy:** A specified VRTK_TagOrScriptPolicyList to use to determine whether any world canvases will be acted upon by the UI Pointer. If a list is provided then the 'Ignore Canvas With Tag Or Class' parameter will be ignored.
+ * **Click Method:** Determines when the UI Click event action should happen.
+ * **Attempt Click On Deactivate:** Determines whether the UI click action should be triggered when the pointer is deactivated. If the pointer is hovering over a clickable element then it will invoke the click action on that element. Note: Only works with `Click Method =  Click_On_Button_Up`
 
 ### Class Variables
 
@@ -1526,11 +1693,19 @@ The UI pointer is activated via the `Pointer` alias on the `Controller Events` a
   * `Hold_Button` - Only activates the UI Pointer when the Pointer button on the controller is pressed and held down.
   * `Toggle_Button` - Activates the UI Pointer on the first click of the Pointer button on the controller and it stays active until the Pointer button is clicked again.
   * `Always_On` - The UI Pointer is always active regardless of whether the Pointer button on the controller is pressed or not.
+ * `public enum ClickMethods` - Methods of when to consider a UI Click action
+  * `Click_On_Button_Up` - Consider a UI Click action has happened when the UI Click alias button is released.
+  * `Click_On_Button_Down` - Consider a UI Click action has happened when the UI Click alias button is pressed.
+ * `public GameObject autoActivatingCanvas` - The GameObject of the front trigger activator of the canvas currently being activated by this pointer. Default: `null`
+ * `public bool collisionClick` - Determines if the UI Pointer has collided with a valid canvas that has collision click turned on. Default: `false`
 
 ### Class Events
 
  * `UIPointerElementEnter` - Emitted when the UI Pointer is colliding with a valid UI element.
  * `UIPointerElementExit` - Emitted when the UI Pointer is no longer colliding with any valid UI elements.
+ * `UIPointerElementClick` - Emitted when the UI Pointer has clicked the currently collided UI element.
+ * `UIPointerElementDragStart` - Emitted when the UI Pointer begins dragging a valid UI element.
+ * `UIPointerElementDragEnd` - Emitted when the UI Pointer stops dragging a valid UI element.
 
 ### Unity Events
 
@@ -1538,6 +1713,9 @@ Adding the `VRTK_UIPointer_UnityEvents` component to `VRTK_UIPointer` object all
 
  * `OnUIPointerElementEnter` - Emits the UIPointerElementEnter class event.
  * `OnUIPointerElementExit` - Emits the UIPointerElementExit class event.
+ * `OnUIPointerElementClick` - Emits the UIPointerElementClick class event.
+ * `OnUIPointerElementDragStart` - Emits the UIPointerElementDragStart class event.
+ * `OnUIPointerElementDragEnd` - Emits the UIPointerElementDragEnd class event.
 
 ### Event Payload
 
@@ -1559,16 +1737,16 @@ Adding the `VRTK_UIPointer_UnityEvents` component to `VRTK_UIPointer` object all
 
 The SetEventSystem method is used to set up the global Unity event system for the UI pointer. It also handles disabling the existing Standalone Input Module that exists on the EventSystem and adds a custom VRTK Event System VR Input component that is required for interacting with the UI with VR inputs.
 
-#### SetWorldCanvas/1
+#### RemoveEventSystem/0
 
-  > `public void SetWorldCanvas(Canvas canvas)`
+  > `public void RemoveEventSystem()`
 
   * Parameters
-   * `Canvas canvas` - The canvas object to initialise for use with the UI pointers. Must be of type `WorldSpace`.
+   * _none_
   * Returns
    * _none_
 
-The SetWorldCanvas method is used to initialise a `WorldSpace` canvas for use with the UI Pointer. This method is called automatically on start for all editor created canvases but would need to be manually called if a canvas was generated at runtime.
+The RemoveEventSystem resets the Unity EventSystem back to the original state before the VRTK_EventSystemVRInput was swapped for it.
 
 #### PointerActive/0
 
@@ -1581,9 +1759,102 @@ The SetWorldCanvas method is used to initialise a `WorldSpace` canvas for use wi
 
 The PointerActive method determines if the ui pointer beam should be active based on whether the pointer alias is being held and whether the Hold Button To Use parameter is checked.
 
+#### ValidClick/2
+
+  > `public bool ValidClick(bool checkLastClick, bool lastClickState = false)`
+
+  * Parameters
+   * `bool checkLastClick` - If this is true then the last frame's state of the UI Click button is also checked to see if a valid click has happened.
+   * `bool lastClickState` - This determines what the last frame's state of the UI Click button should be in for it to be a valid click.
+  * Returns
+   * `bool` - Returns true if the UI Click button is in a valid state to action a click, returns false if it is not in a valid state.
+
+The ValidClick method determines if the UI Click button is in a valid state to register a click action.
+
+#### GetOriginPosition/0
+
+  > `public Vector3 GetOriginPosition()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * `Vector3` - A Vector3 of the pointer transform position
+
+The GetOriginPosition method returns the relevant transform position for the pointer based on whether the pointerOriginTransform variable is valid.
+
+#### GetOriginForward/0
+
+  > `public Vector3 GetOriginForward()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * `Vector3` - A Vector3 of the pointer transform forward
+
+The GetOriginPosition method returns the relevant transform forward for the pointer based on whether the pointerOriginTransform variable is valid.
+
 ### Example
 
 `VRTK/Examples/034_Controls_InteractingWithUnityUI` uses the `VRTK_UIPointer` script on the right Controller to allow for the interaction with Unity UI elements using a Simple Pointer beam. The left Controller controls a Simple Pointer on the headset to demonstrate gaze interaction with Unity UI elements.
+
+---
+
+## UI Canvas (VRTK_UICanvas)
+
+### Overview
+
+The UI Canvas is used to denote which World Canvases are interactable by a UI Pointer.
+
+When the script is enabled it will disable the `Graphic Raycaster` on the canvas and create a custom `UI Graphics Raycaster` and the Blocking Objects and Blocking Mask settings are copied over from the `Graphic Raycaster`.
+
+### Inspector Parameters
+
+ * **Click On Pointer Collision:** Determines if a UI Click action should happen when a UI Pointer game object collides with this canvas.
+ * **Auto Activate Within Distance:** Determines if a UI Pointer will be auto activated if a UI Pointer game object comes within the given distance of this canvas. If a value of `0` is given then no auto activation will occur.
+
+### Example
+
+`VRTK/Examples/034_Controls_InteractingWithUnityUI` uses the `VRTK_UICanvas` script on two of the canvases to show how the UI Pointer can interact with them.
+
+---
+
+## UI Draggable Item (VRTK_UIDraggableItem)
+ > extends MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
+
+### Overview
+
+The UI Draggable item will make any UI element draggable on the canvas.
+
+If a UI Draggable item is set to `Restrict To Drop Zone = true` then the UI Draggable item must be a child of an element that has the VRTK_UIDropZone script applied to it to ensure it starts in a valid drop zone.
+
+### Inspector Parameters
+
+ * **Restrict To Drop Zone:** If checked then the UI element can only be dropped in valid a VRTK_UIDropZone object and must start as a child of a VRTK_UIDropZone object. If unchecked then the UI element can be dropped anywhere on the canvas.
+ * **Restrict To Original Canvas:** If checked then the UI element can only be dropped on the original parent canvas. If unchecked the UI element can be dropped on any valid VRTK_UICanvas.
+ * **Forward Offset:** The offset to bring the UI element forward when it is being dragged.
+
+### Class Variables
+
+ * `public GameObject validDropZone` - The current valid drop zone the dragged element is hovering over.
+
+### Example
+
+`VRTK/Examples/034_Controls_InteractingWithUnityUI` demonstrates a collection of UI elements that are draggable
+
+---
+
+## UI Drop Zone (VRTK_UIDropZone)
+ > extends MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+
+### Overview
+
+A UI Drop Zone is applied to any UI element that is to be considered a valid parent for any UI Draggable element to be dropped into it.
+
+It's usually appropriate to use a Panel UI element as a drop zone with a layout group applied so new children dropped into the drop zone automatically align.
+
+### Example
+
+`VRTK/Examples/034_Controls_InteractingWithUnityUI` demonstrates a collection of UI Drop Zones.
 
 ---
 
@@ -1699,14 +1970,17 @@ Like the basic teleporter the Height Adjust Teleport script is attached to the `
 
 The purpose of the Headset Collision is to detect when the user's VR headset collides with another game object.
 
-> **Unity Version Information**
-> * If using `Unity 5.3` or older then the Headset Collision script is attached to the `Camera(head)` object within the `[CameraRig]` prefab.
-> * If using `Unity 5.4` or newer then the Headset Collision script is attached to the `Camera(eye)` object within the `[CameraRig]->Camera(head)` prefab.
+The Headset Collision script is added to the `[CameraRig]` prefab. It will automatically create a script on the headset to deal with the collision events.
 
 ### Inspector Parameters
 
  * **Ignore Target With Tag Or Class:** A string that specifies an object Tag or the name of a Script attached to an object and will be ignored on headset collision.
  * **Target Tag Or Script List Policy:** A specified VRTK_TagOrScriptPolicyList to use to determine whether any objects will be acted upon by the Headset Collision. If a list is provided then the 'Ignore Target With Tag Or Class' parameter will be ignored.
+
+### Class Variables
+
+ * `public bool headsetColliding` - Determines if the headset is currently colliding with another object. Default: `false`
+ * `public Collider collidingWith` - Stores the collider of what the headset is colliding with. Default: `null`
 
 ### Class Events
 
@@ -1750,9 +2024,7 @@ The IsColliding method is used to determine if the headset is currently collidin
 
 The purpose of the Headset Fade is to change the colour of the headset view to a specified colour over a given duration and to also unfade it back to being transparent. The `Fade` and `Unfade` methods can only be called via another script and this Headset Fade script does not do anything on initialisation to fade or unfade the headset view.
 
-> **Unity Version Information**
-> * If using `Unity 5.3` or older then the Headset Fade script is attached to the `Camera(head)` object within the `[CameraRig]` prefab.
-> * If using `Unity 5.4` or newer then the Headset Fade script is attached to the `Camera(eye)` object within the `[CameraRig]->Camera(head)` prefab.
+The Headset Fade script is added to the `[CameraRig]` prefab.
 
 ### Class Events
 
@@ -1836,20 +2108,103 @@ The purpose of the Headset Collision Fade is to detect when the user's VR headse
 
 The Headset Collision Fade uses a composition of the Headset Collision and Headset Fade scripts to derive the desired behaviour.
 
-> **Unity Version Information**
-> * If using `Unity 5.3` or older then the Headset Collision Fade script is attached to the `Camera(head)` object within the `[CameraRig]` prefab.
-> * If using `Unity 5.4` or newer then the Headset Collision Fade script is attached to the `Camera(eye)` object within the `[CameraRig]->Camera(head)` prefab.
+The Headset Collision Fade script is added to the `[CameraRig]` prefab.
 
 ### Inspector Parameters
 
  * **Blink Transition Speed:** The fade blink speed on collision.
  * **Fade Color:** The colour to fade the headset to on collision.
- * **Ignore Target With Tag Or Class:** A string that specifies an object Tag or the name of a Script attached to an object and will prevent the object from fading the headset view on collision.
- * **Target Tag Or Script List Policy:** A specified VRTK_TagOrScriptPolicyList to use to determine whether any objects will be acted upon by the Headset Collision Fade. If a list is provided then the 'Ignore Target With Tag Or Class' parameter will be ignored.
 
 ### Example
 
 `VRTK/Examples/011_Camera_HeadSetCollisionFading` has collidable walls around the play area and if the user puts their head into any of the walls then the headset will fade to black.
+
+---
+
+## Headset Controller Aware (VRTK_HeadsetControllerAware)
+
+### Overview
+
+The purpose of Headset Controller Aware is to allow the headset to know if something is blocking the path between the headset and controllers and to know if the headset is looking at a controller.
+
+### Inspector Parameters
+
+ * **Track Left Controller:** If this is checked then the left controller will be checked if items obscure it's path from the headset.
+ * **Track Right Controller:** If this is checked then the right controller will be checked if items obscure it's path from the headset.
+ * **Controller Glance Radius:** The radius of the accepted distance from the controller origin point to determine if the controller is being looked at.
+ * **Custom Right Controller Origin:** A custom transform to provide the world space position of the right controller.
+ * **Custom Left Controller Origin:** A custom transform to provide the world space position of the left controller.
+
+### Class Events
+
+ * `ControllerObscured` - Emitted when the controller is obscured by another object.
+ * `ControllerUnobscured` - Emitted when the controller is no longer obscured by an object.
+ * `ControllerGlanceEnter` - Emitted when the controller is seen by the headset view.
+ * `ControllerGlanceExit` - Emitted when the controller is no longer seen by the headset view.
+
+### Unity Events
+
+Adding the `VRTK_HeadsetControllerAware_UnityEvents` component to `VRTK_HeadsetControllerAware` object allows access to `UnityEvents` that will react identically to the Class Events.
+
+ * `OnControllerObscured` - Emits the ControllerObscured class event.
+ * `OnControllerUnobscured` - Emits the ControllerUnobscured class event.
+ * `OnControllerGlanceEnter` - Emits the ControllerGlanceEnter class event.
+ * `OnControllerGlanceExit` - Emits the ControllerGlanceExit class event.
+
+### Event Payload
+
+ * `RaycastHit raycastHit` - The Raycast Hit struct of item that is obscuring the path to the controller.
+ * `uint controllerIndex` - The index of the controller that is being or has been obscured or being or has been glanced.
+
+### Class Methods
+
+#### LeftControllerObscured/0
+
+  > `public bool LeftControllerObscured()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * `bool` - Returns true if the path between the headset and the controller is obscured.
+
+The LeftControllerObscured method returns the state of if the left controller is being obscured from the path of the headset.
+
+#### RightControllerObscured/0
+
+  > `public bool RightControllerObscured()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * `bool` - Returns true if the path between the headset and the controller is obscured.
+
+The RightControllerObscured method returns the state of if the right controller is being obscured from the path of the headset.
+
+#### LeftControllerGlanced/0
+
+  > `public bool LeftControllerGlanced()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * `bool` - Returns true if the headset can currently see the controller within the given radius threshold.
+
+the LeftControllerGlanced method returns the state of if the headset is currently looking at the left controller or not.
+
+#### RightControllerGlanced/0
+
+  > `public bool RightControllerGlanced()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * `bool` - Returns true if the headset can currently see the controller within the given radius threshold.
+
+the RightControllerGlanced method returns the state of if the headset is currently looking at the right controller or not.
+
+### Example
+
+`VRTK/Examples/029_Controller_Tooltips` displays tooltips that have been added to the controllers and are only visible when the controller is being looked at.
 
 ---
 
@@ -1858,6 +2213,14 @@ The Headset Collision Fade uses a composition of the Headset Collision and Heads
 ### Overview
 
 The purpose of the Teleport Disable On Headset Collision script is to detect when the headset is colliding with a valid object and prevent teleportation from working. This is to ensure that if a user is clipping their head into a wall then they cannot teleport to an area beyond the wall.
+
+---
+
+## Teleport Disable On Controller Obscured (VRTK_TeleportDisableOnControllerObscured)
+
+### Overview
+
+The purpose of the Teleport Disable On Controller Obscured script is to detect when the headset does not have a line of sight to the controllers and prevent teleportation from working. This is to ensure that if a user is clipping their controllers through a wall then they cannot teleport to an area beyond the wall.
 
 ---
 
@@ -1942,7 +2305,7 @@ The StopPhysicsFall method ends the physics based fall state, disables physics a
 
 ---
 
-## Hip Tracking (VRTK_Hip_Tracking)
+## Hip Tracking (VRTK_HipTracking)
 
 ### Overview
 
@@ -1976,6 +2339,79 @@ If the Headset Collision Fade script has been applied to the Camera prefab, then
 ### Example
 
 `VRTK/Examples/017_CameraRig_TouchpadWalking` has a collection of walls and slopes that can be traversed by the user with the touchpad. There is also an area that can only be traversed if the user is crouching. Standing up in this crouched area will cause the user to appear back at their last good known position.
+
+---
+
+## Move In Place (VRTK_MoveInPlace)
+
+### Overview
+
+Move In Place allows the user to move the play area by calculating the y-movement of the user's headset and/or controllers. The user is propelled forward the more they are moving. This simulates moving in game by moving in real life.
+
+> This locomotion method is based on Immersive Movement, originally created by Highsight.
+
+### Inspector Parameters
+
+ * **Engage Button:** Select which button to hold to engage Move In Place.
+ * **Control Options:** Select which trackables are used to determine movement.
+ * **Speed Scale:** Lower to decrease speed, raise to increase.
+ * **Max Speed:** The max speed the user can move in game units. (If 0 or less, max speed is uncapped)
+ * **Direction Method:** How the user's movement direction will be determined.  The Gaze method tends to lead to the least motion sickness.  Smart decoupling is still a Work In Progress.
+ * **Smart Decouple Threshold:** The degree threshold that all tracked objects (controllers, headset) must be within to change direction when using the Smart Decoupling Direction Method.
+ * **Sensitivity:** The maximum amount of movement required to register in the virtual world.  Decreasing this will increase acceleration, and vice versa.
+
+### Class Variables
+
+ * `public enum ControlOptions` - Options for testing if a play space fall is valid.
+  * `HeadsetAndControllers` - Track both headset and controllers for movement calculations.
+  * `ControllersOnly` - Track only the controllers for movement calculations.
+  * `HeadsetOnly` - Track only headset for movement caluclations.
+ * `public enum DirectionalMethod` - Options for which method is used to determine player direction while moving.
+  * `Gaze` - Player will always move in the direction they are currently looking.
+  * `ControllerRotation` - Player will move in the direction that the controllers are pointing (averaged).
+  * `DumbDecoupling` - Player will move in the direction they were first looking when they engaged Move In Place.
+  * `SmartDecoupling` - Player will move in the direction they are looking only if their headset point the same direction as their controllers.
+ * `public bool LeftController` - If true, the left controller's trackpad will engage Move In Place.
+ * `public bool RightController` - If true, the right controller's trackpad will engage Move In Place.
+
+### Class Methods
+
+#### SetControlOptions/1
+
+  > `public void SetControlOptions(ControlOptions givenControlOptions)`
+
+  * Parameters
+   * `ControlOptions givenControlOptions` - The control options to set the current control options to.
+  * Returns
+   * _none_
+
+Set the control options and modify the trackables to match.
+
+#### GetMovementDirection/0
+
+  > `public Vector3 GetMovementDirection()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * `Vector3` - Returns a vector representing the player's current movement direction.
+
+The GetMovementDirection method will return the direction the player is moving.
+
+#### GetSpeed/0
+
+  > `public float GetSpeed()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * `float` - Returns a float representing the player's current movement speed.
+
+The GetSpeed method will return the current speed the player is moving at.
+
+### Example
+
+`VRTK/Examples/042_CameraRig_MoveInPlace` shows how the user can move and traverse colliders.
 
 ---
 
@@ -2026,7 +2462,7 @@ The highlighting of an Interactable Object is defaulted to use the `VRTK_Materia
  * **Allowed Touch Controllers:** Determines which controller can initiate a touch action.
  * **Hide Controller On Touch:** Optionally override the controller setting.
  * **Is Grabbable:** Determines if the object can be grabbed.
- * **Is Droppable:** Determines if the object can be dropped by the controller grab button being used. If this is unchecked then it's not possible to drop the item once it's picked up using the controller button.
+ * **Valid Drop:** Determines in what situation the object can be dropped by the controller grab button.
  * **Is Swappable:** Determines if the object can be swapped between controllers when it is picked up. If it is unchecked then the object must be dropped before it can be picked up by the other controller.
  * **Hold Button To Grab:** If this is checked then the grab button on the controller needs to be continually held down to keep grabbing. If this is unchecked the grab button toggles the grab action with one button press to grab and another to release.
  * **Grab Override Button:** If this is set to `Undefined` then the global grab alias button will grab the object, setting it to any other button will ensure the override button is used to grab this specific interactable object.
@@ -2069,6 +2505,10 @@ The highlighting of an Interactable Object is defaulted to use the `VRTK_Materia
   * `Default` - Use the hide settings from the controller.
   * `OverrideHide` - Hide the controller when interacting, overriding controller settings.
   * `OverrideDontHide` - Don't hide the controller when interacting, overriding controller settings.
+ * `public enum ValidDropTypes` - The types of valid situations that the object can be released from grab.
+  * `No_Drop` - The object cannot be dropped via the controller
+  * `Drop_Anywhere` - The object can be dropped anywhere in the scene via the controller.
+  * `Drop_ValidSnapDropZone` - The object can only be dropped when it is hovering over a valid snap drop zone.
  * `public int usingState` - The current using state of the object. `0` not being used, `1` being used. Default: `0`
 
 ### Class Events
@@ -2120,23 +2560,23 @@ The CheckHideMode method is a simple service method used only by some scripts (e
 
 The IsTouched method is used to determine if the object is currently being touched.
 
-#### IsGrabbed/0
+#### IsGrabbed/1
 
-  > `public bool IsGrabbed()`
+  > `public bool IsGrabbed(GameObject grabbedBy = null)`
 
   * Parameters
-   * _none_
+   * `GameObject grabbedBy` - An optional GameObject to check if the Interactable Object is grabbed by that specific GameObject. Defaults to `null`
   * Returns
    * `bool` - Returns `true` if the object is currently being grabbed.
 
 The IsGrabbed method is used to determine if the object is currently being grabbed.
 
-#### IsUsing/0
+#### IsUsing/1
 
-  > `public bool IsUsing()`
+  > `public bool IsUsing(GameObject usedBy = null)`
 
   * Parameters
-   * _none_
+   * `GameObject usedBy` - An optional GameObject to check if the Interactable Object is used by that specific GameObject. Defaults to `null`
   * Returns
    * `bool` - Returns `true` if the object is currently being used.
 
@@ -2330,6 +2770,28 @@ The SaveCurrentState method stores the existing object parent and the object's r
 
 The ToggleKinematic method is used to set the object's internal rigidbody kinematic state.
 
+#### IsKinematic/0
+
+  > `public bool IsKinematic()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * `bool` - Returns true if the rigidbody is set to kinematic and returns false if it's not.
+
+the IsKinematic method returns whether the rigidbody is set to kinematic or not.
+
+#### GetTouchingObjects/0
+
+  > `public List<GameObject> GetTouchingObjects()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * `List<GameObject>` - A list of game object of that are currently touching the current object.
+
+The GetTouchingObjects method is used to return the collecetion of valid game objects that are currently touching this object.
+
 #### GetGrabbingObject/0
 
   > `public GameObject GetGrabbingObject()`
@@ -2340,6 +2802,17 @@ The ToggleKinematic method is used to set the object's internal rigidbody kinema
    * `GameObject` - The game object of what is grabbing the current object.
 
 The GetGrabbingObject method is used to return the game object that is currently grabbing this object.
+
+#### GetUsingObject/0
+
+  > `public GameObject GetUsingObject()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * `GameObject` - The game object of what is using the current object.
+
+The GetUsingObject method is used to return the game object that is currently using this object.
 
 #### IsValidInteractableController/2
 
@@ -2385,6 +2858,73 @@ The SetGrabbedSnapHandle method is used to set the snap handle of the object at 
    * _none_
 
 The RegisterTeleporters method is used to find all objects that have a teleporter script and register the object on the `OnTeleported` event. This is used internally by the object for keeping Tracked objects positions updated after teleporting.
+
+#### StoreLocalScale/0
+
+  > `public void StoreLocalScale()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * _none_
+
+the StoreLocalScale method saves the current transform local scale values.
+
+#### ToggleSnapDropZone/2
+
+  > `public void ToggleSnapDropZone(VRTK_SnapDropZone snapDropZone, bool state)`
+
+  * Parameters
+   * `VRTK_SnapDropZone snapDropZone` - The Snap Drop Zone object that is being interacted with.
+   * `bool state` - The state of whether the interactable object is fixed in or removed from the Snap Drop Zone. True denotes the interactable object is fixed to the Snap Drop Zone and false denotes it has been removed from the Snap Drop Zone.
+  * Returns
+   * _none_
+
+The ToggleSnapDropZone method is used to set the state of whether the interactable object is in a Snap Drop Zone or not.
+
+#### IsInSnapDropZone/0
+
+  > `public bool IsInSnapDropZone()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * `bool` - Returns true if the interactable object is currently snapped in a drop zone and returns false if it is not.
+
+The IsInSnapDropZone method determines whether the interactable object is currently snapped to a drop zone.
+
+#### SetSnapDropZoneHover/1
+
+  > `public void SetSnapDropZoneHover(bool state)`
+
+  * Parameters
+   * `bool state` - The state of whether the object is being hovered or not.
+  * Returns
+   * _none_
+
+The SetSnapDropZoneHover method sets whether the interactable object is currently being hovered over a valid Snap Drop Zone.
+
+#### GetStoredSnapDropZone/0
+
+  > `public VRTK_SnapDropZone GetStoredSnapDropZone()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * `VRTK_SnapDropZone` - The SnapDropZone that the interactable object is currently snapped to.
+
+The GetStoredSnapDropZone method returns the snap drop zone that the interactable object is currently snapped to.
+
+#### IsDroppable/0
+
+  > `public bool IsDroppable()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * `bool` - Returns true if the item can currently be dropped and returns false if it is not currently possible to drop.
+
+The IsDroppable method returns whether the item can be dropped or not in it's current situation.
 
 ### Example
 
@@ -2459,12 +2999,13 @@ The GetTouchedObject method returns the current object being touched by the cont
 
 The IsObjectInteractable method is used to check if a given game object is of type `VRTK_InteractableObject` and whether the object is enabled.
 
-#### ToggleControllerRigidBody/1
+#### ToggleControllerRigidBody/2
 
-  > `public void ToggleControllerRigidBody(bool state)`
+  > `public void ToggleControllerRigidBody(bool state, bool forceToggle = false)`
 
   * Parameters
    * `bool state` - The state of whether the rigidbody is on or off. `true` toggles the rigidbody on and `false` turns it off.
+   * `bool forceToggle` - Determines if the rigidbody has been forced into it's new state by another script. This can be used to override other non-force settings. Defaults to `false`
   * Returns
    * _none_
 
@@ -2480,6 +3021,17 @@ The ToggleControllerRigidBody method toggles the controller's rigidbody's abilit
    * `bool` - Is true if the rigidbody on the controller is currently active and able to affect other scene rigidbodies.
 
 The IsRigidBodyActive method checks to see if the rigidbody on the controller object is active and can affect other rigidbodies in the scene.
+
+#### IsRigidBodyForcedActive/0
+
+  > `public bool IsRigidBodyForcedActive()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * `bool` - Is true if the rigidbody is active and has been forced into the active state.
+
+The IsRigidBodyForcedActive method checks to see if the rigidbody on the controller object has been forced into the active state.
 
 #### ForceStopTouching/0
 
@@ -2585,6 +3137,17 @@ The AttemptGrab method will attempt to grab the currently touched object without
    * `GameObject` - The game object of what is currently being grabbed by this controller.
 
 The GetGrabbedObject method returns the current object being grabbed by the controller.
+
+#### GetControllerVisibilityState/0
+
+  > `public bool GetControllerVisibilityState()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * `bool` - Returns true if the expected grabbed state of the controller visibility should be visible, and returns false if the expected state should be hidden.
+
+The GetControllerVisibilityState method returns the current expected controller visibility state from the grabbed action.
 
 ### Example
 
@@ -2841,14 +3404,14 @@ Adaptive Quality dynamically changes rendering settings to maintain VR framerate
 
 > **Only Compatible With Unity 5.4 and above**
 
-The Adaptive Quality script is attached to the `eye` object within the `[CameraRig]` prefab.
+The Adaptive Quality script is attached to the `[CameraRig]` game object.
 
 There are two goals:
  * Reduce the chances of dropping frames and reprojecting
  * Increase quality when there are idle GPU cycles
 
 This script currently changes the following to reach these goals:
- * Rendering resolution and viewport (aka Dynamic Resolution)
+ * Rendering resolution and viewport size (aka Dynamic Resolution)
 
 In the future it could be changed to also change the following:
  * MSAA level
@@ -2866,15 +3429,14 @@ In more detail:
 
 ### Inspector Parameters
 
- * **Active:** Toggles whether the render quality is dynamically adjusted to maintain VR framerate. If unchecked, the renderer will render at the recommended resolution provided by the current `VRDevice`.
- * **Draw Debug Visualization:** Toggles whether to show the debug overlay. Each square represents a different level on the quality scale. Levels increase from left to right,  and the first green box that is lit above represents the recommended render target resolution provided by  the current `VRDevice`. The yellow boxes represent resolutions below the recommended render target resolution. The currently lit box becomes red whenever the user is likely seeing reprojection in the HMD since the  application isn't maintaining VR framerate. If lit, the box all the way on the left is almost always lit red because  it represents the lowest render scale with reprojection on.
- * **Responds To Keyboard Shortcuts:** Toggles whether to allow keyboard shortcuts to control this script.
+ * **Draw Debug Visualization:** Toggles whether to show the debug overlay. Each square represents a different level on the quality scale. Levels increase from left to right,  the first green box that is lit above represents the recommended render target resolution provided by the  current `VRDevice`, the box that is lit below in cyan represents the current resolution and the filled box  represents the current viewport scale. The yellow boxes represent resolutions below the recommended render target resolution. The currently lit box becomes red whenever the user is likely seeing reprojection in the HMD since the  application isn't maintaining VR framerate. If lit, the box all the way on the left is almost always lit  red because it represents the lowest render scale with reprojection on.
+ * **Allow Keyboard Shortcuts:** Toggles whether to allow keyboard shortcuts to control this script.
   * The supported shortcuts are:
     * `Shift+F1`: Toggle debug visualization on/off
     * `Shift+F2`: Toggle usage of override render scale on/off
     * `Shift+F3`: Decrease override render scale level
     * `Shift+F4`: Increase override render scale level
- * **Responds To Command Line Arguments:** Toggles whether to allow command line arguments to control this script at startup of the standalone build.
+ * **Allow Command Line Arguments:** Toggles whether to allow command line arguments to control this script at startup of the standalone build.
   * The supported command line arguments all begin with '-' and are:
     * `-noaq`: Disable adaptive quality
     * `-aqminscale X`: Set minimum render scale to X
@@ -2885,17 +3447,19 @@ In more detail:
     * `-vrdebug`: Enable debug visualization
     * `-msaa X`: Set MSAA level to X
  * **Msaa Level:** The MSAA level to use.
+ * **Scale Render Viewport:** Toggles whether the render viewport scale is dynamically adjusted to maintain VR framerate. If unchecked, the renderer will render at the recommended resolution provided by the current `VRDevice`.
  * **Minimum Render Scale:** The minimum allowed render scale.
  * **Maximum Render Scale:** The maximum allowed render scale.
  * **Maximum Render Target Dimension:** The maximum allowed render target dimension. This puts an upper limit on the size of the render target regardless of the maximum render scale.
  * **Render Scale Fill Rate Step Size In Percent:** The fill rate step size in percent by which the render scale levels will be calculated.
- * **Override Render Scale:** Toggles whether to override the used render scale level.
- * **Override Render Scale Level:** The render scale level to override the current one with.
+ * **Scale Render Target Resolution:** Toggles whether the render target resolution is dynamically adjusted to maintain VR framerate. If unchecked, the renderer will use the maximum target resolution specified by `maximumRenderScale`.
+ * **Override Render Viewport Scale:** Toggles whether to override the used render viewport scale level.
+ * **Override Render Viewport Scale Level:** The render viewport scale level to override the current one with.
 
 ### Class Variables
 
  * `public readonly ReadOnlyCollection<float> renderScales` - All the calculated render scales. The elements of this collection are to be interpreted as modifiers to the recommended render target resolution provided by the current `VRDevice`.
- * `public float currentRenderScale` - The current render scale. A render scale of 1.0 represents the recommended render target resolution provided by the current `VRDevice`.
+ * `public static float CurrentRenderScale` - The current render scale. A render scale of `1.0` represents the recommended render target resolution provided by the current `VRDevice`.
  * `public Vector2 defaultRenderTargetResolution` - The recommended render target resolution provided by the current `VRDevice`.
  * `public Vector2 currentRenderTargetResolution` - The current render target resolution.
 
@@ -2969,6 +3533,10 @@ All 3D controls extend the `VRTK_Control` abstract class which provides common m
 ### Overview
 
 All 3D controls extend the `VRTK_Control` abstract class which provides a default set of methods and events that all of the subsequent controls expose.
+
+### Inspector Parameters
+
+ * **Interact Without Grab:** If active the control will react to the controller without the need to push the grab button.
 
 ### Class Variables
 
@@ -3148,6 +3716,7 @@ The script will instantiate the required Rigidbody and Interactable components a
 
 ### Inspector Parameters
 
+ * **Connected To:** An optional game object to which the knob will be connected. If the game object moves the knob will follow along.
  * **Direction:** The axis on which the knob should rotate. All other axis will be frozen.
  * **Min:** The minimum value of the knob.
  * **Max:** The maximum value of the knob.
