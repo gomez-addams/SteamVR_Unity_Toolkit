@@ -4,6 +4,11 @@ namespace VRTK
     using UnityEngine;
     using System.Collections;
 
+#if UNITY_5_5_OR_NEWER
+    using NavMesh = UnityEngine.AI.NavMesh;
+    using NavMeshHit = UnityEngine.AI.NavMeshHit;
+#endif
+
     /// <summary>
     /// Event Payload
     /// </summary>

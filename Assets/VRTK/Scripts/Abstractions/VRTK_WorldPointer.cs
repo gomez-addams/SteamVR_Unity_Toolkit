@@ -3,6 +3,11 @@ namespace VRTK
 {
     using UnityEngine;
 
+#if UNITY_5_5_OR_NEWER
+    using NavMesh = UnityEngine.AI.NavMesh;
+    using NavMeshHit = UnityEngine.AI.NavMeshHit;
+#endif
+
     /// <summary>
     /// This abstract class provides any game pointer the ability to know the state of the implemented pointer. It extends the `VRTK_DestinationMarker` to allow for destination events to be emitted when the pointer cursor collides with objects.
     /// </summary>
