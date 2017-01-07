@@ -2,7 +2,11 @@
 
 This directory contains Unity3d scenes that demonstrate the scripts and prefabs being used in the game world to create desired functionality.
 
+The examples have all been built to work with the SteamVR Plugin by default, but they can be converted over to using the Oculus Utilities package by following the instructions for using the Oculus Utilities package in the README.md.
+
 There is also a `/Resources/Scripts` directory within the `VRTK/Examples` directory that contains helper scripts utilised by the example scenes to highlight certain functionality (such as event listeners). These example scripts are not required for real world usage.
+
+> *If the examples are not working on first load, click the `[VRTK]` GameObject in the scene hierarchy to ensure the SDK Manager editor script successfully sets up the project and scene.*
 
 ## Current Examples
 
@@ -212,7 +216,7 @@ A scene that demonstrates how the Bezier Pointer can display an object (teleport
 
 ### 037_CameraRig_ClimbingFalling
 
-A scene that demonstrates how to set up the climbing mechanism with different activities to try it with. A `VRTK_PlayerClimb` object is needed on the `[CameraRig]`. `VRTK_HeightAdjustTeleport` is also added to the `[CameraRig]` to allow movement, but also to allow walking off edges with `UseGravity` enabled. Various objects with a `VRTK_InteractableObject` component are scattered throughout the level. They all have the `GrabAttachMechanic` set to `Climbable`.
+A scene that demonstrates how to set up the climbing mechanism with different activities to try it with. Various objects with a `VRTK_InteractableObject` component are scattered throughout the level. They all have the `GrabAttachMechanic` set to `Climbable`.
 
 ### 038_CameraRig_CameraRig_DashTeleport
 
@@ -234,7 +238,7 @@ A scene that uses the `VRTK_SnapDropZone` prefab to set up pre-determined snap z
 
 ### 042_CameraRig_MoveInPlace
 
-A scene that demonstrates how the user can move and traverse colliders by either swinging the controllers in a walking fashion or by running on the spot utilisng the head bob for movement.
+A scene that demonstrates how the user can move and traverse colliders by either swinging the controllers in a walking fashion or by running on the spot utilising the head bob for movement.
 
 ### 043_Controller_SecondaryControllerActions
 
