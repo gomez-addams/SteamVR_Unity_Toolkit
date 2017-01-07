@@ -44,12 +44,25 @@ first step is to auto format the code within Visual Studio with
 the key combination of `Ctrl + k` then `Ctrl + d` which will ensure
 the code is correctly formatted and indented.
 
+Spaces should be used instead of tabs for better readability across
+a number of devices (e.g. spaces look better on Github source view.)
+
 In regards to naming conventions we also adhere to the standard
 .NET Framework naming convention system which can be
 [viewed online here](https://msdn.microsoft.com/en-gb/library/x2dbyw72(v=vs.71).aspx)
 
 Class methods and parameters should always denote their accessibility
 level using the `public` `protected` `private` keywords.
+
+  > **Incorrect:**
+  ```
+  void MyMethod()
+  ```
+
+  > **Correct:**
+  ```
+  private void MyMethod()
+  ```
 
 All core classes should be within the `VRTK` namespace and the class
 name should be prefixed with `VRTK_`.
@@ -68,20 +81,32 @@ defined in the same file.
 Where possible, the structure of the code should also flow with the
 accessibility level of the method or parameters. So all `public`
 parameters and methods should be defined first, followed by `protected`
-paramters and methods with `private` parameters and methods being
+parameters and methods with `private` parameters and methods being
 defined last.
 
 Blocks of code such as conditional statements and loops must always
 contain the block of code in braces `{ }` even if it is just one line.
 
+  > **Incorrect:**
+  ```
+  if (this == that) { do; }
+  ```
+
+  > **Correct:**
+  ```
+  if (this == that)
+  {
+    do;
+  }
+  ```
+
 Any method or variable references should have the most simplified name
 as possible, which means no additional references should be added where
 it's not necessary.
 
-e.g.
+  > `this.transform.rotation` *is simplified to* `transform.rotation`
 
-  * `this.transform.rotation` is simplfied to `transform.rotation`
-  * `GameObject.FindObjectsOfType` is simplified to `FindObjectsOfType`
+  > `GameObject.FindObjectsOfType` *is simplified to* `FindObjectsOfType`
 
 ## Documentation
 
@@ -98,7 +123,8 @@ on the first line of the script in this format:
   * `Controls3D` - A script for providing a 3D control.
  * **Position:** The position the text will appear in the section.
 
-  > Example `// UI Pointer|Scripts|0060`
+  > **Example**
+  `// UI Pointer|Scripts|0060`
 
 All core scripts, abstractions, controls and prefabs should contain
 inline code documentation adhering to the .NET Framework XML
@@ -142,7 +168,7 @@ be entered in the following format:
 
 ### Type
 
-The type must be one of the folowing:
+The type must be one of the following:
 
   * feat: A new feature
   * fix: A bug fix
@@ -155,7 +181,7 @@ The type must be one of the folowing:
 
 ### Scope
 
-The scope could be anything specifiyng the place of the commit change,
+The scope could be anything specifying the place of the commit change,
 such as, `Controller`, `Interaction`, `Locomotion`, etc...
 
 ### Subject
@@ -175,9 +201,27 @@ not "changed" nor "changes" The body should include the motivation for
 the change and contrast this with previous behavior. References to
 previous commit hashes is actively encouraged if they are relevant.
 
+  > **Incorrect commit summary:**
+  ```
+  Added feature to improve teleportation
+  ```
+  > **Incorrect commit summary:**
+  ```
+  feat(Teleport): Add feature
+  ```
+  > **Incorrect commit summary:**
+  ```
+  feat(my-teleport-feature): my feature.
+  ```
+
+  > **Correct commit summary:**
+  ```
+  feat(Teleport): add fade camera option on teleport
+  ```
+
 ## Submitting Changes
   * Push your changes to your topic branch in your repository.
   * Submit a pull request to the repository
-  `thestonefox/SteamVR_Unity_Plugin`.
+  `thestonefox/VRTK`.
   * The core team will aim to look at the pull request as soon as
   possible and provide feedback where required.
