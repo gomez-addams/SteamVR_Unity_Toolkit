@@ -187,6 +187,11 @@ namespace VRTK
             return (pointerOriginTransform ? pointerOriginTransform.forward : transform.forward);
         }
 
+        protected virtual Quaternion GetOriginRotation()
+        {
+            return (pointerOriginTransform ? pointerOriginTransform.rotation : transform.rotation);
+        }
+
         protected virtual Quaternion GetOriginLocalRotation()
         {
             return (pointerOriginTransform ? pointerOriginTransform.localRotation : Quaternion.identity);
