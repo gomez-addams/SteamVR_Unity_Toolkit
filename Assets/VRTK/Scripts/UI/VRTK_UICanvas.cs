@@ -21,6 +21,11 @@ namespace VRTK
         [Tooltip("Determines if a UI Pointer will be auto activated if a UI Pointer game object comes within the given distance of this canvas. If a value of `0` is given then no auto activation will occur.")]
         public float autoActivateWithinDistance = 0f;
 
+#if true // strata
+        [Tooltip("Set to the CanvasDraggablePanel prefab if you want to avoid constant console errors.")]
+        public GameObject draggablePanelPrefab = null;
+#endif
+
         private BoxCollider canvasBoxCollider;
         private Rigidbody canvasRigidBody;
         private const string CANVAS_DRAGGABLE_PANEL = "VRTK_UICANVAS_DRAGGABLE_PANEL";
@@ -116,17 +121,34 @@ namespace VRTK
         {
             if (canvas && !canvas.transform.FindChild(CANVAS_DRAGGABLE_PANEL))
             {
-                var draggablePanel = new GameObject(CANVAS_DRAGGABLE_PANEL);
-                draggablePanel.transform.SetParent(canvas.transform);
-                draggablePanel.transform.localPosition = Vector3.zero;
-                draggablePanel.transform.localRotation = Quaternion.identity;
-                draggablePanel.transform.localScale = Vector3.one;
-                draggablePanel.transform.SetAsFirstSibling();
-                draggablePanel.AddComponent<RectTransform>();
-                draggablePanel.AddComponent<Image>().color = Color.clear;
-                draggablePanel.AddComponent<EventTrigger>();
+#if true // strata
+                if (null != draggablePanelPrefab)
+                {
+                    var draggablePanel = GameObject.Instantiate(draggablePanelPrefab);
+                    draggablePanel.transform.SetParent(canvas.transform);
+                    draggablePanel.transform.localPosition = Vector3.zero;
+                    draggablePanel.transform.localRotation = Quaternion.identity;
+                    draggablePanel.transform.localScale = Vector3.one;
+                    draggablePanel.transform.SetAsFirstSibling();
 
-                draggablePanel.GetComponent<RectTransform>().sizeDelta = canvasSize;
+                    draggablePanel.GetComponent<RectTransform>().sizeDelta = canvasSize;
+                    draggablePanel.GetComponent<Image>().color = Color.clear;
+                    return;
+                }
+#endif
+                {
+                    var draggablePanel = new GameObject(CANVAS_DRAGGABLE_PANEL);
+                    draggablePanel.transform.SetParent(canvas.transform);
+                    draggablePanel.transform.localPosition = Vector3.zero;
+                    draggablePanel.transform.localRotation = Quaternion.identity;
+                    draggablePanel.transform.localScale = Vector3.one;
+                    draggablePanel.transform.SetAsFirstSibling();
+                    draggablePanel.AddComponent<RectTransform>();
+                    draggablePanel.AddComponent<Image>().color = Color.clear;
+                    draggablePanel.AddComponent<EventTrigger>();
+
+                    draggablePanel.GetComponent<RectTransform>().sizeDelta = canvasSize;
+                }
             }
         }
 
