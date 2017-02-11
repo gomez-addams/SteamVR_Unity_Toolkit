@@ -161,6 +161,10 @@ namespace VRTK
 
         protected virtual void Update()
         {
+        }
+
+        protected virtual void FixedUpdate()
+        {
             if (interactWithObjects && objectInteractor && objectInteractor.activeInHierarchy)
             {
                 UpdateObjectInteractor();

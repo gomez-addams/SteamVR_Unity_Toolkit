@@ -5,6 +5,7 @@ This file provides documentation on how to use the included prefabs and scripts.
  * [Prefabs](#prefabs-vrtkprefabs)
  * [Pointers](#pointers-vrtkscriptspointers)
  * [Locomotion](#locomotion-vrtkscriptslocomotion)
+  * [Touchpad Control Actions](#touchpad-control-actions-vrtkscriptslocomotiontouchpadcontrolactions)
  * [Interactions](#interactions-vrtkscriptsinteractions)
   * [Highlighters](#highlighters-vrtkscriptsinteractionshighlighters)
   * [Grab Attach Mechanics](#grab-attach-mechanics-vrtkscriptsinteractionsgrabattachmechanics)
@@ -59,6 +60,14 @@ Use the mouse and keyboard to move around both play area and hands and interacti
  * **Hands On Off:** Key used to switch hands On/Off.
  * **Rotation Position:** Key used to switch between positional and rotational movement.
  * **Change Axis:** Key used to switch between X/Y and X/Z axis.
+ * **Trigger Alias:** Key used to simulate trigger button.
+ * **Grip Alias:** Key used to simulate grip button.
+ * **Touchpad Alias:** Key used to simulate touchpad button.
+ * **Button One Alias:** Key used to simulate button one.
+ * **Button Two Alias:** Key used to simulate button two.
+ * **Start Menu Alias:** Key used to simulate start menu button.
+ * **Touch Modifier:** Key used to switch between button touch and button press mode.
+ * **Hair Touch Modifier:** Key used to switch between hair touch mode.
 
 ### Class Methods
 
@@ -238,6 +247,10 @@ If the prefab is placed as a child of the target interactable game object then t
 The sphere collider on the prefab can have the radius adjusted to determine how close the controller needs to be to the object before the rigidbody is activated.
 
 It's also possible to replace the sphere trigger collider with an alternative trigger collider for customised collision detection.
+
+### Inspector Parameters
+
+ * **Is Enabled:** If this is checked then the collider will have it's rigidbody toggled on and off during a collision.
 
 ---
 
@@ -808,6 +821,7 @@ A collection of scripts that provide varying methods of moving the user around t
  * [Dash Teleport](#dash-teleport-vrtk_dashteleport)
  * [Teleport Disable On Headset Collision](#teleport-disable-on-headset-collision-vrtk_teleportdisableonheadsetcollision)
  * [Teleport Disable On Controller Obscured](#teleport-disable-on-controller-obscured-vrtk_teleportdisableoncontrollerobscured)
+ * [Touchpad Control](#touchpad-control-vrtk_touchpadcontrol)
  * [Touchpad Walking](#touchpad-walking-vrtk_touchpadwalking)
  * [Touchpad Movement](#touchpad-movement-vrtk_touchpadmovement)
  * [Move In Place](#move-in-place-vrtk_moveinplace)
@@ -975,6 +989,65 @@ The purpose of the Teleport Disable On Controller Obscured script is to detect w
 
 ---
 
+## Touchpad Control (VRTK_TouchpadControl)
+
+### Overview
+
+The ability to control an object with the touchpad based on the position of the finger on the touchpad axis.
+
+The Touchpad Control script forms the stub to allow for pre-defined actions to execute when the touchpad axis changes.
+
+This is enabled by the Touchpad Control script emitting an event each time the X axis and Y Axis on the touchpad change and the corresponding Touchpad Control Action registers with the appropriate axis event. This means that multiple Touchpad Control Actions can be triggered per axis change.
+
+This script is placed on the Script Alias of the Controller that is required to be affected by changes in the touchpad.
+
+If the controlled object is the play area and `VRTK_BodyPhysics` is also available, then additional logic is processed when the user is falling such as preventing the touchpad control from affecting a falling user.
+
+### Inspector Parameters
+
+ * **Primary Activation Button:** An optional button that has to be engaged to allow the touchpad control to activate.
+ * **Action Modifier Button:** An optional button that when engaged will activate the modifier on the touchpad control action.
+ * **Device For Direction:** The direction that will be moved in is the direction of this device.
+ * **Disable Other Controls On Active:** If this is checked then whenever the touchpad axis on the attached controller is being changed, all other touchpad control scripts on other controllers will be disabled.
+ * **Affect On Falling:** If a `VRTK_BodyPhysics` script is present and this is checked, then the touchpad control will affect the play area whilst it is falling.
+ * **Control Override Object:** An optional game object to apply the touchpad control to. If this is blank then the PlayArea will be controlled.
+
+### Class Variables
+
+ * `public enum DirectionDevices` - Devices for providing direction.
+  * `Headset` - The headset device.
+  * `LeftController` - The left controller device.
+  * `RightController` - The right controller device.
+  * `ControlledObject` - The controlled object.
+
+### Class Events
+
+ * `XAxisChanged` - Emitted when the touchpad X Axis Changes.
+ * `YAxisChanged` - Emitted when the touchpad Y Axis Changes.
+
+### Unity Events
+
+Adding the `VRTK_TouchpadControl_UnityEvents` component to `VRTK_TouchpadControl` object allows access to `UnityEvents` that will react identically to the Class Events.
+
+ * `OnXAxisChanged` - Emits the XAxisChanged class event.
+ * `OnYAxisChanged` - Emits the YAxisChanged class event.
+
+### Event Payload
+
+ * `GameObject controlledGameObject` - The GameObject that is going to be affected.
+ * `Transform directionDevice` - The device that is used for the direction.
+ * `Vector3 axisDirection` - The axis that is being affected from the touchpad.
+ * `Vector3 axis` - The value of the current touchpad touch point based across the axis direction.
+ * `float deadzone` - The value of the deadzone based across the axis direction.
+ * `bool currentlyFalling` - Whether the controlled GameObject is currently falling.
+ * `bool modifierActive` - Whether the modifier button is pressed.
+
+### Example
+
+`VRTK/Examples/017_CameraRig_TouchpadWalking` has a collection of walls and slopes that can be traversed by the user with the touchpad. There is also an area that can only be traversed if the user is crouching.
+
+---
+
 ## Touchpad Walking (VRTK_TouchpadWalking)
 
 ### Overview
@@ -985,6 +1058,8 @@ The Touchpad Walking script adds a rigidbody and a box collider to the user's po
 
 ### Inspector Parameters
 
+ * **Left Controller:** If this is checked then the left controller touchpad will be enabled to move the play area.
+ * **Right Controller:** If this is checked then the right controller touchpad will be enabled to move the play area.
  * **Max Walk Speed:** The maximum speed the play area will be moved when the touchpad is being touched at the extremes of the axis. If a lower part of the touchpad axis is touched (nearer the centre) then the walk speed is slower.
  * **Deceleration:** The speed in which the play area slows down to a complete stop when the user is no longer touching the touchpad. This deceleration effect can ease any motion sickness that may be suffered.
  * **Move On Button Press:** If a button is defined then movement will only occur when the specified button is being held down and the touchpad axis changes.
@@ -1027,6 +1102,8 @@ Snap rotate and flip direction options can be useful with teleport scripts for s
 
 ### Inspector Parameters
 
+ * **Left Controller:** If this is checked then the left controller touchpad will be enabled for the selected movement types.
+ * **Right Controller:** If this is checked then the right controller touchpad will be enabled for the selected movement types.
  * **Move On Button Press:** If a button is defined then the selected movement will only be performed when the specified button is being held down and the touchpad axis changes.
  * **Movement Multiplier Button:** If the defined movement multiplier button is pressed then the movement will be affected by the axis multiplier value.
  * **Vertical Axis Movement:** Selects the main movement type to be performed when the vertical axis changes occur.
@@ -1092,10 +1169,14 @@ Move In Place allows the user to move the play area by calculating the y-movemen
 
 ### Inspector Parameters
 
+ * **Left Controller:** If this is checked then the left controller touchpad will be enabled to move the play area.
+ * **Right Controller:** If this is checked then the right controller touchpad will be enabled to move the play area.
  * **Engage Button:** Select which button to hold to engage Move In Place.
  * **Control Options:** Select which trackables are used to determine movement.
  * **Speed Scale:** Lower to decrease speed, raise to increase.
  * **Max Speed:** The max speed the user can move in game units. (If 0 or less, max speed is uncapped)
+ * **Deceleration:** The speed in which the play area slows down to a complete stop when the user is no longer pressing the engage button. This deceleration effect can ease any motion sickness that may be suffered.
+ * **Falling Deceleration:** The speed in which the play area slows down to a complete stop when the user is falling.
  * **Direction Method:** How the user's movement direction will be determined.  The Gaze method tends to lead to the least motion sickness.  Smart decoupling is still a Work In Progress.
  * **Smart Decouple Threshold:** The degree threshold that all tracked objects (controllers, headset) must be within to change direction when using the Smart Decoupling Direction Method.
  * **Sensitivity:** The maximum amount of movement required to register in the virtual world.  Decreasing this will increase acceleration, and vice versa.
@@ -1111,8 +1192,6 @@ Move In Place allows the user to move the play area by calculating the y-movemen
   * `ControllerRotation` - Player will move in the direction that the controllers are pointing (averaged).
   * `DumbDecoupling` - Player will move in the direction they were first looking when they engaged Move In Place.
   * `SmartDecoupling` - Player will move in the direction they are looking only if their headset point the same direction as their controllers.
- * `public bool LeftController` - If true, the left controller's trackpad will engage Move In Place.
- * `public bool RightController` - If true, the right controller's trackpad will engage Move In Place.
 
 ### Class Methods
 
@@ -1214,6 +1293,129 @@ There is an additional script `VRTK_RoomExtender_PlayAreaGizmo` which can be att
 ### Example
 
 `VRTK/Examples/028_CameraRig_RoomExtender` shows how the RoomExtender script is controlled by a VRTK_RoomExtender_Controller Example script located at both controllers. Pressing the `Touchpad` on the controller activates the Room Extender. The Additional Movement Multiplier is changed based on the touch distance to the centre of the touchpad.
+
+---
+
+# Touchpad Control Actions (VRTK/Scripts/Locomotion/TouchpadControlActions)
+
+This directory contains scripts that are used to provide different actions when using Touchpad Control.
+
+ * [Base Touchpad Control Action](#base-touchpad-control-action-vrtk_basetouchpadcontrolaction)
+ * [Slide Touchpad Control Action](#slide-touchpad-control-action-vrtk_slidetouchpadcontrolaction)
+ * [Rotate Touchpad Control Action](#rotate-touchpad-control-action-vrtk_rotatetouchpadcontrolaction)
+ * [Snap Rotate Touchpad Control Action](#snap-rotate-touchpad-control-action-vrtk_snaprotatetouchpadcontrolaction)
+ * [Warp Touchpad Control Action](#warp-touchpad-control-action-vrtk_warptouchpadcontrolaction)
+
+---
+
+## Base Touchpad Control Action (VRTK_BaseTouchpadControlAction)
+
+### Overview
+
+The Base Touchpad Control Action script is an abstract class that all touchpad control action scripts inherit.
+
+As this is an abstract class, it cannot be applied directly to a game object and performs no logic.
+
+### Inspector Parameters
+
+ * **Touchpad Control Script:** The Touchpad Control script to receive axis change events from.
+ * **Listen On Axis Change:** Determines which Touchpad Control Axis event to listen to.
+
+---
+
+## Slide Touchpad Control Action (VRTK_SlideTouchpadControlAction)
+ > extends [VRTK_BaseTouchpadControlAction](#base-touchpad-control-action-vrtk_basetouchpadcontrolaction)
+
+### Overview
+
+The Slide Touchpad Control Action script is used to slide the controlled GameObject around the scene when changing the touchpad axis.
+
+The effect is a smooth sliding motion in forward and sideways directions to simulate touchpad walking.
+
+### Inspector Parameters
+
+ * **Maximum Speed:** The maximum speed the controlled object can be moved in based on the position of the touchpad axis.
+ * **Deceleration:** The rate of speed deceleration when the touchpad is no longer being touched.
+ * **Falling Deceleration:** The rate of speed deceleration when the touchpad is no longer being touched and the object is falling.
+ * **Speed Multiplier:** The speed multiplier to be applied when the modifier button is pressed.
+
+### Example
+
+`VRTK/Examples/017_CameraRig_TouchpadWalking` has a collection of walls and slopes that can be traversed by the user with the touchpad. There is also an area that can only be traversed if the user is crouching.
+
+To enable the Slide Touchpad Control Action, ensure one of the `TouchpadControlOptions` children (located under the Controller script alias) has the `Slide` control script active.
+
+---
+
+## Rotate Touchpad Control Action (VRTK_RotateTouchpadControlAction)
+ > extends [VRTK_BaseTouchpadControlAction](#base-touchpad-control-action-vrtk_basetouchpadcontrolaction)
+
+### Overview
+
+The Rotate Touchpad Control Action script is used to rotate the controlled GameObject around the up vector when changing the touchpad axis.
+
+The effect is a smooth rotation to simulate turning.
+
+### Inspector Parameters
+
+ * **Maximum Rotation Speed:** The maximum speed the controlled object can be rotated based on the position of the touchpad axis.
+ * **Rotation Multiplier:** The rotation multiplier to be applied when the modifier button is pressed.
+
+### Example
+
+`VRTK/Examples/017_CameraRig_TouchpadWalking` has a collection of walls and slopes that can be traversed by the user with the touchpad. There is also an area that can only be traversed if the user is crouching.
+
+To enable the Rotate Touchpad Control Action, ensure one of the `TouchpadControlOptions` children (located under the Controller script alias) has the `Rotate` control script active.
+
+---
+
+## Snap Rotate Touchpad Control Action (VRTK_SnapRotateTouchpadControlAction)
+ > extends [VRTK_BaseTouchpadControlAction](#base-touchpad-control-action-vrtk_basetouchpadcontrolaction)
+
+### Overview
+
+The Snap Rotate Touchpad Control Action script is used to snap rotate the controlled GameObject around the up vector when changing the touchpad axis.
+
+The effect is a immediate snap rotation to quickly face in a new direction.
+
+### Inspector Parameters
+
+ * **Angle Per Snap:** The angle to rotate for each snap.
+ * **Angle Multiplier:** The snap angle multiplier to be applied when the modifier button is pressed.
+ * **Snap Delay:** The amount of time required to pass before another snap rotation can be carried out.
+ * **Blink Transition Speed:** The speed for the headset to fade out and back in. Having a blink between rotations can reduce nausia.
+ * **Axis Threshold:** The threshold the listened axis needs to exceed before the action occurs. This can be used to limit the snap rotate to a single axis direction (e.g. pull down to flip rotate). The threshold is ignored if it is 0.
+
+### Example
+
+`VRTK/Examples/017_CameraRig_TouchpadWalking` has a collection of walls and slopes that can be traversed by the user with the touchpad. There is also an area that can only be traversed if the user is crouching.
+
+To enable the Snap Rotate Touchpad Control Action, ensure one of the `TouchpadControlOptions` children (located under the Controller script alias) has the `Snap Rotate` control script active.
+
+---
+
+## Warp Touchpad Control Action (VRTK_WarpTouchpadControlAction)
+ > extends [VRTK_BaseTouchpadControlAction](#base-touchpad-control-action-vrtk_basetouchpadcontrolaction)
+
+### Overview
+
+The Warp Touchpad Control Action script is used to warp the controlled GameObject a given distance when changing the touchpad axis.
+
+The effect is a immediate snap to a new position in the given direction.
+
+### Inspector Parameters
+
+ * **Warp Distance:** The distance to warp in the facing direction.
+ * **Warp Multiplier:** The multiplier to be applied to the warp when the modifier button is pressed.
+ * **Warp Delay:** The amount of time required to pass before another warp can be carried out.
+ * **Floor Height Tolerance:** The height different in floor allowed to be a valid warp.
+ * **Blink Transition Speed:** The speed for the headset to fade out and back in. Having a blink between warps can reduce nausia.
+
+### Example
+
+`VRTK/Examples/017_CameraRig_TouchpadWalking` has a collection of walls and slopes that can be traversed by the user with the touchpad. There is also an area that can only be traversed if the user is crouching.
+
+To enable the Warp Touchpad Control Action, ensure one of the `TouchpadControlOptions` children (located under the Controller script alias) has the `Warp` control script active.
 
 ---
 
@@ -1498,6 +1700,32 @@ The AnyButtonPressed method returns true if any of the controller buttons are be
    * `bool` - Is true if the button is being pressed.
 
 The IsButtonPressed method takes a given button alias and returns a boolean whether that given button is currently being pressed or not.
+
+#### SubscribeToButtonAliasEvent/3
+
+  > `public void SubscribeToButtonAliasEvent(ButtonAlias givenButton, bool startEvent, ControllerInteractionEventHandler callbackMethod)`
+
+  * Parameters
+   * `ButtonAlias givenButton` - The ButtonAlias to register the event on.
+   * `bool startEvent` - If this is `true` then the start event related to the button is used (e.g. OnPress). If this is `false` then the end event related to the button is used (e.g. OnRelease).
+   * `ControllerInteractionEventHandler callbackMethod` - The method to subscribe to the event.
+  * Returns
+   * _none_
+
+The SubscribeToButtonAliasEvent method makes it easier to subscribe to a button event on either the start or end action. Upon the event firing, the given callback method is executed.
+
+#### UnsubscribeToButtonAliasEvent/3
+
+  > `public void UnsubscribeToButtonAliasEvent(ButtonAlias givenButton, bool startEvent, ControllerInteractionEventHandler callbackMethod)`
+
+  * Parameters
+   * `ButtonAlias givenButton` - The ButtonAlias to unregister the event on.
+   * `bool startEvent` - If this is `true` then the start event related to the button is used (e.g. OnPress). If this is `false` then the end event related to the button is used (e.g. OnRelease).
+   * `ControllerInteractionEventHandler callbackMethod` - The method to unsubscribe from the event.
+  * Returns
+   * _none_
+
+The UnsubscribeToButtonAliasEvent method makes it easier to unsubscribe to from button event on either the start or end action.
 
 ### Example
 
@@ -2653,6 +2881,7 @@ As this is an abstract class, it cannot be applied directly to a game object and
 ### Inspector Parameters
 
  * **Active:** Determines if this highlighter is the active highlighter for the object the component is attached to. Only 1 active highlighter can be applied to a game object.
+ * **Unhighlight On Disable:** Determines if the highlighted object should be unhighlighted when it is disabled.
 
 ### Class Methods
 
@@ -3259,6 +3488,8 @@ This works well for items that are on hinged joints or objects that require to i
 ### Inspector Parameters
 
  * **Detach Distance:** The maximum distance the grabbing controller is away from the object before it is automatically dropped.
+ * **Velocity Limit:** The maximum amount of velocity magnitude that can be applied to the object. Lowering this can prevent physics glitches if objects are moving too fast.
+ * **Angular Velocity Limit:** The maximum amount of angular velocity magnitude that can be applied to the object. Lowering this can prevent physics glitches if objects are moving too fast.
 
 ### Class Methods
 
@@ -4294,6 +4525,7 @@ All 3D controls extend the `VRTK_Control` abstract class which provides common m
  * [Door](#door-vrtk_door)
  * [Drawer](#drawer-vrtk_drawer)
  * [Knob](#knob-vrtk_knob)
+ * [Wheel](#wheel-vrtk_wheel)
  * [Lever](#lever-vrtk_lever)
  * [Spring Lever](#spring-lever-vrtk_springlever)
  * [Slider](#slider-vrtk_slider)
@@ -4314,10 +4546,26 @@ All 3D controls extend the `VRTK_Control` abstract class which provides a defaul
 ### Class Variables
 
  * `public ValueChangedEvent OnValueChanged` - Emitted when the control is interacted with.
+ * `public enum Direction` - 3D Control Directions
+  * `autodetect` - Attempt to auto detect the axis
+  * `x` - X axis
+  * `y` - Y axis
+  * `z` - Z axis
+
+### Class Events
+
+ * `ValueChanged` - Emitted when the 3D Control value has changed.
 
 ### Unity Events
 
- * `OnValueChanged` - Emitted when the control is interacted with.
+Adding the `VRTK_Control_UnityEvents` component to `VRTK_Control` object allows access to `UnityEvents` that will react identically to the Class Events.
+
+ * `OnValueChanged` - Emits the ValueChanged class event.
+
+### Event Payload
+
+ * `float value` - The current value being reported by the control.
+ * `float normalizedValue` - The normalized value being reported by the control.
 
 ### Class Methods
 
@@ -4384,9 +4632,31 @@ The script will instantiate the required Rigidbody and ConstantForce components 
  * **Activation Distance:** The local distance the button needs to be pushed until a push event is triggered.
  * **Button Strength:** The amount of force needed to push the button down as well as the speed with which it will go back into its original position.
 
+### Class Variables
+
+ * `public enum ButtonDirection` - 3D Control Button Directions
+  * `autodetect` - Attempt to auto detect the axis
+  * `x` - X axis
+  * `y` - Y axis
+  * `z` - Z axis
+  * `negX` - Negative X axis
+  * `negY` - Negative Y axis
+  * `negZ` - Negative Z axis
+
+### Class Events
+
+ * `Pushed` - Emitted when the 3D Button has reached it's activation distance.
+
 ### Unity Events
 
- * `OnPush` - Emitted when the button is successfully pushed.
+Adding the `VRTK_Button_UnityEvents` component to `VRTK_Button` object allows access to `UnityEvents` that will react identically to the Class Events.
+
+ * `OnPushed` - Emits the Pushed class event.
+
+### Event Payload
+
+ * `float value` - The current value being reported by the control.
+ * `float normalizedValue` - The normalized value being reported by the control.
 
 ### Example
 
@@ -4441,7 +4711,10 @@ The script will instantiate the required Rigidbodies, Interactable and HingeJoin
  * **Max Angle:** The maximum opening angle of the door.
  * **Open Inward:** Can the door be pulled to open.
  * **Open Outward:** Can the door be pushed to open.
- * **Snapping:** Keeps the door closed with a slight force. This way the door will not gradually open due to some minor physics effect. Only works if either inward or outward is selected, not both.
+ * **Min Snap Close:** The range at which the door must be to being closed before it snaps shut. Only works if either inward or outward is selected, not both.
+ * **Released Friction:** The amount of friction the door will have whilst swinging when it is not grabbed.
+ * **Grabbed Friction:** The amount of friction the door will have whilst swinging when it is grabbed.
+ * **Handle Interactable Only:** If this is checked then only the door handle is grabbale to operate the door.
 
 ### Example
 
@@ -4470,7 +4743,8 @@ It is possible to supply a third game object which is the root of the contents i
  * **Handle:** The game object for the handle.
  * **Content:** The parent game object for the drawer content elements.
  * **Hide Content:** Makes the content invisible while the drawer is closed.
- * **Snapping:** Keeps the drawer closed with a slight force. This way the drawer will not gradually open due to some minor physics effect.
+ * **Min Snap Close:** If the extension of the drawer is below this percentage then the drawer will snap shut.
+ * **Max Extend:** The maximum percentage of the drawer's total length that the drawer will open to.
 
 ### Example
 
@@ -4501,6 +4775,35 @@ The script will instantiate the required Rigidbody and Interactable components a
 
 ---
 
+## Wheel (VRTK_Wheel)
+ > extends [VRTK_Control](#control-vrtk_control)
+
+### Overview
+
+Attaching the script to a game object will allow the user to interact with it as if it were a spinnable wheel.
+
+The script will instantiate the required Rigidbody and Interactable components automatically in case they do not exist yet.
+
+### Inspector Parameters
+
+ * **Connected To:** An optional game object to which the wheel will be connected. If the game object moves the wheel will follow along.
+ * **Grab Type:** The grab attach mechanic to use. Track Object allows for rotations of the controller, Rotator Track allows for grabbing the wheel and spinning it.
+ * **Detatch Distance:** The maximum distance the grabbing controller is away from the wheel before it is automatically released.
+ * **Minimum Value:** The minimum value the wheel can be set to.
+ * **Maximum Value:** The maximum value the wheel can be set to.
+ * **Step Size:** The increments in which values can change.
+ * **Snap To Step:** If this is checked then when the wheel is released, it will snap to the step rotation.
+ * **Grabbed Friction:** The amount of friction the wheel will have when it is grabbed.
+ * **Released Friction:** The amount of friction the wheel will have when it is released.
+ * **Max Angle:** The maximum angle the wheel has to be turned to reach it's maximum value.
+ * **Lock At Limits:** If this is checked then the wheel cannot be turned beyond the minimum and maximum value.
+
+### Example
+
+`VRTK/Examples/025_Controls_Overview` has a collection of wheels that can be rotated by grabbing with the controller and then rotating the controller in the desired direction.
+
+---
+
 ## Lever (VRTK_Lever)
  > extends [VRTK_Control](#control-vrtk_control)
 
@@ -4517,6 +4820,8 @@ The script will instantiate the required Rigidbody, Interactable and HingeJoint 
  * **Min Angle:** The minimum angle of the lever counted from its initial position.
  * **Max Angle:** The maximum angle of the lever counted from its initial position.
  * **Step Size:** The increments in which lever values can change.
+ * **Released Friction:** The amount of friction the lever will have whilst swinging when it is not grabbed.
+ * **Grabbed Friction:** The amount of friction the lever will have whilst swinging when it is grabbed.
 
 ### Example
 
@@ -4535,7 +4840,10 @@ The script will instantiate the required Rigidbody, Interactable and HingeJoint 
 
 ### Inspector Parameters
 
- * **Spring Strength:** Strength of the spring force that will be applied toward either end of the lever's range.
+ * **Spring Strength:** The strength of the spring force that will be applied upon the lever.
+ * **Spring Damper:** The damper of the spring force that will be applied upon the lever.
+ * **Snap To Nearest Limit:** If this is checked then the spring will snap the lever to the nearest end point (either min or max angle). If it is unchecked, the lever will always snap to the min angle position.
+ * **Always Active:** If this is checked then the spring will always be active even when grabbing the lever.
 
 ---
 
@@ -4550,13 +4858,15 @@ The script will instantiate the required Rigidbody and Interactable components a
 
 ### Inspector Parameters
 
+ * **Connected To:** An optional game object to which the wheel will be connected. If the game object moves the wheel will follow along.
  * **Direction:** The axis on which the slider should move. All other axis will be frozen.
- * **Min:** The minimum value of the slider.
- * **Max:** The maximum value of the slider.
- * **Step Size:** The increments in which slider values can change. The slider supports snapping.
- * **Detect Min Max:** Automatically detect the minimum and maximum positions.
- * **Min Point:** The minimum point on the slider.
- * **Max Point:** The maximum point on the slider.
+ * **Minimum Limit:** The collider to specify the minimum limit of the slider.
+ * **Maximum Limit:** The collider to specify the maximum limit of the slider.
+ * **Minimum Value:** The minimum value of the slider.
+ * **Maximum Value:** The maximum value of the slider.
+ * **Step Size:** The increments in which slider values can change.
+ * **Snap To Step:** If this is checked then when the slider is released, it will snap to the nearest value position.
+ * **Released Friction:** The amount of friction the slider will have when it is released.
 
 ### Example
 
