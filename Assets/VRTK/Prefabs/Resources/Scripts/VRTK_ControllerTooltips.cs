@@ -207,8 +207,9 @@ namespace VRTK
         }
 
         protected virtual void Update()
-        {
-            var actualController = VRTK_DeviceFinder.GetActualController(controllerActions.gameObject);
+		{
+			if (controllerActions == null) return;
+			var actualController = VRTK_DeviceFinder.GetActualController(controllerActions.gameObject);
             if (!TipsInitialised() && actualController && actualController.activeInHierarchy)
             {
                 InitialiseTips();
@@ -235,7 +236,8 @@ namespace VRTK
 
         private void DoGlanceEnterController(object sender, HeadsetControllerAwareEventArgs e)
         {
-            var controllerIndex = VRTK_DeviceFinder.GetControllerIndex(controllerActions.gameObject);
+			if (controllerActions == null) return;
+			var controllerIndex = VRTK_DeviceFinder.GetControllerIndex(controllerActions.gameObject);
             if (controllerIndex == e.controllerIndex)
             {
                 ToggleTips(true);
@@ -244,7 +246,8 @@ namespace VRTK
 
         private void DoGlanceExitController(object sender, HeadsetControllerAwareEventArgs e)
         {
-            var controllerIndex = VRTK_DeviceFinder.GetControllerIndex(controllerActions.gameObject);
+			if (controllerActions == null) return;
+			var controllerIndex = VRTK_DeviceFinder.GetControllerIndex(controllerActions.gameObject);
             if (controllerIndex == e.controllerIndex)
             {
                 ToggleTips(false);
@@ -338,7 +341,7 @@ namespace VRTK
             {
                 returnTransform = setTransform;
             }
-            else
+			else if (controllerActions != null)
             {
                 var modelController = VRTK_DeviceFinder.GetModelAliasController(controllerActions.gameObject);
 
