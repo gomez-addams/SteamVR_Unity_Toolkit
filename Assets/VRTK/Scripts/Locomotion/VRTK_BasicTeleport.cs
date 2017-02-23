@@ -73,8 +73,10 @@ namespace VRTK
         {
             if (markerMaker)
             {
-                foreach (var worldMarker in markerMaker.GetComponentsInChildren<VRTK_DestinationMarker>())
+                VRTK_DestinationMarker[] worldMarkers = markerMaker.GetComponentsInChildren<VRTK_DestinationMarker>();
+                for (int i = 0; i < worldMarkers.Length; i++)
                 {
+                    VRTK_DestinationMarker worldMarker = worldMarkers[i];
                     if (register)
                     {
                         worldMarker.DestinationMarkerSet += new DestinationMarkerEventHandler(DoTeleport);
@@ -253,8 +255,7 @@ namespace VRTK
             var rightHand = VRTK_DeviceFinder.GetControllerRightHand();
 
             InitDestinationSetListener(leftHand, state);
-            InitDestinationSetListener(rightHand, state)
-;
+            InitDestinationSetListener(rightHand, state);
             foreach (var destinationMarker in VRTK_ObjectCache.registeredDestinationMarkers)
             {
                 if (destinationMarker.gameObject != leftHand && destinationMarker.gameObject != rightHand)
