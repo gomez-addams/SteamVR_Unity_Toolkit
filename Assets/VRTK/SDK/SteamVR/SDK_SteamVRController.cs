@@ -827,7 +827,8 @@ namespace VRTK
                 //SteamVR plugin >= 1.2.0
                 eventClass = executingAssembly.GetType("SteamVR_Events");
                 MethodInfo systemMethod = eventClass.GetMethod("System", BindingFlags.Public | BindingFlags.Static);
-                object steamVREventInstance = systemMethod.Invoke(null, new object[] { "TrackedDeviceRoleChanged" });
+				//object steamVREventInstance = systemMethod.Invoke(null, new object[] { "TrackedDeviceRoleChanged" });
+				object steamVREventInstance = systemMethod.Invoke(null, new object[] { EVREventType.VREvent_TrackedDeviceRoleChanged }); // SteamVR v1.2.1 - need a dynamic test?
                 MethodInfo listenMethod = steamVREventInstance.GetType().GetMethod("Listen", BindingFlags.Public | BindingFlags.Instance);
                 Type listenMethodParameterType = listenMethod.GetParameters()[0].ParameterType;
 
