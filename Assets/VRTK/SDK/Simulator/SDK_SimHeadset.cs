@@ -1,13 +1,13 @@
 ﻿// Simulator Headset|SDK_Simulator|002
 namespace VRTK
 {
-#if VRTK_SDK_SIM
     using UnityEngine;
     using System.Collections.Generic;
 
     /// <summary>
     /// The Sim Headset SDK script  provides dummy functions for the headset.
     /// </summary>
+    [SDK_Description(typeof(SDK_SimSystem))]
     public class SDK_SimHeadset : SDK_BaseHeadset
     {
         private Transform camera;
@@ -34,6 +34,14 @@ namespace VRTK
             }
             lastPos = camera.position;
             lastRot = camera.rotation.eulerAngles;
+        }
+
+        /// <summary>
+        /// The ProcessFixedUpdate method enables an SDK to run logic for every Unity FixedUpdate
+        /// </summary>
+        /// <param name="options">A dictionary of generic options that can be used to within the fixed update.</param>
+        public override void ProcessFixedUpdate(Dictionary<string, object> options)
+        {
         }
 
         /// <summary>
@@ -138,13 +146,11 @@ namespace VRTK
             rotList = new List<Vector3>();
 
             var headset = GetHeadset();
-            lastPos = headset.position;
-            lastRot = headset.rotation.eulerAngles;
+            if (headset != null)
+            {
+                lastPos = headset.position;
+                lastRot = headset.rotation.eulerAngles;
+            }
         }
     }
-#else
-    public class SDK_SimHeadset : SDK_FallbackHeadset
-    {
-    }
-#endif
 }

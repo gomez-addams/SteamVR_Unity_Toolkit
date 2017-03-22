@@ -152,8 +152,7 @@ namespace VRTK
             pointerMaterial = new Material(tmpMaterial);
             pointerMaterial.color = pointerMissColor;
 
-            var fetchedPlayAreaCursor = GetComponent<VRTK_PlayAreaCursor>();
-            playAreaCursor = (fetchedPlayAreaCursor ?? fetchedPlayAreaCursor);
+            playAreaCursor = GetComponent<VRTK_PlayAreaCursor>();
         }
 
         protected override void OnDisable()
@@ -460,7 +459,6 @@ namespace VRTK
             pointerOriginTransformFollowGameObject = new GameObject(string.Format("[{0}]BasePointer_Origin_Smoothed", gameObject.name));
             pointerOriginTransformFollowGameObject.SetActive(false);
             pointerOriginTransformFollow = pointerOriginTransformFollowGameObject.AddComponent<VRTK_TransformFollow>();
-            pointerOriginTransformFollow.gameObjectToChange = pointerOriginTransformFollowGameObject;
             pointerOriginTransformFollow.followsScale = false;
             UpdatePointerOriginTransformFollow();
         }

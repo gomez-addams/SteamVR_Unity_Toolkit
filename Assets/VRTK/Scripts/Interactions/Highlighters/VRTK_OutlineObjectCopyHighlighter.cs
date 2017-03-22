@@ -24,9 +24,9 @@ namespace VRTK.Highlighters
         [Tooltip("If the mesh has multiple sub-meshes to highlight then this should be checked, otherwise only the first mesh will be highlighted.")]
         public bool enableSubmeshHighlight = false;
 
-        private Material stencilOutline;
-        private GameObject[] highlightModels;
-        private string[] copyComponents = new string[] { "UnityEngine.MeshFilter", "UnityEngine.MeshRenderer" };
+        protected Material stencilOutline;
+        protected GameObject[] highlightModels;
+        protected string[] copyComponents = new string[] { "UnityEngine.MeshFilter", "UnityEngine.MeshRenderer" };
 
         /// <summary>
         /// The Initialise method sets up the highlighter for use.
@@ -100,6 +100,19 @@ namespace VRTK.Highlighters
             }
         }
 
+        protected virtual void OnEnable()
+        {
+            if (customOutlineModels == null)
+            {
+                customOutlineModels = new GameObject[0];
+            }
+
+            if (customOutlineModelPaths == null)
+            {
+                customOutlineModelPaths = new string[0];
+            }
+        }
+
         protected virtual void OnDestroy()
         {
             if (highlightModels != null)
@@ -117,7 +130,7 @@ namespace VRTK.Highlighters
 
         protected virtual void ResetHighlighterWithCustomModels()
         {
-            if (customOutlineModels.Length > 0)
+            if (customOutlineModels != null && customOutlineModels.Length > 0)
             {
                 highlightModels = new GameObject[customOutlineModels.Length];
                 for (int i = 0; i < customOutlineModels.Length; i++)
@@ -129,7 +142,7 @@ namespace VRTK.Highlighters
 
         protected virtual void ResetHighlighterWithCustomModelPaths()
         {
-            if (customOutlineModelPaths.Length > 0)
+            if (customOutlineModelPaths != null && customOutlineModelPaths.Length > 0)
             {
                 highlightModels = new GameObject[customOutlineModels.Length];
                 for (int i = 0; i < customOutlineModelPaths.Length; i++)

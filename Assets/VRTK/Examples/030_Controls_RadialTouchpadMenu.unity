@@ -37,7 +37,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.37429237, g: 0.42147171, b: 0.46712714, a: 1}
+  m_IndirectSpecularColor: {r: 0.18053603, g: 0.2260181, b: 0.30718738, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -134,6 +134,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65eb64f0f2fd6d64faddbcf5d7d3bdbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  useButton: 3
 --- !u!114 &106315681
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -196,7 +197,11 @@ MonoBehaviour:
   menuToggleButton: 14
   axisFidelity: 1
   triggerClickThreshold: 1
+  triggerForceZeroThreshold: 0.01
+  triggerAxisZeroOnUntouch: 0
   gripClickThreshold: 1
+  gripForceZeroThreshold: 0.01
+  gripAxisZeroOnUntouch: 0
   triggerPressed: 0
   triggerTouched: 0
   triggerHairlinePressed: 0
@@ -299,7 +304,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2023571378}
   m_RootOrder: 1
---- !u!21 &273033975
+--- !u!21 &290305615
 Material:
   serializedVersion: 6
   m_ObjectHideFlags: 0
@@ -684,6 +689,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65eb64f0f2fd6d64faddbcf5d7d3bdbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  useButton: 3
 --- !u!114 &708505809
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -746,7 +752,11 @@ MonoBehaviour:
   menuToggleButton: 14
   axisFidelity: 1
   triggerClickThreshold: 1
+  triggerForceZeroThreshold: 0.01
+  triggerAxisZeroOnUntouch: 0
   gripClickThreshold: 1
+  gripForceZeroThreshold: 0.01
+  gripAxisZeroOnUntouch: 0
   triggerPressed: 0
   triggerTouched: 0
   triggerHairlinePressed: 0
@@ -903,10 +913,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   persistOnLoad: 0
-  systemSDK: 1
-  boundariesSDK: 1
-  headsetSDK: 1
-  controllerSDK: 1
+  autoPopulateObjectReferences: 1
   autoManageScriptDefines: 1
   actualBoundaries: {fileID: 815778966}
   actualHeadset: {fileID: 734656374}
@@ -916,6 +923,22 @@ MonoBehaviour:
   modelAliasRightController: {fileID: 1757825998}
   scriptAliasLeftController: {fileID: 106315678}
   scriptAliasRightController: {fileID: 708505806}
+  cachedSystemSDKInfo:
+    baseTypeName: VRTK.SDK_BaseSystem
+    fallbackTypeName: VRTK.SDK_FallbackSystem
+    typeName: VRTK.SDK_SteamVRSystem
+  cachedBoundariesSDKInfo:
+    baseTypeName: VRTK.SDK_BaseBoundaries
+    fallbackTypeName: VRTK.SDK_FallbackBoundaries
+    typeName: VRTK.SDK_SteamVRBoundaries
+  cachedHeadsetSDKInfo:
+    baseTypeName: VRTK.SDK_BaseHeadset
+    fallbackTypeName: VRTK.SDK_FallbackHeadset
+    typeName: VRTK.SDK_SteamVRHeadset
+  cachedControllerSDKInfo:
+    baseTypeName: VRTK.SDK_BaseController
+    fallbackTypeName: VRTK.SDK_FallbackController
+    typeName: VRTK.SDK_SteamVRController
 --- !u!1 &815778966
 GameObject:
   m_ObjectHideFlags: 0
@@ -969,7 +992,7 @@ MeshFilter:
     type: 2}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 815778966}
-  m_Mesh: {fileID: 1292764093}
+  m_Mesh: {fileID: 1367608261}
 --- !u!23 &815778969
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -984,7 +1007,7 @@ MeshRenderer:
   m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
   m_Materials:
-  - {fileID: 273033975}
+  - {fileID: 290305615}
   m_SubsetIndices: 
   m_StaticBatchRoot: {fileID: 0}
   m_ProbeAnchor: {fileID: 0}
@@ -1172,7 +1195,7 @@ MonoBehaviour:
   index: -1
   origin: {fileID: 0}
   isValid: 0
---- !u!43 &1292764093
+--- !u!43 &1367608261
 Mesh:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
@@ -1373,11 +1396,12 @@ MonoBehaviour:
   disableWhenIdle: 1
   touchHighlightColor: {r: 0, g: 0, b: 0, a: 0}
   allowedTouchControllers: 0
+  ignoredColliders: []
   isGrabbable: 0
   holdButtonToGrab: 1
   stayGrabbedOnTeleport: 1
   validDrop: 1
-  grabOverrideButton: 8
+  grabOverrideButton: 0
   allowedGrabControllers: 0
   grabAttachMechanicScript: {fileID: 0}
   secondaryGrabActionScript: {fileID: 0}
@@ -1385,7 +1409,7 @@ MonoBehaviour:
   holdButtonToUse: 1
   useOnlyIfGrabbed: 0
   pointerActivatesUseAction: 0
-  useOverrideButton: 8
+  useOverrideButton: 0
   allowedUseControllers: 0
   usingState: 0
 --- !u!23 &1570480414

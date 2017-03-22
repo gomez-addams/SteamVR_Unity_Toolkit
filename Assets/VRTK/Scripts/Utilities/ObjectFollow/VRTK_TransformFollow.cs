@@ -22,30 +22,53 @@ namespace VRTK
         }
 
         [Tooltip("The moment at which to follow.")]
-        public FollowMoment moment = FollowMoment.OnPreRender;
-
-        private Transform transformToFollow;
-        private Transform transformToChange;
-        private bool isListeningToOnPreRender;
-
-        protected virtual void OnEnable()
+        [SerializeField]
+        private FollowMoment _moment = FollowMoment.OnPreRender;
+        public FollowMoment moment
         {
-            if (gameObjectToFollow == null)
+            get
             {
-                return;
+                return _moment;
             }
-
-            transformToFollow = gameObjectToFollow.transform;
-
-            if (gameObjectToChange)
+            set
             {
-                transformToChange = gameObjectToChange.transform;
+                if (_moment == value)
+                {
+                    return;
+                }
+
+                if (isActiveAndEnabled)
+                {
+                    if (_moment == FollowMoment.OnPreRender && value != FollowMoment.OnPreRender)
+                    {
+                        Camera.onPreRender -= OnCamPreRender;
+                    }
+                    if (_moment != FollowMoment.OnPreRender && value == FollowMoment.OnPreRender)
+                    {
+                        Camera.onPreRender += OnCamPreRender;
+                    }
+                }
+
+                _moment = value;
             }
+        }
+
+        protected Transform transformToFollow;
+        protected Transform transformToChange;
+
+        public override void Follow()
+        {
+            CacheTransforms();
+            base.Follow();
+        }
+
+        protected override void OnEnable()
+        {
+            base.OnEnable();
 
             if (moment == FollowMoment.OnPreRender)
             {
                 Camera.onPreRender += OnCamPreRender;
-                isListeningToOnPreRender = true;
             }
         }
 
@@ -53,15 +76,10 @@ namespace VRTK
         {
             transformToFollow = null;
             transformToChange = null;
-
-            if (isListeningToOnPreRender)
-            {
-                Camera.onPreRender -= OnCamPreRender;
-                isListeningToOnPreRender = false;
-            }
+            Camera.onPreRender -= OnCamPreRender;
         }
 
-        protected virtual void Update()
+        protected void Update()
         {
             if (moment == FollowMoment.OnUpdate)
             {
@@ -104,6 +122,18 @@ namespace VRTK
         protected override void SetRotationOnGameObject(Quaternion newRotation)
         {
             transformToChange.rotation = newRotation;
+        }
+
+        protected virtual void CacheTransforms()
+        {
+            if (gameObjectToFollow == null || gameObjectToChange == null
+                || (transformToFollow != null && transformToChange != null))
+            {
+                return;
+            }
+
+            transformToFollow = gameObjectToFollow.transform;
+            transformToChange = gameObjectToChange.transform;
         }
     }
 }
