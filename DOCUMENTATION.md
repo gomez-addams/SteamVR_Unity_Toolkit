@@ -38,6 +38,7 @@ A collection of pre-defined usable prefabs have been included to allow for each 
  * [Radial Menu](#radial-menu-radialmenu)
  * [Independent Radial Menu Controller](#independent-radial-menu-controller-vrtk_independentradialmenucontroller)
  * [Destination Point](#destination-point-vrtk_destinationpoint)
+ * [Pointer Direction Indicator](#pointer-direction-indicator-vrtk_pointerdirectionindicator)
  * [Console Viewer Canvas](#console-viewer-canvas-vrtk_consoleviewer)
  * [Panel Menu Controller](#panel-menu-controller-panelmenucontroller)
  * [Panel Menu Item Controller](#panel-menu-item-controller-panelmenuitemcontroller)
@@ -301,6 +302,7 @@ If the `Use Joint` Snap Type is selected then a custom Joint component is requir
  * **Highlight Always Active:** The highlight object will always be displayed when the snap drop zone is available even if a valid item isn't being hovered over.
  * **Valid Object List Policy:** A specified VRTK_PolicyList to use to determine which interactable objects will be snapped to the snap drop zone on release.
  * **Display Drop Zone In Editor:** If this is checked then the drop zone highlight section will be displayed in the scene editor window.
+ * **Default Snapped Object:** The game object to snap into the dropzone when the drop zone is enabled. The game object must be valid in any given policy list to snap.
 
 ### Class Variables
 
@@ -573,6 +575,14 @@ The destination points can also have a locked state if the `Enable Teleport` fla
  * **Locked Cursor Object:** The GameObject to use to represent the locked cursor state.
  * **Snap To Point:** If this is checked then after teleporting, the play area will be snapped to the origin of the destination point. If this is false then it's possible to teleport to anywhere within the destination point collider.
  * **Hide Pointer Cursor On Hover:** If this is checked, then the pointer cursor will be hidden when a valid destination point is hovered over.
+ * **Snap To Rotation:** Determines if the play area will be rotated to the rotation of the destination point upon the destination marker being set.
+
+### Class Variables
+
+ * `public enum RotationTypes` - Allowed snap to rotation types.
+  * `NoRotation` - No rotation information will be emitted in the destination set payload.
+  * `RotateWithNoHeadsetOffset` - The destination point's rotation will be emitted without taking into consideration the current headset rotation.
+  * `RotateWithHeadsetOffset` - The destination point's rotation will be emitted and will take into consideration the current headset rotation.
 
 ### Class Methods
 
@@ -590,6 +600,58 @@ The ResetDestinationPoint resets the destination point back to the default state
 ### Example
 
 `044_CameraRig_RestrictedTeleportZones` uses the `VRTK_DestinationPoint` prefab to set up a collection of pre-defined teleport locations.
+
+---
+
+## Pointer Direction Indicator (VRTK_PointerDirectionIndicator)
+
+### Overview
+
+The Pointer Direction Indicator is used to determine a given world rotation that can be used by a Destiantion Marker.
+
+The Pointer Direction Indicator can be attached to a VRTK_Pointer in the `Direction Indicator` parameter and will the be used to send rotation data when the destination marker events are emitted.
+
+This can be useful for rotating the play area upon teleporting to face the user in a new direction without expecting them to physically turn in the play space.
+
+### Inspector Parameters
+
+ * **Include Headset Offset:** If this is checked then the reported rotation will include the offset of the headset rotation in relation to the play area.
+
+### Class Methods
+
+#### Initialize/1
+
+  > `public virtual void Initialize(VRTK_ControllerEvents events)`
+
+  * Parameters
+   * `VRTK_ControllerEvents events` - The Controller Events script that is used to control the direction indicator's rotation.
+  * Returns
+   * _none_
+
+The Initialize method is used to set up the direction indicator.
+
+#### SetPosition/2
+
+  > `public virtual void SetPosition(bool active, Vector3 position)`
+
+  * Parameters
+   * `bool active` - Determines if the direction indicator GameObject should be active or not.
+   * `Vector3 position` - The position to set the direction indicator to.
+  * Returns
+   * _none_
+
+The SetPosition method is used to set the world position of the direction indicator.
+
+#### GetRotation/0
+
+  > `public virtual Quaternion GetRotation()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * `Quaternion` - The reported rotation of the direction indicator.
+
+The GetRotation method returns the current reported rotation of the direction indicator.
 
 ---
 
@@ -871,6 +933,7 @@ Adding the `VRTK_DestinationMarker_UnityEvents` component to `VRTK_DestinationMa
  * `Transform target` - The Transform of the collided destination object.
  * `RaycastHit raycastHit` - The optional RaycastHit generated from when the ray collided.
  * `Vector3 destinationPosition` - The world position of the destination marker.
+ * `Quaternion? destinationRotation` - The world rotation of the destination marker.
  * `bool forceDestinationPosition` - If true then the given destination position should not be altered by anything consuming the payload.
  * `bool enableTeleport` - Whether the destination set event should trigger teleport.
  * `uint controllerIndex` - The optional index of the controller emitting the beam.
@@ -944,6 +1007,7 @@ It extends the `VRTK_DestinationMarker` to allow for destination events to be em
  * **Grab To Pointer Tip:** If `Interact With Objects` is checked and this is checked then when an object is grabbed with the pointer touching it, the object will attach to the pointer tip and not snap to the controller.
  * **Controller:** The controller that will be used to toggle the pointer. If the script is being applied onto a controller then this parameter can be left blank as it will be auto populated by the controller the script is on at runtime.
  * **Custom Origin:** A custom transform to use as the origin of the pointer. If no pointer origin transform is provided then the transform the script is attached to is used.
+ * **Direction Indicator:** A custom VRTK_PointerDirectionIndicator to use to determine the rotation given to the destination set event.
 
 ### Class Methods
 
@@ -1049,6 +1113,7 @@ The Play Area Cursor is used in conjunction with a Pointer script and displays a
  * **Handle Play Area Cursor Collisions:** If this is ticked then if the play area cursor is colliding with any other object then the pointer colour will change to the `Pointer Miss Color` and the `DestinationMarkerSet` event will not be triggered, which will prevent teleporting into areas where the play area will collide.
  * **Headset Out Of Bounds Is Collision:** If this is ticked then if the user's headset is outside of the play area cursor bounds then it is considered a collision even if the play area isn't colliding with anything.
  * **Target List Policy:** A specified VRTK_PolicyList to use to determine whether the play area cursor collisions will be acted upon.
+ * **Play Area Cursor Prefab:** A custom GameObject to use for the play area cursor representation.
 
 ### Class Methods
 
@@ -1460,6 +1525,7 @@ Adding the `VRTK_BasicTeleport_UnityEvents` component to `VRTK_BasicTeleport` ob
  * `Transform target` - The Transform of the collided destination object.
  * `RaycastHit raycastHit` - The optional RaycastHit generated from when the ray collided.
  * `Vector3 destinationPosition` - The world position of the destination marker.
+ * `Quaternion? destinationRotation` - The world rotation of the destination marker.
  * `bool forceDestinationPosition` - If true then the given destination position should not be altered by anything consuming the payload.
  * `bool enableTeleport` - Whether the destination set event should trigger teleport.
  * `uint controllerIndex` - The optional index of the controller emitting the beam.
