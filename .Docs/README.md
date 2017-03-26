@@ -1,4 +1,4 @@
-![vrtk logo](https://raw.githubusercontent.com/thestonefox/VRTK/master/Assets/VRTK/Examples/Resources/Images/logos/vrtk-capsule-clear.png)
+![vrtk logo](https://raw.githubusercontent.com/thestonefox/VRTK/master/Assets/VRTK/Examples/ExampleResources/Images/logos/vrtk-capsule-clear.png)
 > ### VRTK - Virtual Reality Toolkit
 > A productive VR Toolkit for rapidly building VR solutions in Unity3d.
 
@@ -15,9 +15,16 @@
 | VR Simulator | Included |
 | SteamVR Unity Asset | [SteamVR Plugin] |
 | Oculus Utilities Unity Package | [Oculus Utilities] |
+| *Ximmerse Unity SDK Package | [Ximmerse Unity SDK] |
 | *Google VR SDK for Unity | [Google VR SDK for Unity]
 
 _*experimental_
+
+## Thank You
+
+A big thank you to all those who support VRTK via [Patreon].
+
+A list of supports can be seen in [THANK_YOU_CREDITS.md].
 
 ## Documentation
 
@@ -44,6 +51,7 @@ if your query has already been answered.
 For further information about setting up a specific SDK, check out the
 [GETTING_STARTED.md] document.
 
+
 ## What's In The Box
 
 VRTK is a collection of useful scripts and concepts to aid building VR
@@ -67,8 +75,8 @@ A list of the examples can be viewed in [EXAMPLES.md] which includes
 an up to date list of examples showcasing the features of VRTK.
 
 The examples have all been built to work with the [SteamVR Plugin] by
-default, but they can be converted over to using the [Oculus Utilities]
-package by following the instructions for using the Oculus Utilities
+default, but they can be converted over to using the [Oculus Utilities] or [Ximmerse Unity SDK]
+by following the instructions for using the [Oculus Utilities] or [Ximmerse Unity SDK]
 package above.
 
 > *If the examples are not working on first load, click the `[VRTK]`
@@ -107,13 +115,16 @@ Code released under the [MIT License].
 [SteamVR Plugin]: https://www.assetstore.unity3d.com/en/#!/content/32647
 [SteamVR Plugin for Unity3d Github Repo]: https://github.com/ValveSoftware/openvr/tree/master/unity_package/Assets/SteamVR
 [Oculus Utilities]: https://developer3.oculus.com/downloads/game-engines/1.10.0/Oculus_Utilities_for_Unity_5/
+[Ximmerse Unity SDK]: https://github.com/Ximmerse/SDK/tree/master/Unity
 [Google VR SDK for Unity]: https://developers.google.com/vr/unity/download
 [MIT License]: https://github.com/thestonefox/SteamVR_Unity_Toolkit/blob/master/LICENSE
 [CONTRIBUTING.md]: https://github.com/thestonefox/SteamVR_Unity_Toolkit/blob/master/CONTRIBUTING.md
 [MADEWITHVRTK.md]: https://github.com/thestonefox/SteamVR_Unity_Toolkit/blob/master/MADEWITHVRTK.md
 [DOCUMENTATION.md]: https://github.com/thestonefox/SteamVR_Unity_Toolkit/blob/master/DOCUMENTATION.md
 [GETTING_STARTED.md]: https://github.com/thestonefox/SteamVR_Unity_Toolkit/blob/master/GETTING_STARTED.md
+[THANK_YOU_CREDITS.md]: https://github.com/thestonefox/SteamVR_Unity_Toolkit/blob/master/THANK_YOU_CREDITS.md
 [EXAMPLES.md]: https://github.com/thestonefox/SteamVR_Unity_Toolkit/blob/master/EXAMPLES.md
 [Fork]: http://help.github.com/fork-a-repo/
 [Open a Pull Request]: https://help.github.com/articles/using-pull-requests/
 [FAQ.md]: https://github.com/thestonefox/SteamVR_Unity_Toolkit/blob/master/FAQ.md
+[Patreon]: https://www.patreon.com/vrtk

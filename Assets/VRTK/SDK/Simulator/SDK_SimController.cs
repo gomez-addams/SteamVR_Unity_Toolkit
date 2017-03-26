@@ -1,13 +1,13 @@
 ﻿// Simulator Controller|SDK_Simulator|003
 namespace VRTK
 {
-#if VRTK_SDK_SIM
     using UnityEngine;
     using System.Collections.Generic;
 
     /// <summary>
     /// The Sim Controller SDK script provides functions to help simulate VR controllers.
     /// </summary>
+    [SDK_Description(typeof(SDK_SimSystem))]
     public class SDK_SimController : SDK_BaseController
     {
         private SimControllers controllers;
@@ -37,6 +37,15 @@ namespace VRTK
         /// <param name="index">The index of the controller.</param>
         /// <param name="options">A dictionary of generic options that can be used to within the update.</param>
         public override void ProcessUpdate(uint index, Dictionary<string, object> options)
+        {
+        }
+
+        /// <summary>
+        /// The ProcessFixedUpdate method enables an SDK to run logic for every Unity FixedUpdate
+        /// </summary>
+        /// <param name="index">The index of the controller.</param>
+        /// <param name="options">A dictionary of generic options that can be used to within the fixed update.</param>
+        public override void ProcessFixedUpdate(uint index, Dictionary<string, object> options)
         {
         }
 
@@ -111,7 +120,7 @@ namespace VRTK
         /// </summary>
         /// <param name="index">The index of the controller to find.</param>
         /// <param name="actual">If true it will return the actual controller, if false it will return the script alias controller GameObject.</param>
-        /// <returns></returns>
+        /// <returns>The GameObject of the controller</returns>
         public override GameObject GetControllerByIndex(uint index, bool actual = false)
         {
             switch (index)
@@ -863,7 +872,7 @@ namespace VRTK
         /// whether or not a button press shall be ignored, e.g. because of the
         /// use of the touch or hair touch modifier
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Returns true if the button press is ignored.</returns>
         protected bool IsButtonPressIgnored()
         {
             // button presses shall be ignored if the hair touch or touch modifiers are used
@@ -874,7 +883,7 @@ namespace VRTK
         /// whether or not a button press shall be ignored, e.g. because of the
         /// use of the touch or hair touch modifier
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Returns true if the hair trigger touch should be ignored.</returns>
         protected bool IsButtonHairTouchIgnored()
         {
             // button presses shall be ignored if the hair touch or touch modifiers are used
@@ -888,7 +897,7 @@ namespace VRTK
         /// <param name="index">unique index of the controller for which the button press is to be checked</param>
         /// <param name="type">the type of press (up, down, hold)</param>
         /// <param name="button">the button on the keyboard</param>
-        /// <returns></returns>
+        /// <returns>Returns true if the button is being pressed.</returns>
         private bool IsButtonPressed(uint index, ButtonPressTypes type, KeyCode button)
         {
             if (index >= uint.MaxValue)
@@ -914,7 +923,6 @@ namespace VRTK
             {
                 return false;
             }
-
 
             switch (type)
             {
@@ -947,9 +955,4 @@ namespace VRTK
             }
         }
     }
-#else
-    public class SDK_SimController : SDK_FallbackController
-    {
-    }
-#endif
 }

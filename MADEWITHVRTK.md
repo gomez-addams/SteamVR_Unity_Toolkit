@@ -13,6 +13,7 @@ A collection of titles that have been made with VRTK.
 | Nock: Hidden Arrow | [Steam Store Page](http://store.steampowered.com/app/525210) |
 | ViveSpray | [Steam Store Page](http://store.steampowered.com/app/494830) |
 | Richie's Plank Experience | [Steam Store Page](http://store.steampowered.com/app/517160) |
+| Oodlescape - The Apocalypse | [Steam Store Page](http://store.steampowered.com/app/587560) |
 | VeeR Pong | [Steam Store Page](http://store.steampowered.com/app/494850) |
 | Emergence Fractal Universe | [Steam Store Page](http://store.steampowered.com/app/500470) |
 | Tower Island: Explore, Discover and Disassemble | [Steam Store Page](http://store.steampowered.com/app/487740) |
@@ -35,12 +36,15 @@ A collection of titles that have been made with VRTK.
 | ObserVR | [Steam Store Page](http://store.steampowered.com/app/549360) |
 | Sky Sanctuary | [Steam Store Page](http://store.steampowered.com/app/526130) |
 | Percussive VR | [Steam Store Page](http://store.steampowered.com/app/536370) |
+| Beach Bowling Dream VR | [Steam Store Page](http://store.steampowered.com/app/557960) |
+| Welcome Home, Love | [Steam Store Page](http://store.steampowered.com/app/553050) |
 | Coinvault | [Itch.io Store Page](https://ldvr.itch.io/ldvrs-coinvault-for-the-vive) |
 | VR Explosive Kitten Toss | [Itch.io Store Page](https://ldvr.itch.io/ldvrs-kitten-toss) |
 | Zika VR | [Itch.io Store Page](https://ldvr.itch.io/ldvr-presents-zika-vr) |
 | Ocarina of Vive | [Itch.io Store Page](https://tomcat94.itch.io/ocarina-of-vive-shooting-gallery) |
 | Danc<R | [Itch.io Store Page](https://tomcat94.itch.io/dancr-alpha) |
 | Quantized | [Steam Greenlight Page](https://steamcommunity.com/sharedfiles/filedetails/?id=195344075) |
+| Riley Short: Analog Boy for HTC Vive | [Steam Greenlight Page](http://steamcommunity.com/sharedfiles/filedetails/?id=878866678) |
 | MegaPolice | [Youtube Trailer](https://www.youtube.com/watch?v=d6hCgfMxldY) |
 | Drone Training VR | [Youtube Trailer](https://www.youtube.com/watch?v=A5MFT2JsySc) |
 | The Days After | [Game website](http://www.fivefingerstudios.com/thedaysafter) |

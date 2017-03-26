@@ -78,7 +78,7 @@ namespace VRTK
         {
             TogglePointerCursor(pointerState, actualState);
             TogglePointerTracer(pointerState, actualState);
-            if (actualState && tracerVisibility != VisibilityStates.AlwaysOn)
+            if (actualTracer != null && actualState && tracerVisibility != VisibilityStates.AlwaysOn)
             {
                 ToggleRendererVisibility(actualTracer.gameObject, false);
                 AddVisibleRenderer(actualTracer.gameObject);
@@ -97,6 +97,7 @@ namespace VRTK
             if (controllingPointer)
             {
                 controllingPointer.ResetActivationTimer(true);
+                controllingPointer.ResetSelectionTimer(true);
             }
         }
 
@@ -193,7 +194,7 @@ namespace VRTK
             if ((attachedRotation * 100f) > heightLimitAngle)
             {
                 useForward = new Vector3(useForward.x, fixedForwardBeamForward.y, useForward.z);
-                var controllerRotationOffset = 1f - (attachedRotation - (heightLimitAngle / 100f));
+                float controllerRotationOffset = 1f - (attachedRotation - (heightLimitAngle / 100f));
                 calculatedLength = (maximumLength * controllerRotationOffset) * controllerRotationOffset;
             }
             else
@@ -201,11 +202,11 @@ namespace VRTK
                 fixedForwardBeamForward = origin.forward;
             }
 
-            var actualLength = calculatedLength;
+            float actualLength = calculatedLength;
             Ray pointerRaycast = new Ray(origin.position, useForward);
 
             RaycastHit collidedWith;
-            var hasRayHit = Physics.Raycast(pointerRaycast, out collidedWith, calculatedLength, ~layersToIgnore);
+            bool hasRayHit = VRTK_CustomRaycast.Raycast(customRaycast, pointerRaycast, out collidedWith, layersToIgnore, calculatedLength);
 
             float contactDistance = 0f;
             //reset if beam not hitting or hitting new target
@@ -236,7 +237,7 @@ namespace VRTK
             Ray projectedBeamDownRaycast = new Ray(jointPosition, Vector3.down);
             RaycastHit collidedWith;
 
-            var downRayHit = Physics.Raycast(projectedBeamDownRaycast, out collidedWith, float.PositiveInfinity, ~layersToIgnore);
+            bool downRayHit = VRTK_CustomRaycast.Raycast(customRaycast, projectedBeamDownRaycast, out collidedWith, layersToIgnore, float.PositiveInfinity);
 
             if (!downRayHit || (destinationHit.collider && destinationHit.collider != collidedWith.collider))
             {
@@ -262,7 +263,7 @@ namespace VRTK
             Vector3 newDownPosition = downPosition;
             Vector3 newJointPosition = jointPosition;
 
-            if (collisionCheckFrequency > 0)
+            if (collisionCheckFrequency > 0 && actualTracer != null)
             {
                 collisionCheckFrequency = Mathf.Clamp(collisionCheckFrequency, 0, tracerDensity);
                 Vector3[] beamPoints = new Vector3[]
@@ -278,21 +279,21 @@ namespace VRTK
 
                 for (int i = 0; i < tracerDensity - checkFrequency; i += checkFrequency)
                 {
-                    var currentPoint = checkPoints[i];
-                    var nextPoint = (i + checkFrequency < checkPoints.Length ? checkPoints[i + checkFrequency] : checkPoints[checkPoints.Length - 1]);
-                    var nextPointDirection = (nextPoint - currentPoint).normalized;
-                    var nextPointDistance = Vector3.Distance(currentPoint, nextPoint);
+                    Vector3 currentPoint = checkPoints[i];
+                    Vector3 nextPoint = (i + checkFrequency < checkPoints.Length ? checkPoints[i + checkFrequency] : checkPoints[checkPoints.Length - 1]);
+                    Vector3 nextPointDirection = (nextPoint - currentPoint).normalized;
+                    float nextPointDistance = Vector3.Distance(currentPoint, nextPoint);
 
                     Ray checkCollisionRay = new Ray(currentPoint, nextPointDirection);
                     RaycastHit checkCollisionHit;
 
-                    if (Physics.Raycast(checkCollisionRay, out checkCollisionHit, nextPointDistance, ~layersToIgnore))
+                    if (VRTK_CustomRaycast.Raycast(customRaycast, checkCollisionRay, out checkCollisionHit, layersToIgnore, nextPointDistance))
                     {
-                        var collisionPoint = checkCollisionRay.GetPoint(checkCollisionHit.distance);
+                        Vector3 collisionPoint = checkCollisionRay.GetPoint(checkCollisionHit.distance);
                         Ray downwardCheckRay = new Ray(collisionPoint + (Vector3.up * 0.01f), Vector3.down);
                         RaycastHit downwardCheckHit;
 
-                        if (Physics.Raycast(downwardCheckRay, out downwardCheckHit, float.PositiveInfinity, ~layersToIgnore))
+                        if (VRTK_CustomRaycast.Raycast(customRaycast, downwardCheckRay, out downwardCheckHit, layersToIgnore, float.PositiveInfinity))
                         {
                             destinationHit = downwardCheckHit;
                             newDownPosition = downwardCheckRay.GetPoint(downwardCheckHit.distance); ;
@@ -309,22 +310,25 @@ namespace VRTK
 
         protected virtual void DisplayCurvedBeam(Vector3 jointPosition, Vector3 downPosition)
         {
-            Vector3[] beamPoints = new Vector3[]
+            if (actualTracer != null)
             {
+                Vector3[] beamPoints = new Vector3[]
+                {
                 GetOrigin(false).position,
                 jointPosition + new Vector3(0f, curveOffset, 0f),
                 downPosition,
                 downPosition,
-            };
-            var tracerMaterial = (customTracer ? null : defaultMaterial);
-            actualTracer.SetPoints(beamPoints, tracerMaterial, currentColor);
-            if (tracerVisibility == VisibilityStates.AlwaysOff)
-            {
-                TogglePointerTracer(false, false);
-            }
-            else if (controllingPointer)
-            {
-                TogglePointerTracer(controllingPointer.IsPointerActive(), controllingPointer.IsPointerActive());
+                };
+                Material tracerMaterial = (customTracer ? null : defaultMaterial);
+                actualTracer.SetPoints(beamPoints, tracerMaterial, currentColor);
+                if (tracerVisibility == VisibilityStates.AlwaysOff)
+                {
+                    TogglePointerTracer(false, false);
+                }
+                else if (controllingPointer)
+                {
+                    TogglePointerTracer(controllingPointer.IsPointerActive(), controllingPointer.IsPointerActive());
+                }
             }
         }
 
@@ -336,7 +340,10 @@ namespace VRTK
         protected virtual void TogglePointerTracer(bool pointerState, bool actualState)
         {
             tracerVisible = (tracerVisibility == VisibilityStates.AlwaysOn ? true : pointerState);
-            actualTracer.TogglePoints(tracerVisible);
+            if (actualTracer != null)
+            {
+                actualTracer.TogglePoints(tracerVisible);
+            }
         }
 
         protected virtual void SetPointerCursor()
@@ -354,11 +361,11 @@ namespace VRTK
                 ChangeColor(validCollisionColor);
                 if (actualValidLocationObject)
                 {
-                    actualValidLocationObject.SetActive(ValidDestination());
+                    actualValidLocationObject.SetActive(ValidDestination() && IsValidCollision());
                 }
                 if (actualInvalidLocationObject)
                 {
-                    actualInvalidLocationObject.SetActive(!ValidDestination());
+                    actualInvalidLocationObject.SetActive(!ValidDestination() || !IsValidCollision());
                 }
             }
             else

@@ -21,6 +21,7 @@ This file provides documentation on how to use the included prefabs and scripts.
   * [SteamVR SDK](#steamvr-sdk-vrtksdksteamvr)
   * [OculusVR SDK](#oculusvr-sdk-vrtksdkoculusvr)
   * [Daydream SDK](#daydream-sdk-vrtksdkdaydream)
+  * [XimmerseVR SDK](#ximmersevr-sdk-vrtksdkximmerse)
 
 ---
 
@@ -37,6 +38,7 @@ A collection of pre-defined usable prefabs have been included to allow for each 
  * [Radial Menu](#radial-menu-radialmenu)
  * [Independent Radial Menu Controller](#independent-radial-menu-controller-vrtk_independentradialmenucontroller)
  * [Destination Point](#destination-point-vrtk_destinationpoint)
+ * [Pointer Direction Indicator](#pointer-direction-indicator-vrtk_pointerdirectionindicator)
  * [Console Viewer Canvas](#console-viewer-canvas-vrtk_consoleviewer)
  * [Panel Menu Controller](#panel-menu-controller-panelmenucontroller)
  * [Panel Menu Item Controller](#panel-menu-item-controller-panelmenuitemcontroller)
@@ -53,16 +55,25 @@ Use the mouse and keyboard to move around both play area and hands and interacti
 
 ### Inspector Parameters
 
+ * **Show Control Hints:** Show control information in the upper left corner of the screen.
  * **Hide Hands At Switch:** Hide hands when disabling them.
  * **Reset Hands At Switch:** Reset hand position and rotation when enabling them.
+ * **Mouse Movement Input:** Whether mouse movement always acts as input or requires a button press.
+ * **Lock Mouse To View:** Lock the mouse cursor to the game window when the mouse movement key is pressed.
  * **Hand Move Multiplier:** Adjust hand movement speed.
  * **Hand Rotation Multiplier:** Adjust hand rotation speed.
  * **Player Move Multiplier:** Adjust player movement speed.
  * **Player Rotation Multiplier:** Adjust player rotation speed.
+ * **Mouse Movement Key:** Key used to enable mouse input if a button press is required.
+ * **Toggle Control Hints:** Key used to toggle control hints on/off.
  * **Change Hands:** Key used to switch between left and righ hand.
  * **Hands On Off:** Key used to switch hands On/Off.
  * **Rotation Position:** Key used to switch between positional and rotational movement.
  * **Change Axis:** Key used to switch between X/Y and X/Z axis.
+ * **Move Forward:** Key used to move forward.
+ * **Move Left:** Key used to move to the left.
+ * **Move Backward:** Key used to move backwards.
+ * **Move Right:** Key used to move to the right.
  * **Trigger Alias:** Key used to simulate trigger button.
  * **Grip Alias:** Key used to simulate grip button.
  * **Touchpad Alias:** Key used to simulate touchpad button.
@@ -71,6 +82,12 @@ Use the mouse and keyboard to move around both play area and hands and interacti
  * **Start Menu Alias:** Key used to simulate start menu button.
  * **Touch Modifier:** Key used to switch between button touch and button press mode.
  * **Hair Touch Modifier:** Key used to switch between hair touch mode.
+
+### Class Variables
+
+ * `public enum MouseInputMode` - Mouse input mode types
+  * `Always` - Mouse movement is always treated as mouse input.
+  * `RequiresButtonPress` - Mouse movement is only treated as movement when a button is pressed.
 
 ### Class Methods
 
@@ -285,13 +302,14 @@ If the `Use Joint` Snap Type is selected then a custom Joint component is requir
  * **Highlight Always Active:** The highlight object will always be displayed when the snap drop zone is available even if a valid item isn't being hovered over.
  * **Valid Object List Policy:** A specified VRTK_PolicyList to use to determine which interactable objects will be snapped to the snap drop zone on release.
  * **Display Drop Zone In Editor:** If this is checked then the drop zone highlight section will be displayed in the scene editor window.
+ * **Default Snapped Object:** The game object to snap into the dropzone when the drop zone is enabled. The game object must be valid in any given policy list to snap.
 
 ### Class Variables
 
  * `public enum SnapTypes` - The types of snap on release available.
-  * `Use_Kinematic` - Will set the interactable object rigidbody to `isKinematic = true`.
-  * `Use_Joint` - Will attach the interactable object's rigidbody to the provided joint as it's `Connected Body`.
-  * `Use_Parenting` - Will set the SnapDropZone as the interactable object's parent and set it's rigidbody to `isKinematic = true`.
+  * `UseKinematic` - Will set the interactable object rigidbody to `isKinematic = true`.
+  * `UseJoint` - Will attach the interactable object's rigidbody to the provided joint as it's `Connected Body`.
+  * `UseParenting` - Will set the SnapDropZone as the interactable object's parent and set it's rigidbody to `isKinematic = true`.
 
 ### Class Events
 
@@ -381,6 +399,118 @@ The RadialMenu can also be placed inside a `VRTK_InteractableObject` for the Rad
  * **Base Haptic Strength:** The base strength of the haptic pulses when the selected button is changed, or a button is pressed. Set to zero to disable.
  * **Menu Buttons:** The actual GameObjects that make up the radial menu.
 
+### Class Methods
+
+#### HoverButton/1
+
+  > `public virtual void HoverButton(float angle)`
+
+  * Parameters
+   * `float angle` - The angle on the radial menu.
+  * Returns
+   * _none_
+
+The HoverButton method is used to set the button hover at a given angle.
+
+#### ClickButton/1
+
+  > `public virtual void ClickButton(float angle)`
+
+  * Parameters
+   * `float angle` - The angle on the radial menu.
+  * Returns
+   * _none_
+
+The ClickButton method is used to set the button click at a given angle.
+
+#### UnClickButton/1
+
+  > `public virtual void UnClickButton(float angle)`
+
+  * Parameters
+   * `float angle` - The angle on the radial menu.
+  * Returns
+   * _none_
+
+The UnClickButton method is used to set the button unclick at a given angle.
+
+#### ToggleMenu/0
+
+  > `public virtual void ToggleMenu()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * _none_
+
+The ToggleMenu method is used to show or hide the radial menu.
+
+#### StopTouching/0
+
+  > `public virtual void StopTouching()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * _none_
+
+The StopTouching method is used to stop touching the menu.
+
+#### ShowMenu/0
+
+  > `public virtual void ShowMenu()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * _none_
+
+The ShowMenu method is used to show the menu.
+
+#### GetButton/1
+
+  > `public virtual RadialMenuButton GetButton(int id)`
+
+  * Parameters
+   * `int id` - The id of the button to retrieve.
+  * Returns
+   * `RadialMenuButton` - The found radial menu button.
+
+The GetButton method is used to get a button from the menu.
+
+#### HideMenu/1
+
+  > `public virtual void HideMenu(bool force)`
+
+  * Parameters
+   * `bool force` - If true then the menu is always hidden.
+  * Returns
+   * _none_
+
+The HideMenu method is used to hide the menu.
+
+#### RegenerateButtons/0
+
+  > `public void RegenerateButtons()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * _none_
+
+The RegenerateButtons method creates all the button arcs and populates them with desired icons.
+
+#### AddButton/1
+
+  > `public void AddButton(RadialMenuButton newButton)`
+
+  * Parameters
+   * `RadialMenuButton newButton` - The button to add.
+  * Returns
+   * _none_
+
+The AddButton method is used to add a new button to the menu.
+
 ### Example
 
 `VRTK/Examples/030_Controls_RadialTouchpadMenu` displays a radial menu for each controller. The left controller uses the `Hide On Release` variable, so it will only be visible if the left touchpad is being touched. It also uses the `Execute On Unclick` variable to delay execution until the touchpad button is unclicked. The example scene also contains a demonstration of anchoring the RadialMenu to an interactable cube instead of a controller.
@@ -412,6 +542,19 @@ To convert the default `RadialMenu` prefab to be independent of the controllers:
  * **Offset Multiplier:** How far away from the object the menu should be placed, relative to the size of the RadialMenu.
  * **Rotate Towards:** The object the RadialMenu should face towards. If left empty, it will automatically try to find the Headset Camera.
 
+### Class Methods
+
+#### UpdateEventsManager/0
+
+  > `public virtual void UpdateEventsManager()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * _none_
+
+The UpdateEventsManager method is used to update the events within the menu controller.
+
 ---
 
 ## Destination Point (VRTK_DestinationPoint)
@@ -432,6 +575,14 @@ The destination points can also have a locked state if the `Enable Teleport` fla
  * **Locked Cursor Object:** The GameObject to use to represent the locked cursor state.
  * **Snap To Point:** If this is checked then after teleporting, the play area will be snapped to the origin of the destination point. If this is false then it's possible to teleport to anywhere within the destination point collider.
  * **Hide Pointer Cursor On Hover:** If this is checked, then the pointer cursor will be hidden when a valid destination point is hovered over.
+ * **Snap To Rotation:** Determines if the play area will be rotated to the rotation of the destination point upon the destination marker being set.
+
+### Class Variables
+
+ * `public enum RotationTypes` - Allowed snap to rotation types.
+  * `NoRotation` - No rotation information will be emitted in the destination set payload.
+  * `RotateWithNoHeadsetOffset` - The destination point's rotation will be emitted without taking into consideration the current headset rotation.
+  * `RotateWithHeadsetOffset` - The destination point's rotation will be emitted and will take into consideration the current headset rotation.
 
 ### Class Methods
 
@@ -449,6 +600,58 @@ The ResetDestinationPoint resets the destination point back to the default state
 ### Example
 
 `044_CameraRig_RestrictedTeleportZones` uses the `VRTK_DestinationPoint` prefab to set up a collection of pre-defined teleport locations.
+
+---
+
+## Pointer Direction Indicator (VRTK_PointerDirectionIndicator)
+
+### Overview
+
+The Pointer Direction Indicator is used to determine a given world rotation that can be used by a Destiantion Marker.
+
+The Pointer Direction Indicator can be attached to a VRTK_Pointer in the `Direction Indicator` parameter and will the be used to send rotation data when the destination marker events are emitted.
+
+This can be useful for rotating the play area upon teleporting to face the user in a new direction without expecting them to physically turn in the play space.
+
+### Inspector Parameters
+
+ * **Include Headset Offset:** If this is checked then the reported rotation will include the offset of the headset rotation in relation to the play area.
+
+### Class Methods
+
+#### Initialize/1
+
+  > `public virtual void Initialize(VRTK_ControllerEvents events)`
+
+  * Parameters
+   * `VRTK_ControllerEvents events` - The Controller Events script that is used to control the direction indicator's rotation.
+  * Returns
+   * _none_
+
+The Initialize method is used to set up the direction indicator.
+
+#### SetPosition/2
+
+  > `public virtual void SetPosition(bool active, Vector3 position)`
+
+  * Parameters
+   * `bool active` - Determines if the direction indicator GameObject should be active or not.
+   * `Vector3 position` - The position to set the direction indicator to.
+  * Returns
+   * _none_
+
+The SetPosition method is used to set the world position of the direction indicator.
+
+#### GetRotation/0
+
+  > `public virtual Quaternion GetRotation()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * `Quaternion` - The reported rotation of the direction indicator.
+
+The GetRotation method returns the current reported rotation of the direction indicator.
 
 ---
 
@@ -517,6 +720,52 @@ To show / hide a UI panel, you must first pick up the VRTK_InteractableObject an
  * **Left Panel Menu Item Controller:** The left PanelMenuItemController, which is triggered by pressing left on the controller touchpad.
  * **Right Panel Menu Item Controller:** The right PanelMenuItemController, which is triggered by pressing right on the controller touchpad.
 
+### Class Methods
+
+#### ToggleMenu/0
+
+  > `public virtual void ToggleMenu()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * _none_
+
+The ToggleMenu method is used to show or hide the menu.
+
+#### ShowMenu/0
+
+  > `public virtual void ShowMenu()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * _none_
+
+The ShowMenu method is used to show the menu.
+
+#### HideMenu/1
+
+  > `public virtual void HideMenu(bool force)`
+
+  * Parameters
+   * `bool force` - If true then the menu is always hidden.
+  * Returns
+   * _none_
+
+The HideMenu method is used to hide the menu.
+
+#### HideMenuImmediate/0
+
+  > `public virtual void HideMenuImmediate()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * _none_
+
+The HideMenuImmediate method is used to immediately hide the menu.
+
 ### Example
 
 `040_Controls_Panel_Menu` contains three basic interactive object examples of the PanelMenu in use.
@@ -545,6 +794,96 @@ To show / hide a UI panel, you must first pick up the VRTK_InteractableObject an
 ### Event Payload
 
  * `GameObject interactableObject` - The GameObject for the interactable object the PanelMenu is attached to.
+
+### Class Methods
+
+#### SetPanelMenuItemEvent/1
+
+  > `public virtual PanelMenuItemControllerEventArgs SetPanelMenuItemEvent(GameObject interactableObject)`
+
+  * Parameters
+   * `GameObject interactableObject` - The object the menu is attached to.
+  * Returns
+   * `PanelMenuItemControllerEventArgs` - The payload for the event.
+
+The SetPanelMenuItemEvent is used to build up the event payload.
+
+#### Show/1
+
+  > `public virtual void Show(GameObject interactableObject)`
+
+  * Parameters
+   * `GameObject interactableObject` - The object the menu is attached to.
+  * Returns
+   * _none_
+
+The Show method is used to show the menu.
+
+#### Hide/1
+
+  > `public virtual void Hide(GameObject interactableObject)`
+
+  * Parameters
+   * `GameObject interactableObject` - The object the menu is attached to.
+  * Returns
+   * _none_
+
+The Hide method is used to show the menu.
+
+#### SwipeLeft/1
+
+  > `public virtual void SwipeLeft(GameObject interactableObject)`
+
+  * Parameters
+   * `GameObject interactableObject` - The object the menu is attached to.
+  * Returns
+   * _none_
+
+The SwipeLeft method is used when the control is swiped left.
+
+#### SwipeRight/1
+
+  > `public virtual void SwipeRight(GameObject interactableObject)`
+
+  * Parameters
+   * `GameObject interactableObject` - The object the menu is attached to.
+  * Returns
+   * _none_
+
+The SwipeRight method is used when the control is swiped right.
+
+#### SwipeTop/1
+
+  > `public virtual void SwipeTop(GameObject interactableObject)`
+
+  * Parameters
+   * `GameObject interactableObject` - The object the menu is attached to.
+  * Returns
+   * _none_
+
+The SwipeTop method is used when the control is swiped up.
+
+#### SwipeBottom/1
+
+  > `public virtual void SwipeBottom(GameObject interactableObject)`
+
+  * Parameters
+   * `GameObject interactableObject` - The object the menu is attached to.
+  * Returns
+   * _none_
+
+The SwipeBottom method is used when the control is swiped down.
+
+#### TriggerPressed/1
+
+  > `public virtual void TriggerPressed(GameObject interactableObject)`
+
+  * Parameters
+   * `GameObject interactableObject` - The object the menu is attached to.
+  * Returns
+   * _none_
+
+The TriggerPressed method is used when the control action button is pressed.
 
 ### Example
 
@@ -594,6 +933,7 @@ Adding the `VRTK_DestinationMarker_UnityEvents` component to `VRTK_DestinationMa
  * `Transform target` - The Transform of the collided destination object.
  * `RaycastHit raycastHit` - The optional RaycastHit generated from when the ray collided.
  * `Vector3 destinationPosition` - The world position of the destination marker.
+ * `Quaternion? destinationRotation` - The world rotation of the destination marker.
  * `bool forceDestinationPosition` - If true then the given destination position should not be altered by anything consuming the payload.
  * `bool enableTeleport` - Whether the destination set event should trigger teleport.
  * `uint controllerIndex` - The optional index of the controller emitting the beam.
@@ -657,13 +997,17 @@ It extends the `VRTK_DestinationMarker` to allow for destination events to be em
  * **Pointer Renderer:** The specific renderer to use when the pointer is activated. The renderer also determines how the pointer reaches it's destination (e.g. straight line, bezier curve).
  * **Activation Button:** The button used to activate/deactivate the pointer.
  * **Hold Button To Activate:** If this is checked then the Activation Button needs to be continuously held down to keep the pointer active. If this is unchecked then the Activation Button works as a toggle, the first press/release enables the pointer and the second press/release disables the pointer.
+ * **Activate On Enable:** If this is checked then the pointer will be toggled on when the script is enabled.
  * **Activation Delay:** The time in seconds to delay the pointer being able to be active again.
  * **Selection Button:** The button used to execute the select action at the pointer's target position.
  * **Select On Press:** If this is checked then the pointer selection action is executed when the Selection Button is pressed down. If this is unchecked then the selection action is executed when the Selection Button is released.
+ * **Selection Delay:** The time in seconds to delay the pointer being able to execute the select action again.
+ * **Select After Hover Duration:** The amount of time the pointer can be over the same collider before it automatically attempts to select it. 0f means no selection attempt will be made.
  * **Interact With Objects:** If this is checked then the pointer will be an extension of the controller and able to interact with Interactable Objects.
  * **Grab To Pointer Tip:** If `Interact With Objects` is checked and this is checked then when an object is grabbed with the pointer touching it, the object will attach to the pointer tip and not snap to the controller.
  * **Controller:** The controller that will be used to toggle the pointer. If the script is being applied onto a controller then this parameter can be left blank as it will be auto populated by the controller the script is on at runtime.
  * **Custom Origin:** A custom transform to use as the origin of the pointer. If no pointer origin transform is provided then the transform the script is attached to is used.
+ * **Direction Indicator:** A custom VRTK_PointerDirectionIndicator to use to determine the rotation given to the destination set event.
 
 ### Class Methods
 
@@ -700,6 +1044,17 @@ The PointerExit method emits a DestinationMarkerExit event when the pointer leav
 
 The CanActivate method is used to determine if the pointer has passed the activation time limit.
 
+#### CanSelect/0
+
+  > `public virtual bool CanSelect()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * `bool` - Returns true if the pointer can execute the select action.
+
+The CanSelect method is used to determine if the pointer has passed the selection time limit.
+
 #### IsPointerActive/0
 
   > `public virtual bool IsPointerActive()`
@@ -721,6 +1076,17 @@ The IsPointerActive method is used to determine if the pointer's current state i
    * _none_
 
 The ResetActivationTimer method is used to reset the pointer activation timer to the next valid activation time.
+
+#### ResetSelectionTimer/1
+
+  > `public virtual void ResetSelectionTimer(bool forceZero = false)`
+
+  * Parameters
+   * `bool forceZero` - If this is true then the next activation time will be 0.
+  * Returns
+   * _none_
+
+The ResetSelectionTimer method is used to reset the pointer selection timer to the next valid activation time.
 
 #### Toggle/1
 
@@ -747,6 +1113,7 @@ The Play Area Cursor is used in conjunction with a Pointer script and displays a
  * **Handle Play Area Cursor Collisions:** If this is ticked then if the play area cursor is colliding with any other object then the pointer colour will change to the `Pointer Miss Color` and the `DestinationMarkerSet` event will not be triggered, which will prevent teleporting into areas where the play area will collide.
  * **Headset Out Of Bounds Is Collision:** If this is ticked then if the user's headset is outside of the play area cursor bounds then it is considered a collision even if the play area isn't colliding with anything.
  * **Target List Policy:** A specified VRTK_PolicyList to use to determine whether the play area cursor collisions will be acted upon.
+ * **Play Area Cursor Prefab:** A custom GameObject to use for the play area cursor representation.
 
 ### Class Methods
 
@@ -859,19 +1226,17 @@ The ToggleVisibility method enables or disables the play area cursor renderers t
 
 This directory contains scripts that are used to provide different renderers for the VRTK_Pointer.
 
- * [Base Pointer Renderer](#base-pointer-renderer-vrtk_basepointerrenderer)
+ * [Base Pointer Renderer](#base-pointer-renderer-pointeroriginsmoothingsettings)
  * [Straight Pointer Renderer](#straight-pointer-renderer-vrtk_straightpointerrenderer)
  * [Bezier Pointer Renderer](#bezier-pointer-renderer-vrtk_bezierpointerrenderer)
 
 ---
 
-## Base Pointer Renderer (VRTK_BasePointerRenderer)
+## Base Pointer Renderer (PointerOriginSmoothingSettings)
 
 ### Overview
 
-The Base Pointer Renderer script is an abstract class that handles the set up and operation of how a pointer renderer works.
-
-As this is an abstract class, it cannot be applied directly to a game object and performs no logic.
+Specifies the smoothing to be applied to the pointer.
 
 ### Inspector Parameters
 
@@ -880,7 +1245,7 @@ As this is an abstract class, it cannot be applied directly to a game object and
  * **Smooths Rotation:** Whether or not to smooth the rotation of the pointer origin when positioning the pointer tip.
  * **Max Allowed Per Frame Angle Difference:** The maximum allowed angle between the unsmoothed pointer origin and the smoothed pointer origin per frame to use for smoothing.
  * **Playarea Cursor:** An optional Play Area Cursor generator to add to the destination position of the pointer tip.
- * **Layers To Ignore:** The layers for the pointer's raycasts to ignore.
+ * **Custom Raycast:** A custom raycaster to use for the pointer's raycasts to ignore.
  * **Valid Collision Color:** The colour to change the pointer materials when the pointer collides with a valid object. Set to `Color.clear` to bypass changing material colour on valid collision.
  * **Invalid Collision Color:** The colour to change the pointer materials when the pointer is not colliding with anything or with an invalid object. Set to `Color.clear` to bypass changing material colour on invalid collision.
  * **Tracer Visibility:** Determines when the main tracer of the pointer renderer will be visible.
@@ -908,6 +1273,17 @@ As this is an abstract class, it cannot be applied directly to a game object and
    * _none_
 
 The InitalizePointer method is used to set up the state of the pointer renderer.
+
+#### ResetPointerObjects/0
+
+  > `public virtual void ResetPointerObjects()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * _none_
+
+The ResetPointerObjects method is used to destroy any existing pointer objects and recreate them at runtime.
 
 #### Toggle/2
 
@@ -997,6 +1373,17 @@ The IsTracerVisible method determines if the pointer tracer renderer is visible.
    * `bool` - Returns true if the cursor renderers are visible.
 
 The IsCursorVisible method determines if the pointer cursor renderer is visible.
+
+#### IsValidCollision/0
+
+  > `public virtual bool IsValidCollision()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * `bool` - Returns true if the pointer is in a valid collision, returns false if the pointer is in an invalid collision state.
+
+The IsValidCollision method determines if the pointer is currently in it's valid collision state.
 
 ---
 
@@ -1113,6 +1500,7 @@ The y position is never altered so the basic teleporter cannot be used to move u
 
 ### Inspector Parameters
 
+ * **Blink To Color:** The colour to fade to when blinking on teleport.
  * **Blink Transition Speed:** The fade blink speed can be changed on the basic teleport script to provide a customised teleport experience. Setting the speed to 0 will mean no fade blink effect is present.
  * **Distance Blink Delay:** A range between 0 and 32 that determines how long the blink transition will stay blacked out depending on the distance being teleported. A value of 0 will not delay the teleport blink effect over any distance, a value of 32 will delay the teleport blink fade in even when the distance teleported is very close to the original position. This can be used to simulate time taking longer to pass the further a user teleports. A value of 16 provides a decent basis to simulate this to the user.
  * **Headset Position Compensation:** If this is checked then the teleported location will be the position of the headset within the play area. If it is unchecked then the teleported location will always be the centre of the play area even if the headset position is not in the centre of the play area.
@@ -1137,6 +1525,7 @@ Adding the `VRTK_BasicTeleport_UnityEvents` component to `VRTK_BasicTeleport` ob
  * `Transform target` - The Transform of the collided destination object.
  * `RaycastHit raycastHit` - The optional RaycastHit generated from when the ray collided.
  * `Vector3 destinationPosition` - The world position of the destination marker.
+ * `Quaternion? destinationRotation` - The world rotation of the destination marker.
  * `bool forceDestinationPosition` - If true then the given destination position should not be altered by anything consuming the payload.
  * `bool enableTeleport` - Whether the destination set event should trigger teleport.
  * `uint controllerIndex` - The optional index of the controller emitting the beam.
@@ -1193,7 +1582,7 @@ The height adjust teleporter extends the basic teleporter and allows for the y p
 
 ### Inspector Parameters
 
- * **Layers To Ignore:** The layers to ignore when raycasting to find floors.
+ * **Custom Raycast:** A custom raycaster to use when raycasting to find floors.
 
 ### Example
 
@@ -1374,11 +1763,11 @@ Move In Place allows the user to move the play area by calculating the y-movemen
  * **Right Controller:** If this is checked then the right controller touchpad will be enabled to move the play area.
  * **Engage Button:** Select which button to hold to engage Move In Place.
  * **Control Options:** Select which trackables are used to determine movement.
+ * **Direction Method:** How the user's movement direction will be determined.  The Gaze method tends to lead to the least motion sickness.  Smart decoupling is still a Work In Progress.
  * **Speed Scale:** Lower to decrease speed, raise to increase.
  * **Max Speed:** The max speed the user can move in game units. (If 0 or less, max speed is uncapped)
  * **Deceleration:** The speed in which the play area slows down to a complete stop when the user is no longer pressing the engage button. This deceleration effect can ease any motion sickness that may be suffered.
  * **Falling Deceleration:** The speed in which the play area slows down to a complete stop when the user is falling.
- * **Direction Method:** How the user's movement direction will be determined.  The Gaze method tends to lead to the least motion sickness.  Smart decoupling is still a Work In Progress.
  * **Smart Decouple Threshold:** The degree threshold that all tracked objects (controllers, headset) must be within to change direction when using the Smart Decoupling Direction Method.
  * **Sensitivity:** The maximum amount of movement required to register in the virtual world.  Decreasing this will increase acceleration, and vice versa.
 
@@ -1398,7 +1787,7 @@ Move In Place allows the user to move the play area by calculating the y-movemen
 
 #### SetControlOptions/1
 
-  > `public void SetControlOptions(ControlOptions givenControlOptions)`
+  > `public virtual void SetControlOptions(ControlOptions givenControlOptions)`
 
   * Parameters
    * `ControlOptions givenControlOptions` - The control options to set the current control options to.
@@ -1409,7 +1798,7 @@ Set the control options and modify the trackables to match.
 
 #### GetMovementDirection/0
 
-  > `public Vector3 GetMovementDirection()`
+  > `public virtual Vector3 GetMovementDirection()`
 
   * Parameters
    * _none_
@@ -1420,7 +1809,7 @@ The GetMovementDirection method will return the direction the player is moving.
 
 #### GetSpeed/0
 
-  > `public float GetSpeed()`
+  > `public virtual float GetSpeed()`
 
   * Parameters
    * _none_
@@ -1633,6 +2022,7 @@ A collection of scripts that provide the ability to interact with game objects w
  * [Interact Haptics](#interact-haptics-vrtk_interacthaptics)
  * [Interact Controller Appearance](#interact-controller-appearance-vrtk_interactcontrollerappearance)
  * [Object Auto Grab](#object-auto-grab-vrtk_objectautograb)
+ * [Object Touch Auto Interact](#object-touch-auto-interact-vrtk_objecttouchautointeract)
 
 ---
 
@@ -1650,32 +2040,34 @@ The script also has a public boolean pressed state for the buttons to allow the 
 
 ### Inspector Parameters
 
- * **Grab Toggle Button:** The button to use for the action of grabbing game objects.
- * **Use Toggle Button:** The button to use for the action of using game objects.
  * **Menu Toggle Button:** The button to use for the action of bringing up an in-game menu.
  * **Axis Fidelity:** The amount of fidelity in the changes on the axis, which is defaulted to 1. Any number higher than 2 will probably give too sensitive results.
  * **Trigger Click Threshold:** The level on the trigger axis to reach before a click is registered.
+ * **Trigger Force Zero Threshold:** The level on the trigger axis to reach before the axis is forced to 0f.
+ * **Trigger Axis Zero On Untouch:** If this is checked then the trigger axis will be forced to 0f when the trigger button reports an untouch event.
  * **Grip Click Threshold:** The level on the grip axis to reach before a click is registered.
+ * **Grip Force Zero Threshold:** The level on the grip axis to reach before the axis is forced to 0f.
+ * **Grip Axis Zero On Untouch:** If this is checked then the grip axis will be forced to 0f when the grip button reports an untouch event.
 
 ### Class Variables
 
  * `public enum ButtonAlias` - Button types
   * `Undefined` - No button specified
-  * `Trigger_Hairline` - The trigger is squeezed past the current hairline threshold.
-  * `Trigger_Touch` - The trigger is squeezed a small amount.
-  * `Trigger_Press` - The trigger is squeezed about half way in.
-  * `Trigger_Click` - The trigger is squeezed all the way down.
-  * `Grip_Hairline` - The grip is squeezed past the current hairline threshold.
-  * `Grip_Touch` - The grip button is touched.
-  * `Grip_Press` - The grip button is pressed.
-  * `Grip_Click` - The grip button is pressed all the way down.
-  * `Touchpad_Touch` - The touchpad is touched (without pressing down to click).
-  * `Touchpad_Press` - The touchpad is pressed (to the point of hearing a click).
-  * `Button_One_Touch` - The button one is touched.
-  * `Button_One_Press` - The button one is pressed.
-  * `Button_Two_Touch` - The button one is touched.
-  * `Button_Two_Press` - The button one is pressed.
-  * `Start_Menu_Press` - The button one is pressed.
+  * `TriggerHairline` - The trigger is squeezed past the current hairline threshold.
+  * `TriggerTouch` - The trigger is squeezed a small amount.
+  * `TriggerPress` - The trigger is squeezed about half way in.
+  * `TriggerClick` - The trigger is squeezed all the way down.
+  * `GripHairline` - The grip is squeezed past the current hairline threshold.
+  * `GripTouch` - The grip button is touched.
+  * `GripPress` - The grip button is pressed.
+  * `GripClick` - The grip button is pressed all the way down.
+  * `TouchpadTouch` - The touchpad is touched (without pressing down to click).
+  * `TouchpadPress` - The touchpad is pressed (to the point of hearing a click).
+  * `ButtonOneTouch` - The button one is touched.
+  * `ButtonOnePress` - The button one is pressed.
+  * `ButtonTwoTouch` - The button one is touched.
+  * `ButtonTwoPress` - The button one is pressed.
+  * `StartMenuPress` - The button one is pressed.
  * `public bool triggerPressed` - This will be true if the trigger is squeezed about half way in. Default: `false`
  * `public bool triggerTouched` - This will be true if the trigger is squeezed a small amount. Default: `false`
  * `public bool triggerHairlinePressed` - This will be true if the trigger is squeezed a small amount more from any previous squeeze on the trigger. Default: `false`
@@ -1813,7 +2205,7 @@ Adding the `VRTK_ControllerEvents_UnityEvents` component to `VRTK_ControllerEven
 
 #### GetTouchpadAxis/0
 
-  > `public Vector2 GetTouchpadAxis()`
+  > `public virtual Vector2 GetTouchpadAxis()`
 
   * Parameters
    * _none_
@@ -1824,7 +2216,7 @@ The GetTouchpadAxis method returns the coordinates of where the touchpad is bein
 
 #### GetTouchpadAxisAngle/0
 
-  > `public float GetTouchpadAxisAngle()`
+  > `public virtual float GetTouchpadAxisAngle()`
 
   * Parameters
    * _none_
@@ -1835,7 +2227,7 @@ The GetTouchpadAxisAngle method returns the angle of where the touchpad is curre
 
 #### GetTriggerAxis/0
 
-  > `public float GetTriggerAxis()`
+  > `public virtual float GetTriggerAxis()`
 
   * Parameters
    * _none_
@@ -1846,7 +2238,7 @@ The GetTriggerAxis method returns a float that represents how much the trigger i
 
 #### GetGripAxis/0
 
-  > `public float GetGripAxis()`
+  > `public virtual float GetGripAxis()`
 
   * Parameters
    * _none_
@@ -1857,7 +2249,7 @@ The GetGripAxis method returns a float that represents how much the grip is bein
 
 #### GetHairTriggerDelta/0
 
-  > `public float GetHairTriggerDelta()`
+  > `public virtual float GetHairTriggerDelta()`
 
   * Parameters
    * _none_
@@ -1868,7 +2260,7 @@ The GetHairTriggerDelta method returns a float representing the difference in ho
 
 #### GetHairGripDelta/0
 
-  > `public float GetHairGripDelta()`
+  > `public virtual float GetHairGripDelta()`
 
   * Parameters
    * _none_
@@ -1879,7 +2271,7 @@ The GetHairTriggerDelta method returns a float representing the difference in ho
 
 #### AnyButtonPressed/0
 
-  > `public bool AnyButtonPressed()`
+  > `public virtual bool AnyButtonPressed()`
 
   * Parameters
    * _none_
@@ -1890,7 +2282,7 @@ The AnyButtonPressed method returns true if any of the controller buttons are be
 
 #### IsButtonPressed/1
 
-  > `public bool IsButtonPressed(ButtonAlias button)`
+  > `public virtual bool IsButtonPressed(ButtonAlias button)`
 
   * Parameters
    * `ButtonAlias button` - The button to check if it's being pressed.
@@ -1901,7 +2293,7 @@ The IsButtonPressed method takes a given button alias and returns a boolean whet
 
 #### SubscribeToButtonAliasEvent/3
 
-  > `public void SubscribeToButtonAliasEvent(ButtonAlias givenButton, bool startEvent, ControllerInteractionEventHandler callbackMethod)`
+  > `public virtual void SubscribeToButtonAliasEvent(ButtonAlias givenButton, bool startEvent, ControllerInteractionEventHandler callbackMethod)`
 
   * Parameters
    * `ButtonAlias givenButton` - The ButtonAlias to register the event on.
@@ -1914,7 +2306,7 @@ The SubscribeToButtonAliasEvent method makes it easier to subscribe to a button 
 
 #### UnsubscribeToButtonAliasEvent/3
 
-  > `public void UnsubscribeToButtonAliasEvent(ButtonAlias givenButton, bool startEvent, ControllerInteractionEventHandler callbackMethod)`
+  > `public virtual void UnsubscribeToButtonAliasEvent(ButtonAlias givenButton, bool startEvent, ControllerInteractionEventHandler callbackMethod)`
 
   * Parameters
    * `ButtonAlias givenButton` - The ButtonAlias to unregister the event on.
@@ -1982,7 +2374,7 @@ Adding the `VRTK_ControllerActions_UnityEvents` component to `VRTK_ControllerAct
 
 #### IsControllerVisible/0
 
-  > `public bool IsControllerVisible()`
+  > `public virtual bool IsControllerVisible()`
 
   * Parameters
    * _none_
@@ -2156,30 +2548,6 @@ The ToggleHighlighBody method is a shortcut method that makes it easier to toggl
 
 The ToggleHighlightController method is a shortcut method that makes it easier to toggle the highlight state of the entire controller.
 
-#### TriggerHapticPulse/1
-
-  > `public virtual void TriggerHapticPulse(float strength)`
-
-  * Parameters
-   * `float strength` - The intensity of the rumble of the controller motor. `0` to `1`.
-  * Returns
-   * _none_
-
-The TriggerHapticPulse/1 method calls a single haptic pulse call on the controller for a single tick.
-
-#### TriggerHapticPulse/3
-
-  > `public virtual void TriggerHapticPulse(float strength, float duration, float pulseInterval)`
-
-  * Parameters
-   * `float strength` - The intensity of the rumble of the controller motor. `0` to `1`.
-   * `float duration` - The length of time the rumble should continue for.
-   * `float pulseInterval` - The interval to wait between each haptic pulse.
-  * Returns
-   * _none_
-
-The TriggerHapticPulse/3 method calls a haptic pulse for a specified amount of time rather than just a single tick. Each pulse can be separated by providing a `pulseInterval` to pause between each haptic pulse.
-
 #### InitaliseHighlighters/0
 
   > `public virtual void InitaliseHighlighters()`
@@ -2192,8 +2560,6 @@ The TriggerHapticPulse/3 method calls a haptic pulse for a specified amount of t
 The InitaliseHighlighters method sets up the highlighters on the controller model.
 
 ### Example
-
-`VRTK/Examples/016_Controller_HapticRumble` demonstrates the ability to hide a controller model and make the controller vibrate for a given length of time at a given intensity.
 
 `VRTK/Examples/035_Controller_OpacityAndHighlighting` demonstrates the ability to change the opacity of a controller model and to highlight specific elements of a controller such as the buttons or even the entire controller model.
 
@@ -2214,6 +2580,7 @@ The highlighting of an Interactable Object is defaulted to use the `VRTK_Materia
  * **Disable When Idle:** If this is checked then the interactable object script will be disabled when the object is not being interacted with. This will eliminate the potential number of calls the interactable objects make each frame.
  * **Touch Highlight Color:** The colour to highlight the object when it is touched. This colour will override any globally set colour (for instance on the `VRTK_InteractTouch` script).
  * **Allowed Touch Controllers:** Determines which controller can initiate a touch action.
+ * **Ignored Colliders:** An array of colliders on the object to ignore when being touched.
  * **Is Grabbable:** Determines if the object can be grabbed.
  * **Hold Button To Grab:** If this is checked then the grab button on the controller needs to be continually held down to keep grabbing. If this is unchecked the grab button toggles the grab action with one button press to grab and another to release.
  * **Stay Grabbed On Teleport:** If this is checked then the object will stay grabbed to the controller when a teleport occurs. If it is unchecked then the object will be released when a teleport occurs.
@@ -2233,12 +2600,12 @@ The highlighting of an Interactable Object is defaulted to use the `VRTK_Materia
 
  * `public enum AllowedController` - Allowed controller type.
   * `Both` - Both controllers are allowed to interact.
-  * `Left_Only` - Only the left controller is allowed to interact.
-  * `Right_Only` - Only the right controller is allowed to interact.
+  * `LeftOnly` - Only the left controller is allowed to interact.
+  * `RightOnly` - Only the right controller is allowed to interact.
  * `public enum ValidDropTypes` - The types of valid situations that the object can be released from grab.
-  * `No_Drop` - The object cannot be dropped via the controller
-  * `Drop_Anywhere` - The object can be dropped anywhere in the scene via the controller.
-  * `Drop_ValidSnapDropZone` - The object can only be dropped when it is hovering over a valid snap drop zone.
+  * `NoDrop` - The object cannot be dropped via the controller
+  * `DropAnywhere` - The object can be dropped anywhere in the scene via the controller.
+  * `DropValidSnapDropZone` - The object can only be dropped when it is hovering over a valid snap drop zone.
  * `public int usingState` - The current using state of the object. `0` not being used, `1` being used. Default: `0`
  * `public bool isKinematic` - isKinematic is a pass through to the `isKinematic` getter/setter on the object's rigidbody component.
 
@@ -2270,7 +2637,7 @@ Adding the `VRTK_InteractableObject_UnityEvents` component to `VRTK_Interactable
 
 #### IsTouched/0
 
-  > `public bool IsTouched()`
+  > `public virtual bool IsTouched()`
 
   * Parameters
    * _none_
@@ -2281,7 +2648,7 @@ The IsTouched method is used to determine if the object is currently being touch
 
 #### IsGrabbed/1
 
-  > `public bool IsGrabbed(GameObject grabbedBy = null)`
+  > `public virtual bool IsGrabbed(GameObject grabbedBy = null)`
 
   * Parameters
    * `GameObject grabbedBy` - An optional GameObject to check if the Interactable Object is grabbed by that specific GameObject. Defaults to `null`
@@ -2292,7 +2659,7 @@ The IsGrabbed method is used to determine if the object is currently being grabb
 
 #### IsUsing/1
 
-  > `public bool IsUsing(GameObject usedBy = null)`
+  > `public virtual bool IsUsing(GameObject usedBy = null)`
 
   * Parameters
    * `GameObject usedBy` - An optional GameObject to check if the Interactable Object is used by that specific GameObject. Defaults to `null`
@@ -2424,7 +2791,7 @@ The SaveCurrentState method stores the existing object parent and the object's r
 
 #### GetTouchingObjects/0
 
-  > `public List<GameObject> GetTouchingObjects()`
+  > `public virtual List<GameObject> GetTouchingObjects()`
 
   * Parameters
    * _none_
@@ -2435,7 +2802,7 @@ The GetTouchingObjects method is used to return the collecetion of valid game ob
 
 #### GetGrabbingObject/0
 
-  > `public GameObject GetGrabbingObject()`
+  > `public virtual GameObject GetGrabbingObject()`
 
   * Parameters
    * _none_
@@ -2446,7 +2813,7 @@ The GetGrabbingObject method is used to return the game object that is currently
 
 #### GetSecondaryGrabbingObject/0
 
-  > `public GameObject GetSecondaryGrabbingObject()`
+  > `public virtual GameObject GetSecondaryGrabbingObject()`
 
   * Parameters
    * _none_
@@ -2457,7 +2824,7 @@ The GetSecondaryGrabbingObject method is used to return the game object that is 
 
 #### GetUsingObject/0
 
-  > `public GameObject GetUsingObject()`
+  > `public virtual GameObject GetUsingObject()`
 
   * Parameters
    * _none_
@@ -2502,7 +2869,7 @@ The ForceStopSecondaryGrabInteraction method forces the object to no longer be i
 
 #### RegisterTeleporters/0
 
-  > `public void RegisterTeleporters()`
+  > `public virtual void RegisterTeleporters()`
 
   * Parameters
    * _none_
@@ -2513,7 +2880,7 @@ The RegisterTeleporters method is used to find all objects that have a teleporte
 
 #### UnregisterTeleporters/0
 
-  > `public void UnregisterTeleporters()`
+  > `public virtual void UnregisterTeleporters()`
 
   * Parameters
    * _none_
@@ -2547,7 +2914,7 @@ The ToggleSnapDropZone method is used to set the state of whether the interactab
 
 #### IsInSnapDropZone/0
 
-  > `public bool IsInSnapDropZone()`
+  > `public virtual bool IsInSnapDropZone()`
 
   * Parameters
    * _none_
@@ -2558,7 +2925,7 @@ The IsInSnapDropZone method determines whether the interactable object is curren
 
 #### SetSnapDropZoneHover/1
 
-  > `public void SetSnapDropZoneHover(bool state)`
+  > `public virtual void SetSnapDropZoneHover(bool state)`
 
   * Parameters
    * `bool state` - The state of whether the object is being hovered or not.
@@ -2569,7 +2936,7 @@ The SetSnapDropZoneHover method sets whether the interactable object is currentl
 
 #### GetStoredSnapDropZone/0
 
-  > `public VRTK_SnapDropZone GetStoredSnapDropZone()`
+  > `public virtual VRTK_SnapDropZone GetStoredSnapDropZone()`
 
   * Parameters
    * _none_
@@ -2580,7 +2947,7 @@ The GetStoredSnapDropZone method returns the snap drop zone that the interactabl
 
 #### IsDroppable/0
 
-  > `public bool IsDroppable()`
+  > `public virtual bool IsDroppable()`
 
   * Parameters
    * _none_
@@ -2591,7 +2958,7 @@ The IsDroppable method returns whether the object can be dropped or not in it's 
 
 #### IsSwappable/0
 
-  > `public bool IsSwappable()`
+  > `public virtual bool IsSwappable()`
 
   * Parameters
    * _none_
@@ -2602,7 +2969,7 @@ The IsSwappable method returns whether the object can be grabbed with one contro
 
 #### PerformSecondaryAction/0
 
-  > `public bool PerformSecondaryAction()`
+  > `public virtual bool PerformSecondaryAction()`
 
   * Parameters
    * _none_
@@ -2610,6 +2977,17 @@ The IsSwappable method returns whether the object can be grabbed with one contro
    * `bool` - Returns true if the obejct has a secondary action, returns false if it has no secondary action or is swappable.
 
 The PerformSecondaryAction method returns whether the object has a secondary action that can be performed when grabbing the object with a secondary controller.
+
+#### ResetIgnoredColliders/0
+
+  > `public virtual void ResetIgnoredColliders()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * _none_
+
+The ResetIgnoredColliders method is used to clear any stored ignored colliders in case the `Ignored Colliders` array parameter is changed at runtime. This needs to be called manually if changes are made at runtime.
 
 ### Example
 
@@ -2654,7 +3032,7 @@ Adding the `VRTK_InteractTouch_UnityEvents` component to `VRTK_InteractTouch` ob
 
 #### ForceTouch/1
 
-  > `public void ForceTouch(GameObject obj)`
+  > `public virtual void ForceTouch(GameObject obj)`
 
   * Parameters
    * `GameObject obj` - The game object to attempt to force touch.
@@ -2665,7 +3043,7 @@ The ForceTouch method will attempt to force the controller to touch the given ga
 
 #### GetTouchedObject/0
 
-  > `public GameObject GetTouchedObject()`
+  > `public virtual GameObject GetTouchedObject()`
 
   * Parameters
    * _none_
@@ -2676,7 +3054,7 @@ The GetTouchedObject method returns the current object being touched by the cont
 
 #### IsObjectInteractable/1
 
-  > `public bool IsObjectInteractable(GameObject obj)`
+  > `public virtual bool IsObjectInteractable(GameObject obj)`
 
   * Parameters
    * `GameObject obj` - The game object to check to see if it's interactable.
@@ -2687,7 +3065,7 @@ The IsObjectInteractable method is used to check if a given game object is of ty
 
 #### ToggleControllerRigidBody/2
 
-  > `public void ToggleControllerRigidBody(bool state, bool forceToggle = false)`
+  > `public virtual void ToggleControllerRigidBody(bool state, bool forceToggle = false)`
 
   * Parameters
    * `bool state` - The state of whether the rigidbody is on or off. `true` toggles the rigidbody on and `false` turns it off.
@@ -2699,7 +3077,7 @@ The ToggleControllerRigidBody method toggles the controller's rigidbody's abilit
 
 #### IsRigidBodyActive/0
 
-  > `public bool IsRigidBodyActive()`
+  > `public virtual bool IsRigidBodyActive()`
 
   * Parameters
    * _none_
@@ -2710,7 +3088,7 @@ The IsRigidBodyActive method checks to see if the rigidbody on the controller ob
 
 #### IsRigidBodyForcedActive/0
 
-  > `public bool IsRigidBodyForcedActive()`
+  > `public virtual bool IsRigidBodyForcedActive()`
 
   * Parameters
    * _none_
@@ -2721,7 +3099,7 @@ The IsRigidBodyForcedActive method checks to see if the rigidbody on the control
 
 #### ForceStopTouching/0
 
-  > `public void ForceStopTouching()`
+  > `public virtual void ForceStopTouching()`
 
   * Parameters
    * _none_
@@ -2732,7 +3110,7 @@ The ForceStopTouching method will stop the controller from touching an object ev
 
 #### ControllerColliders/0
 
-  > `public Collider[] ControllerColliders()`
+  > `public virtual Collider[] ControllerColliders()`
 
   * Parameters
    * _none_
@@ -2767,10 +3145,11 @@ The interactable objects require a collider to activate the trigger and a rigidb
 
 ### Inspector Parameters
 
- * **Controller Attach Point:** The rigidbody point on the controller model to snap the grabbed object to. If blank it will be set to the SDK default.
+ * **Grab Button:** The button used to grab/release a touched object.
  * **Grab Precognition:** An amount of time between when the grab button is pressed to when the controller is touching something to grab it. For example, if an object is falling at a fast rate, then it is very hard to press the grab button in time to catch the object due to human reaction times. A higher number here will mean the grab button can be pressed before the controller touches the object and when the collision takes place, if the grab button is still being held down then the grab action will be successful.
  * **Throw Multiplier:** An amount to multiply the velocity of any objects being thrown. This can be useful when scaling up the play area to simulate being able to throw items further.
  * **Create Rigid Body When Not Touching:** If this is checked and the controller is not touching an Interactable Object when the grab button is pressed then a rigid body is added to the controller to allow the controller to push other rigid body objects around.
+ * **Controller Attach Point:** The rigidbody point on the controller model to snap the grabbed object to. If blank it will be set to the SDK default.
 
 ### Class Events
 
@@ -2791,9 +3170,20 @@ Adding the `VRTK_InteractGrab_UnityEvents` component to `VRTK_InteractGrab` obje
 
 ### Class Methods
 
+#### IsGrabButtonPressed/0
+
+  > `public virtual bool IsGrabButtonPressed()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * `bool` - Returns true if the grab alias button is being held down.
+
+The IsGrabButtonPressed method determines whether the current grab alias button is being pressed down.
+
 #### ForceRelease/1
 
-  > `public void ForceRelease(bool applyGrabbingObjectVelocity = false)`
+  > `public virtual void ForceRelease(bool applyGrabbingObjectVelocity = false)`
 
   * Parameters
    * `bool applyGrabbingObjectVelocity` - If this is true then upon releasing the object any velocity on the grabbing object will be applied to the object to essentiall throw it. Defaults to `false`.
@@ -2804,7 +3194,7 @@ The ForceRelease method will force the controller to stop grabbing the currently
 
 #### AttemptGrab/0
 
-  > `public void AttemptGrab()`
+  > `public virtual void AttemptGrab()`
 
   * Parameters
    * _none_
@@ -2815,7 +3205,7 @@ The AttemptGrab method will attempt to grab the currently touched object without
 
 #### GetGrabbedObject/0
 
-  > `public GameObject GetGrabbedObject()`
+  > `public virtual GameObject GetGrabbedObject()`
 
   * Parameters
    * _none_
@@ -2848,6 +3238,10 @@ An object can be used if the Controller touches a game object which contains the
 
 If a valid interactable object is usable then pressing the set `Use` button on the Controller (default is `Trigger`) will call the `StartUsing` method on the touched interactable object.
 
+### Inspector Parameters
+
+ * **Use Button:** The button used to use/unuse a touched object.
+
 ### Class Events
 
  * `ControllerUseInteractableObject` - Emitted when a valid object starts being used.
@@ -2867,9 +3261,20 @@ Adding the `VRTK_InteractUse_UnityEvents` component to `VRTK_InteractUse` object
 
 ### Class Methods
 
+#### IsUseButtonPressed/0
+
+  > `public virtual bool IsUseButtonPressed()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * `bool` - Returns true if the use alias button is being held down.
+
+The IsUsebuttonPressed method determines whether the current use alias button is being pressed down.
+
 #### GetUsingObject/0
 
-  > `public GameObject GetUsingObject()`
+  > `public virtual GameObject GetUsingObject()`
 
   * Parameters
    * _none_
@@ -2880,7 +3285,7 @@ The GetUsingObject method returns the current object being used by the controlle
 
 #### ForceStopUsing/0
 
-  > `public void ForceStopUsing()`
+  > `public virtual void ForceStopUsing()`
 
   * Parameters
    * _none_
@@ -2891,7 +3296,7 @@ The ForceStopUsing method will force the controller to stop using the currently 
 
 #### ForceResetUsing/0
 
-  > `public void ForceResetUsing()`
+  > `public virtual void ForceResetUsing()`
 
   * Parameters
    * _none_
@@ -2899,6 +3304,17 @@ The ForceStopUsing method will force the controller to stop using the currently 
    * _none_
 
 The ForceResetUsing will force the controller to stop using the currently touched object but the object will continue with it's existing using action.
+
+#### AttemptUse/0
+
+  > `public virtual void AttemptUse()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * _none_
+
+The AttemptUse method will attempt to use the currently touched object without needing to press the use button on the controller.
 
 ### Example
 
@@ -2930,10 +3346,10 @@ The Interact Haptics script is attached on the same GameObject as an Interactabl
 
 #### HapticsOnTouch/1
 
-  > `public virtual void HapticsOnTouch(VRTK_ControllerActions controllerActions)`
+  > `public virtual void HapticsOnTouch(uint controllerIndex)`
 
   * Parameters
-   * `VRTK_ControllerActions controllerActions` - The controller to activate the haptic feedback on.
+   * `uint controllerIndex` - The controller index to activate the haptic feedback on.
   * Returns
    * _none_
 
@@ -2941,10 +3357,10 @@ The HapticsOnTouch method triggers the haptic feedback on the given controller f
 
 #### HapticsOnGrab/1
 
-  > `public virtual void HapticsOnGrab(VRTK_ControllerActions controllerActions)`
+  > `public virtual void HapticsOnGrab(uint controllerIndex)`
 
   * Parameters
-   * `VRTK_ControllerActions controllerActions` - The controller to activate the haptic feedback on.
+   * `uint controllerIndex` - The controller index to activate the haptic feedback on.
   * Returns
    * _none_
 
@@ -2952,10 +3368,10 @@ The HapticsOnGrab method triggers the haptic feedback on the given controller fo
 
 #### HapticsOnUse/1
 
-  > `public virtual void HapticsOnUse(VRTK_ControllerActions controllerActions)`
+  > `public virtual void HapticsOnUse(uint controllerIndex)`
 
   * Parameters
-   * `VRTK_ControllerActions controllerActions` - The controller to activate the haptic feedback on.
+   * `uint controllerIndex` - The controller index to activate the haptic feedback on.
   * Returns
    * _none_
 
@@ -3042,7 +3458,7 @@ It is possible to automatically grab an Interactable Object to a specific contro
 
 #### ClearPreviousClone/0
 
-  > `public void ClearPreviousClone()`
+  > `public virtual void ClearPreviousClone()`
 
   * Parameters
    * _none_
@@ -3054,6 +3470,31 @@ The ClearPreviousClone method resets the previous cloned object to null to ensur
 ### Example
 
 `VRTK/Examples/026_Controller_ForceHoldObject` shows how to automatically grab a sword to each controller and also prevents the swords from being dropped so they are permanently attached to the user's controllers.
+
+---
+
+## Object Touch Auto Interact (VRTK_ObjectTouchAutoInteract)
+
+### Overview
+
+The Object Touch Auto Interact script allows grab or use interactions on an object to automatically happen upon touching the interactable object.
+
+### Inspector Parameters
+
+ * **Grab On Touch When:** Determines when a grab on touch should occur.
+ * **Regrab Delay:** After being ungrabbed, another auto grab on touch can only occur after this time.
+ * **Continuous Grab Check:** If this is checked then the grab on touch check will happen every frame and not only on the first touch of the object.
+ * **Use On Touch When:** Determines when a use on touch should occur.
+ * **Reuse Delay:** After being unused, another auto use on touch can only occur after this time.
+ * **Continuous Use Check:** If this is checked then the use on touch check will happen every frame and not only on the first touch of the object.
+ * **Interactable Object:** The interactable object that the auto interaction will occur on. If this is blank then the script must be on the same GameObject as the Interactable Object script.
+
+### Class Variables
+
+ * `public enum AutoInteractions` - Situation when auto interaction can occur.
+  * `Never` - Auto interaction can never occur on touch.
+  * `NoButtonHeld` - Auto interaction will occur on touch even if the specified interaction button is not held down.
+  * `ButtonHeld` - Auto interaction will only occur on touch if the specified interaction button is held down.
 
 ---
 
@@ -3397,7 +3838,7 @@ As this is an abstract class, it cannot be applied directly to a game object and
 
 #### IsTracked/0
 
-  > `public bool IsTracked()`
+  > `public virtual bool IsTracked()`
 
   * Parameters
    * _none_
@@ -3408,7 +3849,7 @@ The IsTracked method determines if the grab attach mechanic is a track object ty
 
 #### IsClimbable/0
 
-  > `public bool IsClimbable()`
+  > `public virtual bool IsClimbable()`
 
   * Parameters
    * _none_
@@ -3419,7 +3860,7 @@ The IsClimbable method determines if the grab attach mechanic is a climbable obj
 
 #### IsKinematic/0
 
-  > `public bool IsKinematic()`
+  > `public virtual bool IsKinematic()`
 
   * Parameters
    * _none_
@@ -3850,7 +4291,7 @@ The ResetAction method is used to reset the secondary action when the object is 
 
 #### IsActionable/0
 
-  > `public bool IsActionable()`
+  > `public virtual bool IsActionable()`
 
   * Parameters
    * _none_
@@ -3861,7 +4302,7 @@ The IsActionable method is used to determine if the secondary grab action perfor
 
 #### IsSwappable/0
 
-  > `public bool IsSwappable()`
+  > `public virtual bool IsSwappable()`
 
   * Parameters
    * _none_
@@ -4272,7 +4713,7 @@ Adding the `VRTK_HeadsetControllerAware_UnityEvents` component to `VRTK_HeadsetC
 
 #### LeftControllerObscured/0
 
-  > `public bool LeftControllerObscured()`
+  > `public virtual bool LeftControllerObscured()`
 
   * Parameters
    * _none_
@@ -4283,7 +4724,7 @@ The LeftControllerObscured method returns the state of if the left controller is
 
 #### RightControllerObscured/0
 
-  > `public bool RightControllerObscured()`
+  > `public virtual bool RightControllerObscured()`
 
   * Parameters
    * _none_
@@ -4294,7 +4735,7 @@ The RightControllerObscured method returns the state of if the right controller 
 
 #### LeftControllerGlanced/0
 
-  > `public bool LeftControllerGlanced()`
+  > `public virtual bool LeftControllerGlanced()`
 
   * Parameters
    * _none_
@@ -4305,7 +4746,7 @@ the LeftControllerGlanced method returns the state of if the headset is currentl
 
 #### RightControllerGlanced/0
 
-  > `public bool RightControllerGlanced()`
+  > `public virtual bool RightControllerGlanced()`
 
   * Parameters
    * _none_
@@ -4359,20 +4800,21 @@ To allow for peeking over a ledge and not falling, a fall restiction can happen 
  * **Movement Threshold:** The amount of movement of the headset between the headset's current position and the current standing position to determine if the user is walking in play space and to ignore the body physics collisions if the movement delta is above this threshold.
  * **Standing History Samples:** The maximum number of samples to collect of headset position before determining if the current standing position within the play space has changed.
  * **Lean Y Threshold:** The `y` distance between the headset and the object being leaned over, if object being leaned over is taller than this threshold then the current standing position won't be updated.
- * **Layers To Ignore:** The layers to ignore when raycasting to find floors.
+ * **Custom Raycast:** A custom raycaster to use when raycasting to find floors.
  * **Fall Restriction:** A check to see if the drop to nearest floor should take place. If the selected restrictor is still over the current floor then the drop to nearest floor will not occur. Works well for being able to lean over ledges and look down. Only works for falling down not teleporting up.
  * **Gravity Fall Y Threshold:** When the `y` distance between the floor and the headset exceeds this distance and `Enable Body Collisions` is true then the rigidbody gravity will be used instead of teleport to drop to nearest floor.
  * **Blink Y Threshold:** The `y` distance between the floor and the headset that must change before a fade transition is initiated. If the new user location is at a higher distance than the threshold then the headset blink transition will activate on teleport. If the new user location is within the threshold then no blink transition will happen, which is useful for walking up slopes, meshes and terrains to prevent constant blinking.
  * **Floor Height Tolerance:** The amount the `y` position needs to change by between the current floor `y` position and the previous floor `y` position before a change in floor height is considered to have occurred. A higher value here will mean that a `Drop To Floor` will be less likely to happen if the `y` of the floor beneath the user hasn't changed as much as the given threshold.
+ * **Fall Check Precision:** The amount of rounding on the play area Y position to be applied when checking if falling is occuring.
 
 ### Class Variables
 
  * `public enum FallingRestrictors` - Options for testing if a play space fall is valid
-  * `No_Restriction` - Always drop to nearest floor when the headset is no longer over the current standing object.
-  * `Left_Controller` - Don't drop to nearest floor  if the Left Controller is still over the current standing object even if the headset isn't.
-  * `Right_Controller` - Don't drop to nearest floor  if the Right Controller is still over the current standing object even if the headset isn't.
-  * `Either_Controller` - Don't drop to nearest floor  if Either Controller is still over the current standing object even if the headset isn't.
-  * `Both_Controllers` - Don't drop to nearest floor only if Both Controllers are still over the current standing object even if the headset isn't.
+  * `NoRestriction` - Always drop to nearest floor when the headset is no longer over the current standing object.
+  * `LeftController` - Don't drop to nearest floor  if the Left Controller is still over the current standing object even if the headset isn't.
+  * `RightController` - Don't drop to nearest floor  if the Right Controller is still over the current standing object even if the headset isn't.
+  * `EitherController` - Don't drop to nearest floor  if Either Controller is still over the current standing object even if the headset isn't.
+  * `BothControllers` - Don't drop to nearest floor only if Both Controllers are still over the current standing object even if the headset isn't.
 
 ### Class Events
 
@@ -4402,7 +4844,7 @@ Adding the `VRTK_BodyPhysics_UnityEvents` component to `VRTK_BodyPhysics` object
 
 #### ArePhysicsEnabled/0
 
-  > `public bool ArePhysicsEnabled()`
+  > `public virtual bool ArePhysicsEnabled()`
 
   * Parameters
    * _none_
@@ -4413,7 +4855,7 @@ The ArePhysicsEnabled method determines whether the body physics are set to inte
 
 #### ApplyBodyVelocity/3
 
-  > `public void ApplyBodyVelocity(Vector3 velocity, bool forcePhysicsOn = false, bool applyMomentum = false)`
+  > `public virtual void ApplyBodyVelocity(Vector3 velocity, bool forcePhysicsOn = false, bool applyMomentum = false)`
 
   * Parameters
    * `Vector3 velocity` - The velocity to apply.
@@ -4426,7 +4868,7 @@ The ApplyBodyVelocity method applies a given velocity to the rigidbody attached 
 
 #### ToggleOnGround/1
 
-  > `public void ToggleOnGround(bool state)`
+  > `public virtual void ToggleOnGround(bool state)`
 
   * Parameters
    * `bool state` - If true then body physics are set to being on the ground.
@@ -4437,7 +4879,7 @@ The ToggleOnGround method sets whether the body is considered on the ground or n
 
 #### TogglePreventSnapToFloor/1
 
-  > `public void TogglePreventSnapToFloor(bool state)`
+  > `public virtual void TogglePreventSnapToFloor(bool state)`
 
   * Parameters
    * `bool state` - If true the the snap to floor mechanic will not execute.
@@ -4448,7 +4890,7 @@ The PreventSnapToFloor method sets whether the snap to floor mechanic should be 
 
 #### IsFalling/0
 
-  > `public bool IsFalling()`
+  > `public virtual bool IsFalling()`
 
   * Parameters
    * _none_
@@ -4459,7 +4901,7 @@ The IsFalling method returns the falling state of the body.
 
 #### IsMoving/0
 
-  > `public bool IsMoving()`
+  > `public virtual bool IsMoving()`
 
   * Parameters
    * _none_
@@ -4470,7 +4912,7 @@ The IsMoving method returns the moving within play area state of the body.
 
 #### IsLeaning/0
 
-  > `public bool IsLeaning()`
+  > `public virtual bool IsLeaning()`
 
   * Parameters
    * _none_
@@ -4481,7 +4923,7 @@ The IsLeaning method returns the leaning state of the user.
 
 #### OnGround/0
 
-  > `public bool OnGround()`
+  > `public virtual bool OnGround()`
 
   * Parameters
    * _none_
@@ -4507,6 +4949,7 @@ The Position Rewind script is used to reset the user back to a good known standi
  * **Rewind Delay:** The amount of time from original headset collision until the rewind to the last good known position takes place.
  * **Pushback Distance:** The additional distance to push the play area back upon rewind to prevent being right next to the wall again.
  * **Crouch Threshold:** The threshold to determine how low the headset has to be before it is considered the user is crouching. The last good position will only be recorded in a non-crouching position.
+ * **Crouch Rewind Threshold:** The threshold to determind how low the headset can be to perform a position rewind. If the headset Y position is lower than this threshold then a rewind won't occur.
 
 ### Example
 
@@ -4601,6 +5044,7 @@ Adding the `VRTK_UIPointer_UnityEvents` component to `VRTK_UIPointer` object all
  * `bool isActive` - The state of whether the UI Pointer is currently active or not.
  * `GameObject currentTarget` - The current UI element that the pointer is colliding with.
  * `GameObject previousTarget` - The previous UI element that the pointer was colliding with.
+ * `RaycastResult raycastResult` - The raw raycast result of the UI ray collision.
 
 ### Class Methods
 
@@ -4788,7 +5232,7 @@ Adding the `VRTK_Control_UnityEvents` component to `VRTK_Control` object allows 
 
 #### GetValue/0
 
-  > `public float GetValue()`
+  > `public virtual float GetValue()`
 
   * Parameters
    * _none_
@@ -4799,7 +5243,7 @@ The GetValue method returns the current value/position/setting of the control de
 
 #### GetNormalizedValue/0
 
-  > `public float GetNormalizedValue()`
+  > `public virtual float GetNormalizedValue()`
 
   * Parameters
    * _none_
@@ -4810,7 +5254,7 @@ The GetNormalizedValue method returns the current value mapped onto a range betw
 
 #### SetContent/2
 
-  > `public void SetContent(GameObject content, bool hideContent)`
+  > `public virtual void SetContent(GameObject content, bool hideContent)`
 
   * Parameters
    * `GameObject content` - The content to be considered within the control.
@@ -4822,7 +5266,7 @@ The SetContent method sets the given game object as the content of the control. 
 
 #### GetContent/0
 
-  > `public GameObject GetContent()`
+  > `public virtual GameObject GetContent()`
 
   * Parameters
    * _none_
@@ -5115,10 +5559,12 @@ The script will use the boundaries of the control to determine if it is in or ou
 
 A collection of scripts that provide useful functionality to aid the creation process.
 
- * [SDK Manager](#sdk-manager-vrtk_sdkmanager)
+ * [SDK Manager](#sdk-manager-scriptingdefinesymbolpredicateinfo)
+ * [SDK Info](#sdk-info-vrtk_sdkinfo)
  * [Device Finder](#device-finder-vrtk_devicefinder)
  * [Shared Methods](#shared-methods-vrtk_sharedmethods)
  * [Policy List](#policy-list-vrtk_policylist)
+ * [Custom Raycast](#custom-raycast-vrtk_customraycast)
  * [Adaptive Quality](#adaptive-quality-vrtk_adaptivequality)
  * [Object Follow](#object-follow-vrtk_objectfollow)
  * [Rigidbody Follow](#rigidbody-follow-vrtk_rigidbodyfollow)
@@ -5127,33 +5573,47 @@ A collection of scripts that provide useful functionality to aid the creation pr
 
 ---
 
-## SDK Manager (VRTK_SDKManager)
+## SDK Manager (ScriptingDefineSymbolPredicateInfo)
 
 ### Overview
 
-The SDK Manager script provides configuration of supported SDKs
+A helper class that simply holds references to both the
+
+and the method info of the method the attribute is defined on.
 
 ### Inspector Parameters
 
  * **Persist On Load:** If this is true then the instance of the SDK Manager won't be destroyed on every scene load.
- * **System SDK:** The SDK to use to deal with all system actions.
- * **Boundaries SDK:** The SDK to use to utilise room scale boundaries.
- * **Headset SDK:** The SDK to use to utilise the VR headset.
- * **Controller SDK:** The SDK to use to utilise the input devices.
- * **Auto Manage Script Defines:** This determines whether the scripting define symbols required by the selected SDKs are automatically added to the player settings when using the SDK Manager inspector window.
+ * **Auto Populate Object References:** This determines whether the SDK object references are automatically set to the objects of the selected SDKs. If this is true populating is done whenever the selected SDKs change.
+ * **Auto Manage Script Defines:** This determines whether the scripting define symbols required by the selected SDKs are automatically added to and removed from the player settings. If this is true managing is done whenever the selected SDKs or the current active SDK Manager change in the Editor.
  * **Actual Boundaries:** A reference to the GameObject that is the user's boundary or play area, most likely provided by the SDK's Camera Rig.
  * **Actual Headset:** A reference to the GameObject that contains the VR camera, most likely provided by the SDK's Camera Rig Headset.
  * **Actual Left Controller:** A reference to the GameObject that contains the SDK Left Hand Controller.
  * **Actual Right Controller:** A reference to the GameObject that contains the SDK Right Hand Controller.
  * **Model Alias Left Controller:** A reference to the GameObject that models for the Left Hand Controller.
- * **Model Alias Right Controller:** A reference to the GameObject that models for the Right Hand Controller
+ * **Model Alias Right Controller:** A reference to the GameObject that models for the Right Hand Controller.
  * **Script Alias Left Controller:** A reference to the GameObject that contains any scripts that apply to the Left Hand Controller.
  * **Script Alias Right Controller:** A reference to the GameObject that contains any scripts that apply to the Right Hand Controller.
 
 ### Class Variables
 
- * `public enum SupportedSDKs` - The supported SDKs
- * `public static VRTK_SDKManager instance` - The singleton instance to access the SDK Manager variables from. Default: `null`
+ * `public static ReadOnlyCollection<ScriptingDefineSymbolPredicateInfo> AvailableScriptingDefineSymbolPredicateInfos { get private set }` - All found scripting define symbol predicate attributes with associated method info.
+ * `public static ReadOnlyCollection<VRTK_SDKInfo> AvailableSystemSDKInfos { get private set }` - All available system SDK infos.
+ * `public static ReadOnlyCollection<VRTK_SDKInfo> AvailableBoundariesSDKInfos { get private set }` - All available boundaries SDK infos.
+ * `public static ReadOnlyCollection<VRTK_SDKInfo> AvailableHeadsetSDKInfos { get private set }` - All available headset SDK infos.
+ * `public static ReadOnlyCollection<VRTK_SDKInfo> AvailableControllerSDKInfos { get private set }` - All available controller SDK infos.
+ * `public static ReadOnlyCollection<VRTK_SDKInfo> InstalledSystemSDKInfos { get private set }` - All installed system SDK infos. This is a subset of  . It contains only those available SDK infos for which an  exists that uses the same symbol and whose associated method returns true.
+ * `public static ReadOnlyCollection<VRTK_SDKInfo> InstalledBoundariesSDKInfos { get private set }` - All installed boundaries SDK infos. This is a subset of  . It contains only those available SDK infos for which an  exists that uses the same symbol and whose associated method returns true.
+ * `public static ReadOnlyCollection<VRTK_SDKInfo> InstalledHeadsetSDKInfos { get private set }` - All installed headset SDK infos. This is a subset of  . It contains only those available SDK infos for which an  exists that uses the same symbol and whose associated method returns true.
+ * `public static ReadOnlyCollection<VRTK_SDKInfo> InstalledControllerSDKInfos { get private set }` - All installed controller SDK infos. This is a subset of  . It contains only those available SDK infos for which an  exists that uses the same symbol and whose associated method returns true.
+ * `public static VRTK_SDKManager instance` - The singleton instance to access the SDK Manager variables from.
+ * `public VRTK_SDKInfo systemSDKInfo` - The info of the SDK to use to deal with all system actions. By setting this to `null` the fallback SDK will be used.
+ * `public VRTK_SDKInfo boundariesSDKInfo` - The info of the SDK to use to utilize room scale boundaries. By setting this to `null` the fallback SDK will be used.
+ * `public VRTK_SDKInfo headsetSDKInfo` - The info of the SDK to use to utilize the VR headset. By setting this to `null` the fallback SDK will be used.
+ * `public VRTK_SDKInfo controllerSDKInfo` - The info of the SDK to use to utilize the input devices. By setting this to `null` the fallback SDK will be used.
+ * `public List<SDK_ScriptingDefineSymbolPredicateAttribute> activeScriptingDefineSymbolsWithoutSDKClasses` - The active (i.e. to be added to the  ) scripting define symbol predicate attributes that have no associated SDK classes.
+ * `public readonly SDK_ScriptingDefineSymbolPredicateAttribute attribute` - The predicate attribute.
+ * `public readonly MethodInfo methodInfo` - The method info of the method the attribute is defined on.
 
 ### Class Methods
 
@@ -5164,31 +5624,9 @@ The SDK Manager script provides configuration of supported SDKs
   * Parameters
    * _none_
   * Returns
-   * `SDK_BaseSystem` - The currently selected System SDK
+   * `SDK_BaseSystem` - The currently selected system SDK.
 
-The GetSystemSDK method returns the selected system SDK
-
-#### GetHeadsetSDK/0
-
-  > `public SDK_BaseHeadset GetHeadsetSDK()`
-
-  * Parameters
-   * _none_
-  * Returns
-   * `SDK_BaseHeadset` - The currently selected Headset SDK
-
-The GetHeadsetSDK method returns the selected headset SDK
-
-#### GetControllerSDK/0
-
-  > `public SDK_BaseController GetControllerSDK()`
-
-  * Parameters
-   * _none_
-  * Returns
-   * `SDK_BaseController` - The currently selected Controller SDK
-
-The GetControllerSDK method returns the selected controller SDK
+The GetSystemSDK method returns the selected system SDK.
 
 #### GetBoundariesSDK/0
 
@@ -5197,9 +5635,123 @@ The GetControllerSDK method returns the selected controller SDK
   * Parameters
    * _none_
   * Returns
-   * `SDK_BaseBoundaries` - The currently selected Boundaries SDK
+   * `SDK_BaseBoundaries` - The currently selected boundaries SDK.
 
-The GetBoundariesSDK method returns the selected boundaries SDK
+The GetBoundariesSDK method returns the selected boundaries SDK.
+
+#### GetHeadsetSDK/0
+
+  > `public SDK_BaseHeadset GetHeadsetSDK()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * `SDK_BaseHeadset` - The currently selected headset SDK.
+
+The GetHeadsetSDK method returns the selected headset SDK.
+
+#### GetControllerSDK/0
+
+  > `public SDK_BaseController GetControllerSDK()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * `SDK_BaseController` - The currently selected controller SDK.
+
+The GetControllerSDK method returns the selected controller SDK.
+
+#### PopulateObjectReferences/1
+
+  > `public void PopulateObjectReferences(bool force)`
+
+  * Parameters
+   * `bool force` - Whether to ignore  while deciding to populate.
+  * Returns
+   * _none_
+
+Populates the object references by using the currently set SDKs.
+
+#### ManageScriptingDefineSymbols/2
+
+  > `public bool ManageScriptingDefineSymbols(bool ignoreAutoManageScriptDefines, bool ignoreIsActiveAndEnabled)`
+
+  * Parameters
+   * `bool ignoreAutoManageScriptDefines` - Whether to ignore  while deciding to manage.
+   * `bool ignoreIsActiveAndEnabled` - Whether to ignore  while deciding to manage.
+  * Returns
+   * `bool` - Whether the ' scripting define symbols were changed.
+
+Manages (i.e. adds and removes) the scripting define symbols of the  for the currently set SDK infos. This method is only available in the editor, so usage of the method needs to be surrounded by `#if UNITY_EDITOR` and `#endif` when used in a type that is also compiled for a standalone build.
+
+#### ScriptingDefineSymbolPredicateInfo/2
+
+  > `public ScriptingDefineSymbolPredicateInfo(SDK_ScriptingDefineSymbolPredicateAttribute attribute, MethodInfo methodInfo)`
+
+  * Parameters
+   * `SDK_ScriptingDefineSymbolPredicateAttribute attribute` - The predicate attribute.
+   * `MethodInfo methodInfo` - The method info of the method the attribute is defined on.
+  * Returns
+   * _none_
+
+Constructs a new instance with the specified predicate attribute and associated method info.
+
+---
+
+## SDK Info (VRTK_SDKInfo)
+ > extends ISerializationCallbackReceiver
+
+### Overview
+
+Holds all the info necessary to describe an SDK.
+
+### Class Variables
+
+ * `public Type type { get private set }` - The type of the SDK.
+ * `public string originalTypeNameWhenFallbackIsUsed { get private set }` - The name of the type of which this SDK info was created from. This is only used if said type wasn't found.
+ * `public SDK_DescriptionAttribute description { get private set }` - The description of the SDK.
+
+### Class Methods
+
+#### ActualType>/0
+
+  > `public static VRTK_SDKInfo Create<BaseType, FallbackType, ActualType>() where BaseType : SDK_Base where FallbackType : BaseType where ActualType : BaseType`
+
+  * Type Params
+   * `FallbackType,` - The SDK base type. Must be a subclass of .
+   * `FallbackType,` - The SDK type to fall back on if problems occur. Must be a subclass of .
+   * `FallbackType,` - The SDK type to use. Must be a subclass of .
+  * Parameters
+   * _none_
+  * Returns
+   * `FallbackType,` - A newly created instance.
+
+Creates a new SDK info for a type that is known at compile time.
+
+#### FallbackType>/1
+
+  > `public static VRTK_SDKInfo Create<BaseType, FallbackType>(Type actualType) where BaseType : SDK_Base where FallbackType : BaseType`
+
+  * Type Params
+   * `Create<BaseType,` - The SDK base type. Must be a subclass of .
+   * `Create<BaseType,` - The SDK type to fall back on if problems occur. Must be a subclass of .
+  * Parameters
+   * `Type actualType` - The SDK type to use. Must be a subclass of .
+  * Returns
+   * `Create<BaseType,` - A newly created instance.
+
+Creates a new SDK info for a type.
+
+#### VRTK_SDKInfo/1
+
+  > `public VRTK_SDKInfo(VRTK_SDKInfo infoToCopy)`
+
+  * Parameters
+   * `VRTK_SDKInfo infoToCopy` - The SDK info to copy.
+  * Returns
+   * _none_
+
+Creates a new SDK info by copying an existing one.
 
 ---
 
@@ -5213,8 +5765,8 @@ The Device Finder offers a collection of static methods that can be called to fi
 
  * `public enum Devices` - Possible devices.
   * `Headset` - The headset.
-  * `Left_Controller` - The left hand controller.
-  * `Right_Controller` - The right hand controller.
+  * `LeftController` - The left hand controller.
+  * `RightController` - The right hand controller.
  * `public enum Headsets` - Possible headsets
   * `Unknown` - An unknown headset.
   * `OculusRift` - A summary of all Oculus Rift headset versions.
@@ -5550,6 +6102,19 @@ The CloneComponent method takes a source component and copies it to the given de
 
 The ColorDarken method takes a given colour and darkens it by the given percentage.
 
+#### RoundFloat/3
+
+  > `public static float RoundFloat(float givenFloat, int decimalPlaces, bool rawFidelity = false)`
+
+  * Parameters
+   * `float givenFloat` - The float to round.
+   * `int decimalPlaces` - The number of decimal places to round to.
+   * `bool rawFidelity` - If this is true then the decimal places must be given in the decimal multiplier, e.g. 10 for 1dp, 100 for 2dp, etc.
+  * Returns
+   * `float` - The rounded float.
+
+The RoundFloat method is used to round a given float to the given decimal places.
+
 #### IsEditTime/0
 
   > `public static bool IsEditTime()`
@@ -5560,6 +6125,55 @@ The ColorDarken method takes a given colour and darkens it by the given percenta
    * `bool` - Returns true if Unity is in the Unity Editor and not in play mode.
 
 The IsEditTime method determines if the state of Unity is in the Unity Editor and the scene is not in play mode.
+
+#### TriggerHapticPulse/2
+
+  > `public static void TriggerHapticPulse(uint controllerIndex, float strength)`
+
+  * Parameters
+   * `float strength` - The intensity of the rumble of the controller motor. `0` to `1`.
+  * Returns
+   * _none_
+
+The TriggerHapticPulse/1 method calls a single haptic pulse call on the controller for a single tick.
+
+#### TriggerHapticPulse/4
+
+  > `public static void TriggerHapticPulse(uint controllerIndex, float strength, float duration, float pulseInterval)`
+
+  * Parameters
+   * `float strength` - The intensity of the rumble of the controller motor. `0` to `1`.
+   * `float duration` - The length of time the rumble should continue for.
+   * `float pulseInterval` - The interval to wait between each haptic pulse.
+  * Returns
+   * _none_
+
+The TriggerHapticPulse/3 method calls a haptic pulse for a specified amount of time rather than just a single tick. Each pulse can be separated by providing a `pulseInterval` to pause between each haptic pulse.
+
+#### Mod/2
+
+  > `public static float Mod(float a, float b)`
+
+  * Parameters
+   * `float a` - The dividend value.
+   * `float b` - The divisor value.
+  * Returns
+   * `float` - The remainder value.
+
+The Mod method is used to find the remainder of the sum a/b.
+
+#### FindEvenInactiveGameObject<T>/1
+
+  > `public static GameObject FindEvenInactiveGameObject<T>(string gameObjectName = "") where T : Component`
+
+  * Type Params
+   * `GameObject` - The component type that needs to be on an ancestor of the wanted . Must be a subclass of .
+  * Parameters
+   * `string gameObjectName` - The name of the wanted . If it contains a '/' character, this method traverses the hierarchy like a path name.
+  * Returns
+   * `GameObject` - The  with name  and an ancestor that has a . If no  is found  is returned.
+
+Finds all  s with a given name and an ancestor that has a specific component. This method returns active as well as inactive  s in the scene. It doesn't return assets. For performance reasons it is recommended to not use this function every frame. Cache the result in a member variable at startup instead.
 
 ---
 
@@ -5618,6 +6232,53 @@ The Find method performs the set operation to determine if the given game object
    * `bool` - Returns true of the given game object matches the policy list or given string logic.
 
 The Check method is used to check if a game object should be ignored based on a given string or policy list.
+
+---
+
+## Custom Raycast (VRTK_CustomRaycast)
+
+### Overview
+
+A Custom Raycast allows to specify custom options for a Physics.Raycast.
+
+A number of other scripts can utilise a Custom Raycast to further customise the raycasts that the scripts use internally.
+
+For example, the VRTK_BodyPhysics script can be set to ignore trigger colliders when casting to see if it should teleport up or down to the nearest floor.
+
+### Inspector Parameters
+
+ * **Layers To Ignore:** The layers to ignore when raycasting.
+ * **Trigger Interaction:** Determines whether the ray will interact with trigger colliders.
+
+### Class Methods
+
+#### Raycast/5
+
+  > `public static bool Raycast(VRTK_CustomRaycast customCast, Ray ray, out RaycastHit hitData, LayerMask ignoreLayers, float length = Mathf.Infinity)`
+
+  * Parameters
+   * `VRTK_CustomRaycast customCast` - The optional raycast object with customised raycast parameters.
+   * `Ray ray` - The Ray to cast with.
+   * `out RaycastHit hitData` - The raycast hit data.
+   * `LayerMask ignoreLayers` - A layermask of layers to ignore from the raycast.
+   * `float length` - The maximum length of the raycast.
+  * Returns
+   * `bool` - Returns true if the raycast successfully collides with a valid object.
+
+The Raycast method is used to generate a raycast either from the given CustomRaycast object or a default Physics.Raycast.
+
+#### CustomCast/3
+
+  > `public virtual bool CustomCast(Ray ray, out RaycastHit hitData, float length = Mathf.Infinity)`
+
+  * Parameters
+   * `Ray ray` - The Ray to cast with.
+   * `out RaycastHit hitData` - The raycast hit data.
+   * `float length` - The maximum length of the raycast.
+  * Returns
+   * `bool` - Returns true if the raycast successfully collides with a valid object.
+
+The CustomCast method is used to generate a raycast based on the options defined in the CustomRaycast object.
 
 ---
 
@@ -5760,7 +6421,7 @@ Abstract class that allows to change one game object's properties to follow anot
 
 #### Follow/0
 
-  > `public void Follow()`
+  > `public virtual void Follow()`
 
   * Parameters
    * _none_
@@ -5798,10 +6459,6 @@ Changes one game object's rigidbody to follow another game object's rigidbody.
 
 Changes one game object's transform to follow another game object's transform.
 
-### Inspector Parameters
-
- * **Moment:** The moment at which to follow.
-
 ### Class Variables
 
  * `public enum FollowMoment` - The moment at which to follow.
@@ -5834,6 +6491,9 @@ Supported movements are: forward, backward, strafe left, strafe right, turn left
 
 The base scripts used to determine the interface for interacting with a Unity VR SDK.
 
+ * [SDK Base](#sdk-base-sdk_base)
+ * [SDK Description](#sdk-description-sdk_descriptionattribute)
+ * [SDK Scripting Define Symbol Predicate](#sdk-scripting-define-symbol-predicate-sdk_scriptingdefinesymbolpredicateattribute)
  * [Base System](#base-system-sdk_basesystem)
  * [Base Headset](#base-headset-sdk_baseheadset)
  * [Base Controller](#base-controller-sdk_basecontroller)
@@ -5841,8 +6501,117 @@ The base scripts used to determine the interface for interacting with a Unity VR
 
 ---
 
-## Base System (SDK_BaseSystem)
+## SDK Base (SDK_Base)
  > extends ScriptableObject
+
+### Overview
+
+Abstract superclass that defines that a particular class is an SDK.
+
+This is an abstract class to mark all different SDK endpoints with. This is used to allow for type safety when talking about 'an SDK' instead of one of the different endpoints (System, Boundaries, Headset, Controller).
+
+---
+
+## SDK Description (SDK_DescriptionAttribute)
+ > extends Attribute
+
+### Overview
+
+Describes a class that represents an SDK. Only allowed on classes that inherit from
+
+.
+
+### Class Variables
+
+ * `public readonly string prettyName` - The pretty name of the SDK. Uniquely identifies the SDK.
+ * `public readonly string symbol` - The scripting define symbol needed for the SDK. Needs to be the same as  to add and remove the scripting define symbol automatically using  .
+
+### Class Methods
+
+#### SDK_DescriptionAttribute/0
+
+  > `public static readonly SDK_DescriptionAttribute Fallback = new SDK_DescriptionAttribute("Fallback", null);`
+
+  * Parameters
+   * _none_
+  * Returns
+   * _none_
+
+The description of a fallback SDK.
+
+#### SDK_DescriptionAttribute/2
+
+  > `public SDK_DescriptionAttribute(string prettyName, string symbol)`
+
+  * Parameters
+   * `string prettyName` - The pretty name of the SDK. Uniquely identifies the SDK.  and  aren't allowed.
+   * `string symbol` - The scripting define symbol needed for the SDK. Needs to be the same as  to add and remove the scripting define symbol automatically using .  and  are allowed.
+  * Returns
+   * _none_
+
+Creates a new attribute.
+
+#### SDK_DescriptionAttribute/1
+
+  > `public SDK_DescriptionAttribute(Type typeToCopyExistingDescriptionFrom)`
+
+  * Parameters
+   * `Type typeToCopyExistingDescriptionFrom` - The type to copy the existing  from.  is not allowed.
+  * Returns
+   * _none_
+
+Creates a new attribute by copying from another attribute on a given type.
+
+---
+
+## SDK Scripting Define Symbol Predicate (SDK_ScriptingDefineSymbolPredicateAttribute)
+ > extends Attribute, ISerializationCallbackReceiver
+
+### Overview
+
+Specifies a method to be used as a predicate to allow
+
+to automatically add and remove scripting define symbols. Only allowed on
+
+methods that take no arguments and return
+
+.
+
+### Class Variables
+
+ * `public const string RemovableSymbolPrefix` - The prefix of scripting define symbols that must be used to be able to automatically remove the symbols. Default: `"VRTK_DEFINE_"`
+ * `public string symbol` - The scripting define symbol to conditionally add or remove.
+ * `public BuildTargetGroup buildTargetGroup` - The build target group to use when conditionally adding or removing  .
+
+### Class Methods
+
+#### SDK_ScriptingDefineSymbolPredicateAttribute/2
+
+  > `public SDK_ScriptingDefineSymbolPredicateAttribute(string symbol, string buildTargetGroupName)`
+
+  * Parameters
+   * `string symbol` - The scripting define symbol to conditionally add or remove. Needs to start with  to be able to automatically remove the symbol.  and  aren't allowed.
+   * `string buildTargetGroupName` - The name of a constant of . ,  and  aren't allowed.
+  * Returns
+   * _none_
+
+Creates a new attribute.
+
+#### SDK_ScriptingDefineSymbolPredicateAttribute/1
+
+  > `public SDK_ScriptingDefineSymbolPredicateAttribute(SDK_ScriptingDefineSymbolPredicateAttribute attributeToCopy)`
+
+  * Parameters
+   * `SDK_ScriptingDefineSymbolPredicateAttribute attributeToCopy` - The attribute to copy.
+  * Returns
+   * _none_
+
+Creates a new attribute by copying an existing one.
+
+---
+
+## Base System (SDK_BaseSystem)
+ > extends [SDK_Base](#sdk-base-sdk_base)
 
 ### Overview
 
@@ -5888,7 +6657,7 @@ The ForceInterleavedReprojectionOn method determines whether Interleaved Reproje
 ---
 
 ## Base Headset (SDK_BaseHeadset)
- > extends ScriptableObject
+ > extends [SDK_Base](#sdk-base-sdk_base)
 
 ### Overview
 
@@ -5908,6 +6677,17 @@ This is an abstract class to implement the interface required by all implemented
    * _none_
 
 The ProcessUpdate method enables an SDK to run logic for every Unity Update
+
+#### ProcessFixedUpdate/1
+
+  > `public abstract void ProcessFixedUpdate(Dictionary<string, object> options);`
+
+  * Parameters
+   * `Dictionary<string, object> options` - A dictionary of generic options that can be used to within the fixed update.
+  * Returns
+   * _none_
+
+The ProcessFixedUpdate method enables an SDK to run logic for every Unity FixedUpdate
 
 #### GetHeadset/0
 
@@ -5991,7 +6771,7 @@ The AddHeadsetFade method attempts to add the fade functionality to the game obj
 ---
 
 ## Base Controller (SDK_BaseController)
- > extends ScriptableObject
+ > extends [SDK_Base](#sdk-base-sdk_base)
 
 ### Overview
 
@@ -6038,6 +6818,18 @@ This is an abstract class to implement the interface required by all implemented
 
 The ProcessUpdate method enables an SDK to run logic for every Unity Update
 
+#### ProcessFixedUpdate/2
+
+  > `public abstract void ProcessFixedUpdate(uint index, Dictionary<string, object> options);`
+
+  * Parameters
+   * `uint index` - The index of the controller.
+   * `Dictionary<string, object> options` - A dictionary of generic options that can be used to within the fixed update.
+  * Returns
+   * _none_
+
+The ProcessFixedUpdate method enables an SDK to run logic for every Unity FixedUpdate
+
 #### GetControllerDefaultColliderPath/1
 
   > `public abstract string GetControllerDefaultColliderPath(ControllerHand hand);`
@@ -6081,7 +6873,7 @@ The GetControllerIndex method returns the index of the given controller.
    * `uint index` - The index of the controller to find.
    * `bool actual` - If true it will return the actual controller, if false it will return the script alias controller GameObject.
   * Returns
-   * `GameObject` -
+   * `GameObject` - The GameObject of the controller
 
 The GetControllerByIndex method returns the GameObject of a controller with a specific index.
 
@@ -6763,7 +7555,7 @@ The IsStartMenuTouchedUpOnIndex method is used to determine if the controller bu
 ---
 
 ## Base Boundaries (SDK_BaseBoundaries)
- > extends ScriptableObject
+ > extends [SDK_Base](#sdk-base-sdk_base)
 
 ### Overview
 
@@ -6892,7 +7684,7 @@ The ForceInterleavedReprojectionOn method determines whether Interleaved Reproje
 
 ### Overview
 
-The Fallback System SDK script provides a fallback collection of methods that return null or default Headset values.
+The Fallback Headset SDK script provides a fallback collection of methods that return null or default headset values.
 
 This is the fallback class that will just return default values.
 
@@ -6908,6 +7700,17 @@ This is the fallback class that will just return default values.
    * _none_
 
 The ProcessUpdate method enables an SDK to run logic for every Unity Update
+
+#### ProcessFixedUpdate/1
+
+  > `public override void ProcessFixedUpdate(Dictionary<string, object> options)`
+
+  * Parameters
+   * `Dictionary<string, object> options` - A dictionary of generic options that can be used to within the fixed update.
+  * Returns
+   * _none_
+
+The ProcessFixedUpdate method enables an SDK to run logic for every Unity FixedUpdate
 
 #### GetHeadset/0
 
@@ -6995,7 +7798,7 @@ The AddHeadsetFade method attempts to add the fade functionality to the game obj
 
 ### Overview
 
-The Base Controller SDK script provides a bridge to SDK methods that deal with the input devices.
+The Fallback Controller SDK script provides a fallback collection of methods that return null or default headset values.
 
 This is the fallback class that will just return default values.
 
@@ -7012,6 +7815,18 @@ This is the fallback class that will just return default values.
    * _none_
 
 The ProcessUpdate method enables an SDK to run logic for every Unity Update
+
+#### ProcessFixedUpdate/2
+
+  > `public override void ProcessFixedUpdate(uint index, Dictionary<string, object> options)`
+
+  * Parameters
+   * `uint index` - The index of the controller.
+   * `Dictionary<string, object> options` - A dictionary of generic options that can be used to within the fixed update.
+  * Returns
+   * _none_
+
+The ProcessFixedUpdate method enables an SDK to run logic for every Unity FixedUpdate
 
 #### GetControllerDefaultColliderPath/1
 
@@ -7056,7 +7871,7 @@ The GetControllerIndex method returns the index of the given controller.
    * `uint index` - The index of the controller to find.
    * `bool actual` - If true it will return the actual controller, if false it will return the script alias controller GameObject.
   * Returns
-   * `GameObject` -
+   * `GameObject` - The GameObject of the controller
 
 The GetControllerByIndex method returns the GameObject of a controller with a specific index.
 
@@ -7742,7 +8557,7 @@ The IsStartMenuTouchedUpOnIndex method is used to determine if the controller bu
 
 ### Overview
 
-The Base Boundaries SDK script provides a bridge to SDK methods that deal with the play area of SDKs that support room scale play spaces.
+The Fallback Boundaries SDK script provides a fallback collection of methods that return null or default headset values.
 
 This is the fallback class that will just return default values.
 
@@ -7880,6 +8695,17 @@ The Sim Headset SDK script  provides dummy functions for the headset.
 
 The ProcessUpdate method enables an SDK to run logic for every Unity Update
 
+#### ProcessFixedUpdate/1
+
+  > `public override void ProcessFixedUpdate(Dictionary<string, object> options)`
+
+  * Parameters
+   * `Dictionary<string, object> options` - A dictionary of generic options that can be used to within the fixed update.
+  * Returns
+   * _none_
+
+The ProcessFixedUpdate method enables an SDK to run logic for every Unity FixedUpdate
+
 #### GetHeadset/0
 
   > `public override Transform GetHeadset()`
@@ -7982,6 +8808,18 @@ The Sim Controller SDK script provides functions to help simulate VR controllers
 
 The ProcessUpdate method enables an SDK to run logic for every Unity Update
 
+#### ProcessFixedUpdate/2
+
+  > `public override void ProcessFixedUpdate(uint index, Dictionary<string, object> options)`
+
+  * Parameters
+   * `uint index` - The index of the controller.
+   * `Dictionary<string, object> options` - A dictionary of generic options that can be used to within the fixed update.
+  * Returns
+   * _none_
+
+The ProcessFixedUpdate method enables an SDK to run logic for every Unity FixedUpdate
+
 #### GetControllerDefaultColliderPath/1
 
   > `public override string GetControllerDefaultColliderPath(ControllerHand hand)`
@@ -8025,7 +8863,7 @@ The GetControllerIndex method returns the index of the given controller.
    * `uint index` - The index of the controller to find.
    * `bool actual` - If true it will return the actual controller, if false it will return the script alias controller GameObject.
   * Returns
-   * `GameObject` -
+   * `GameObject` - The GameObject of the controller
 
 The GetControllerByIndex method returns the GameObject of a controller with a specific index.
 
@@ -8711,7 +9549,7 @@ The IsStartMenuTouchedUpOnIndex method is used to determine if the controller bu
 
 ### Overview
 
-The Sim Boundaries SDK script provides dummy functions for the play area bounderies.
+The Sim Boundaries SDK script provides dummy functions for the play area boundaries.
 
 ### Class Methods
 
@@ -8776,6 +9614,7 @@ The IsPlayAreaSizeCalibrated method returns whether the given play area size has
 
 The scripts used to utilise the SteamVR Unity Plugin SDK.
 
+ * [SteamVR Defines](#steamvr-defines-sdk_steamvrdefines)
  * [SteamVR System](#steamvr-system-sdk_steamvrsystem)
  * [SteamVR Headset](#steamvr-headset-sdk_steamvrheadset)
  * [SteamVR Controller](#steamvr-controller-sdk_steamvrcontroller)
@@ -8783,8 +9622,19 @@ The scripts used to utilise the SteamVR Unity Plugin SDK.
 
 ---
 
+## SteamVR Defines (SDK_SteamVRDefines)
+
+### Overview
+
+Handles all the scripting define symbols for the SteamVR SDK.
+
+### Class Variables
+
+ * `public const string ScriptingDefineSymbol` - The scripting define symbol for the SteamVR SDK. Default: `SDK_ScriptingDefineSymbolPredicateAttribute.RemovableSymbolPrefix + "SDK_STEAMVR"`
+
+---
+
 ## SteamVR System (SDK_SteamVRSystem)
- > extends [SDK_BaseSystem](#base-system-sdk_basesystem)
 
 ### Overview
 
@@ -8828,7 +9678,6 @@ The ForceInterleavedReprojectionOn method determines whether Interleaved Reproje
 ---
 
 ## SteamVR Headset (SDK_SteamVRHeadset)
- > extends [SDK_BaseHeadset](#base-headset-sdk_baseheadset)
 
 ### Overview
 
@@ -8846,6 +9695,17 @@ The SteamVR Headset SDK script provides a bridge to the SteamVR SDK.
    * _none_
 
 The ProcessUpdate method enables an SDK to run logic for every Unity Update
+
+#### ProcessFixedUpdate/1
+
+  > `public override void ProcessFixedUpdate(Dictionary<string, object> options)`
+
+  * Parameters
+   * `Dictionary<string, object> options` - A dictionary of generic options that can be used to within the fixed update.
+  * Returns
+   * _none_
+
+The ProcessFixedUpdate method enables an SDK to run logic for every Unity FixedUpdate
 
 #### GetHeadset/0
 
@@ -8929,7 +9789,6 @@ The AddHeadsetFade method attempts to add the fade functionality to the game obj
 ---
 
 ## SteamVR Controller (SDK_SteamVRController)
- > extends [SDK_BaseController](#base-controller-sdk_basecontroller)
 
 ### Overview
 
@@ -8948,6 +9807,18 @@ The SteamVR Controller SDK script provides a bridge to SDK methods that deal wit
    * _none_
 
 The ProcessUpdate method enables an SDK to run logic for every Unity Update
+
+#### ProcessFixedUpdate/2
+
+  > `public override void ProcessFixedUpdate(uint index, Dictionary<string, object> options)`
+
+  * Parameters
+   * `uint index` - The index of the controller.
+   * `Dictionary<string, object> options` - A dictionary of generic options that can be used to within the fixed update.
+  * Returns
+   * _none_
+
+The ProcessFixedUpdate method enables an SDK to run logic for every Unity FixedUpdate
 
 #### GetControllerDefaultColliderPath/1
 
@@ -8992,7 +9863,7 @@ The GetControllerIndex method returns the index of the given controller.
    * `uint index` - The index of the controller to find.
    * `bool actual` - If true it will return the actual controller, if false it will return the script alias controller GameObject.
   * Returns
-   * `GameObject` -
+   * `GameObject` - The GameObject of the controller
 
 The GetControllerByIndex method returns the GameObject of a controller with a specific index.
 
@@ -9674,7 +10545,6 @@ The IsStartMenuTouchedUpOnIndex method is used to determine if the controller bu
 ---
 
 ## SteamVR Boundaries (SDK_SteamVRBoundaries)
- > extends [SDK_BaseBoundaries](#base-boundaries-sdk_baseboundaries)
 
 ### Overview
 
@@ -9743,6 +10613,7 @@ The IsPlayAreaSizeCalibrated method returns whether the given play area size has
 
 The scripts used to utilise the Oculus Utilities Unity Package SDK.
 
+ * [OculusVR Defines](#oculusvr-defines-sdk_oculusvrdefines)
  * [OculusVR System](#oculusvr-system-sdk_oculusvrsystem)
  * [OculusVR Headset](#oculusvr-headset-sdk_oculusvrheadset)
  * [OculusVR Controller](#oculusvr-controller-sdk_oculusvrcontroller)
@@ -9750,8 +10621,20 @@ The scripts used to utilise the Oculus Utilities Unity Package SDK.
 
 ---
 
+## OculusVR Defines (SDK_OculusVRDefines)
+
+### Overview
+
+Handles all the scripting define symbols for the OculusVR and Avatar SDKs.
+
+### Class Variables
+
+ * `public const string ScriptingDefineSymbol` - The scripting define symbol for the OculusVR SDK. Default: `SDK_ScriptingDefineSymbolPredicateAttribute.RemovableSymbolPrefix + "SDK_OCULUSVR"`
+ * `public const string AvatarScriptingDefineSymbol` - The scripting define symbol for the OculusVR Avatar SDK. Default: `SDK_ScriptingDefineSymbolPredicateAttribute.RemovableSymbolPrefix + "SDK_OCULUSVR_AVATAR"`
+
+---
+
 ## OculusVR System (SDK_OculusVRSystem)
- > extends [SDK_BaseSystem](#base-system-sdk_basesystem)
 
 ### Overview
 
@@ -9795,7 +10678,6 @@ The ForceInterleavedReprojectionOn method determines whether Interleaved Reproje
 ---
 
 ## OculusVR Headset (SDK_OculusVRHeadset)
- > extends [SDK_BaseHeadset](#base-headset-sdk_baseheadset)
 
 ### Overview
 
@@ -9813,6 +10695,17 @@ The OculusVR Headset SDK script provides a bridge to the OculusVR SDK.
    * _none_
 
 The ProcessUpdate method enables an SDK to run logic for every Unity Update
+
+#### ProcessFixedUpdate/1
+
+  > `public override void ProcessFixedUpdate(Dictionary<string, object> options)`
+
+  * Parameters
+   * `Dictionary<string, object> options` - A dictionary of generic options that can be used to within the fixed update.
+  * Returns
+   * _none_
+
+The ProcessFixedUpdate method enables an SDK to run logic for every Unity FixedUpdate
 
 #### GetHeadset/0
 
@@ -9896,7 +10789,6 @@ The AddHeadsetFade method attempts to add the fade functionality to the game obj
 ---
 
 ## OculusVR Controller (SDK_OculusVRController)
- > extends [SDK_BaseController](#base-controller-sdk_basecontroller)
 
 ### Overview
 
@@ -9915,6 +10807,1028 @@ The OculusVR Controller SDK script provides a bridge to SDK methods that deal wi
    * _none_
 
 The ProcessUpdate method enables an SDK to run logic for every Unity Update
+
+#### ProcessFixedUpdate/2
+
+  > `public override void ProcessFixedUpdate(uint index, Dictionary<string, object> options)`
+
+  * Parameters
+   * `uint index` - The index of the controller.
+   * `Dictionary<string, object> options` - A dictionary of generic options that can be used to within the fixed update.
+  * Returns
+   * _none_
+
+The ProcessFixedUpdate method enables an SDK to run logic for every Unity FixedUpdate
+
+#### GetControllerDefaultColliderPath/1
+
+  > `public override string GetControllerDefaultColliderPath(ControllerHand hand)`
+
+  * Parameters
+   * `ControllerHand hand` - The controller hand to check for
+  * Returns
+   * `string` - A path to the resource that contains the collider GameObject.
+
+The GetControllerDefaultColliderPath returns the path to the prefab that contains the collider objects for the default controller of this SDK.
+
+#### GetControllerElementPath/3
+
+  > `public override string GetControllerElementPath(ControllerElements element, ControllerHand hand, bool fullPath = false)`
+
+  * Parameters
+   * `ControllerElements element` - The controller element to look up.
+   * `ControllerHand hand` - The controller hand to look up.
+   * `bool fullPath` - Whether to get the initial path or the full path to the element.
+  * Returns
+   * `string` - A string containing the path to the game object that the controller element resides in.
+
+The GetControllerElementPath returns the path to the game object that the given controller element for the given hand resides in.
+
+#### GetControllerIndex/1
+
+  > `public override uint GetControllerIndex(GameObject controller)`
+
+  * Parameters
+   * `GameObject controller` - The GameObject containing the controller.
+  * Returns
+   * `uint` - The index of the given controller.
+
+The GetControllerIndex method returns the index of the given controller.
+
+#### GetControllerByIndex/2
+
+  > `public override GameObject GetControllerByIndex(uint index, bool actual = false)`
+
+  * Parameters
+   * `uint index` - The index of the controller to find.
+   * `bool actual` - If true it will return the actual controller, if false it will return the script alias controller GameObject.
+  * Returns
+   * `GameObject` - The GameObject of the controller
+
+The GetControllerByIndex method returns the GameObject of a controller with a specific index.
+
+#### GetControllerOrigin/1
+
+  > `public override Transform GetControllerOrigin(GameObject controller)`
+
+  * Parameters
+   * `GameObject controller` - The controller to retrieve the origin from.
+  * Returns
+   * `Transform` - A Transform containing the origin of the controller.
+
+The GetControllerOrigin method returns the origin of the given controller.
+
+#### GenerateControllerPointerOrigin/1
+
+  > `public override Transform GenerateControllerPointerOrigin(GameObject parent)`
+
+  * Parameters
+   * `GameObject parent` - The GameObject that the origin will become parent of. If it is a controller then it will also be used to determine the hand if required.
+  * Returns
+   * `Transform` - A generated Transform that contains the custom pointer origin.
+
+The GenerateControllerPointerOrigin method can create a custom pointer origin Transform to represent the pointer position and forward.
+
+#### GetControllerLeftHand/1
+
+  > `public override GameObject GetControllerLeftHand(bool actual = false)`
+
+  * Parameters
+   * `bool actual` - If true it will return the actual controller, if false it will return the script alias controller GameObject.
+  * Returns
+   * `GameObject` - The GameObject containing the left hand controller.
+
+The GetControllerLeftHand method returns the GameObject containing the representation of the left hand controller.
+
+#### GetControllerRightHand/1
+
+  > `public override GameObject GetControllerRightHand(bool actual = false)`
+
+  * Parameters
+   * `bool actual` - If true it will return the actual controller, if false it will return the script alias controller GameObject.
+  * Returns
+   * `GameObject` - The GameObject containing the right hand controller.
+
+The GetControllerRightHand method returns the GameObject containing the representation of the right hand controller.
+
+#### IsControllerLeftHand/1
+
+  > `public override bool IsControllerLeftHand(GameObject controller)`
+
+  * Parameters
+   * `GameObject controller` - The GameObject to check.
+  * Returns
+   * `bool` - Returns true if the given controller is the left hand controller.
+
+The IsControllerLeftHand/1 method is used to check if the given controller is the the left hand controller.
+
+#### IsControllerRightHand/1
+
+  > `public override bool IsControllerRightHand(GameObject controller)`
+
+  * Parameters
+   * `GameObject controller` - The GameObject to check.
+  * Returns
+   * `bool` - Returns true if the given controller is the right hand controller.
+
+The IsControllerRightHand/1 method is used to check if the given controller is the the right hand controller.
+
+#### IsControllerLeftHand/2
+
+  > `public override bool IsControllerLeftHand(GameObject controller, bool actual)`
+
+  * Parameters
+   * `GameObject controller` - The GameObject to check.
+   * `bool actual` - If true it will check the actual controller, if false it will check the script alias controller.
+  * Returns
+   * `bool` - Returns true if the given controller is the left hand controller.
+
+The IsControllerLeftHand/2 method is used to check if the given controller is the the left hand controller.
+
+#### IsControllerRightHand/2
+
+  > `public override bool IsControllerRightHand(GameObject controller, bool actual)`
+
+  * Parameters
+   * `GameObject controller` - The GameObject to check.
+   * `bool actual` - If true it will check the actual controller, if false it will check the script alias controller.
+  * Returns
+   * `bool` - Returns true if the given controller is the right hand controller.
+
+The IsControllerRightHand/2 method is used to check if the given controller is the the right hand controller.
+
+#### GetControllerModel/1
+
+  > `public override GameObject GetControllerModel(GameObject controller)`
+
+  * Parameters
+   * `GameObject controller` - The GameObject to get the model alias for.
+  * Returns
+   * `GameObject` - The GameObject that has the model alias within it.
+
+The GetControllerModel method returns the model alias for the given GameObject.
+
+#### GetControllerModel/1
+
+  > `public override GameObject GetControllerModel(ControllerHand hand)`
+
+  * Parameters
+   * `ControllerHand hand` - The hand enum of which controller model to retrieve.
+  * Returns
+   * `GameObject` - The GameObject that has the model alias within it.
+
+The GetControllerModel method returns the model alias for the given controller hand.
+
+#### GetControllerRenderModel/1
+
+  > `public override GameObject GetControllerRenderModel(GameObject controller)`
+
+  * Parameters
+   * `GameObject controller` - The GameObject to check.
+  * Returns
+   * `GameObject` - A GameObject containing the object that has a render model for the controller.
+
+The GetControllerRenderModel method gets the game object that contains the given controller's render model.
+
+#### SetControllerRenderModelWheel/2
+
+  > `public override void SetControllerRenderModelWheel(GameObject renderModel, bool state)`
+
+  * Parameters
+   * `GameObject renderModel` - The GameObject containing the controller render model.
+   * `bool state` - If true and the render model has a scroll wheen then it will be displayed, if false then the scroll wheel will be hidden.
+  * Returns
+   * _none_
+
+The SetControllerRenderModelWheel method sets the state of the scroll wheel on the controller render model.
+
+#### HapticPulseOnIndex/2
+
+  > `public override void HapticPulseOnIndex(uint index, float strength = 0.5f)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to initiate the haptic pulse on.
+   * `float strength` - The intensity of the rumble of the controller motor. `0` to `1`.
+  * Returns
+   * _none_
+
+The HapticPulseOnIndex method is used to initiate a simple haptic pulse on the tracked object of the given index.
+
+#### GetHapticModifiers/0
+
+  > `public override SDK_ControllerHapticModifiers GetHapticModifiers()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * `SDK_ControllerHapticModifiers` - An SDK_ControllerHapticModifiers object with a given `durationModifier` and an `intervalModifier`.
+
+The GetHapticModifiers method is used to return modifiers for the duration and interval if the SDK handles it slightly differently.
+
+#### GetVelocityOnIndex/1
+
+  > `public override Vector3 GetVelocityOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `Vector3` - A Vector3 containing the current velocity of the tracked object.
+
+The GetVelocityOnIndex method is used to determine the current velocity of the tracked object on the given index.
+
+#### GetAngularVelocityOnIndex/1
+
+  > `public override Vector3 GetAngularVelocityOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `Vector3` - A Vector3 containing the current angular velocity of the tracked object.
+
+The GetAngularVelocityOnIndex method is used to determine the current angular velocity of the tracked object on the given index.
+
+#### GetTouchpadAxisOnIndex/1
+
+  > `public override Vector2 GetTouchpadAxisOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `Vector2` - A Vector2 containing the current x,y position of where the touchpad is being touched.
+
+The GetTouchpadAxisOnIndex method is used to get the current touch position on the controller touchpad.
+
+#### GetTriggerAxisOnIndex/1
+
+  > `public override Vector2 GetTriggerAxisOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `Vector2` - A Vector2 containing the current position of the trigger.
+
+The GetTriggerAxisOnIndex method is used to get the current trigger position on the controller.
+
+#### GetGripAxisOnIndex/1
+
+  > `public override Vector2 GetGripAxisOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `Vector2` - A Vector2 containing the current position of the grip.
+
+The GetGripAxisOnIndex method is used to get the current grip position on the controller.
+
+#### GetTriggerHairlineDeltaOnIndex/1
+
+  > `public override float GetTriggerHairlineDeltaOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `float` - The delta between the trigger presses.
+
+The GetTriggerHairlineDeltaOnIndex method is used to get the difference between the current trigger press and the previous frame trigger press.
+
+#### GetGripHairlineDeltaOnIndex/1
+
+  > `public override float GetGripHairlineDeltaOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `float` - The delta between the grip presses.
+
+The GetGripHairlineDeltaOnIndex method is used to get the difference between the current grip press and the previous frame grip press.
+
+#### IsTriggerPressedOnIndex/1
+
+  > `public override bool IsTriggerPressedOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button is continually being pressed.
+
+The IsTriggerPressedOnIndex method is used to determine if the controller button is being pressed down continually.
+
+#### IsTriggerPressedDownOnIndex/1
+
+  > `public override bool IsTriggerPressedDownOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has just been pressed down.
+
+The IsTriggerPressedDownOnIndex method is used to determine if the controller button has just been pressed down.
+
+#### IsTriggerPressedUpOnIndex/1
+
+  > `public override bool IsTriggerPressedUpOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has just been released.
+
+The IsTriggerPressedUpOnIndex method is used to determine if the controller button has just been released.
+
+#### IsTriggerTouchedOnIndex/1
+
+  > `public override bool IsTriggerTouchedOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button is continually being touched.
+
+The IsTriggerTouchedOnIndex method is used to determine if the controller button is being touched down continually.
+
+#### IsTriggerTouchedDownOnIndex/1
+
+  > `public override bool IsTriggerTouchedDownOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has just been touched down.
+
+The IsTriggerTouchedDownOnIndex method is used to determine if the controller button has just been touched down.
+
+#### IsTriggerTouchedUpOnIndex/1
+
+  > `public override bool IsTriggerTouchedUpOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has just been released.
+
+The IsTriggerTouchedUpOnIndex method is used to determine if the controller button has just been released.
+
+#### IsHairTriggerDownOnIndex/1
+
+  > `public override bool IsHairTriggerDownOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has passed it's press threshold.
+
+The IsHairTriggerDownOnIndex method is used to determine if the controller button has passed it's press threshold.
+
+#### IsHairTriggerUpOnIndex/1
+
+  > `public override bool IsHairTriggerUpOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has just been released from it's press threshold.
+
+The IsHairTriggerUpOnIndex method is used to determine if the controller button has been released from it's press threshold.
+
+#### IsGripPressedOnIndex/1
+
+  > `public override bool IsGripPressedOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button is continually being pressed.
+
+The IsGripPressedOnIndex method is used to determine if the controller button is being pressed down continually.
+
+#### IsGripPressedDownOnIndex/1
+
+  > `public override bool IsGripPressedDownOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has just been pressed down.
+
+The IsGripPressedDownOnIndex method is used to determine if the controller button has just been pressed down.
+
+#### IsGripPressedUpOnIndex/1
+
+  > `public override bool IsGripPressedUpOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has just been released.
+
+The IsGripPressedUpOnIndex method is used to determine if the controller button has just been released.
+
+#### IsGripTouchedOnIndex/1
+
+  > `public override bool IsGripTouchedOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button is continually being touched.
+
+The IsGripTouchedOnIndex method is used to determine if the controller button is being touched down continually.
+
+#### IsGripTouchedDownOnIndex/1
+
+  > `public override bool IsGripTouchedDownOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has just been touched down.
+
+The IsGripTouchedDownOnIndex method is used to determine if the controller button has just been touched down.
+
+#### IsGripTouchedUpOnIndex/1
+
+  > `public override bool IsGripTouchedUpOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has just been released.
+
+The IsGripTouchedUpOnIndex method is used to determine if the controller button has just been released.
+
+#### IsHairGripDownOnIndex/1
+
+  > `public override bool IsHairGripDownOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has passed it's press threshold.
+
+The IsHairGripDownOnIndex method is used to determine if the controller button has passed it's press threshold.
+
+#### IsHairGripUpOnIndex/1
+
+  > `public override bool IsHairGripUpOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has just been released from it's press threshold.
+
+The IsHairGripUpOnIndex method is used to determine if the controller button has been released from it's press threshold.
+
+#### IsTouchpadPressedOnIndex/1
+
+  > `public override bool IsTouchpadPressedOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button is continually being pressed.
+
+The IsTouchpadPressedOnIndex method is used to determine if the controller button is being pressed down continually.
+
+#### IsTouchpadPressedDownOnIndex/1
+
+  > `public override bool IsTouchpadPressedDownOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has just been pressed down.
+
+The IsTouchpadPressedDownOnIndex method is used to determine if the controller button has just been pressed down.
+
+#### IsTouchpadPressedUpOnIndex/1
+
+  > `public override bool IsTouchpadPressedUpOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has just been released.
+
+The IsTouchpadPressedUpOnIndex method is used to determine if the controller button has just been released.
+
+#### IsTouchpadTouchedOnIndex/1
+
+  > `public override bool IsTouchpadTouchedOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button is continually being touched.
+
+The IsTouchpadTouchedOnIndex method is used to determine if the controller button is being touched down continually.
+
+#### IsTouchpadTouchedDownOnIndex/1
+
+  > `public override bool IsTouchpadTouchedDownOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has just been touched down.
+
+The IsTouchpadTouchedDownOnIndex method is used to determine if the controller button has just been touched down.
+
+#### IsTouchpadTouchedUpOnIndex/1
+
+  > `public override bool IsTouchpadTouchedUpOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has just been released.
+
+The IsTouchpadTouchedUpOnIndex method is used to determine if the controller button has just been released.
+
+#### IsButtonOnePressedOnIndex/1
+
+  > `public override bool IsButtonOnePressedOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button is continually being pressed.
+
+The IsButtonOnePressedOnIndex method is used to determine if the controller button is being pressed down continually.
+
+#### IsButtonOnePressedDownOnIndex/1
+
+  > `public override bool IsButtonOnePressedDownOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has just been pressed down.
+
+The IsButtonOnePressedDownOnIndex method is used to determine if the controller button has just been pressed down.
+
+#### IsButtonOnePressedUpOnIndex/1
+
+  > `public override bool IsButtonOnePressedUpOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has just been released.
+
+The IsButtonOnePressedUpOnIndex method is used to determine if the controller button has just been released.
+
+#### IsButtonOneTouchedOnIndex/1
+
+  > `public override bool IsButtonOneTouchedOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button is continually being touched.
+
+The IsButtonOneTouchedOnIndex method is used to determine if the controller button is being touched down continually.
+
+#### IsButtonOneTouchedDownOnIndex/1
+
+  > `public override bool IsButtonOneTouchedDownOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has just been touched down.
+
+The IsButtonOneTouchedDownOnIndex method is used to determine if the controller button has just been touched down.
+
+#### IsButtonOneTouchedUpOnIndex/1
+
+  > `public override bool IsButtonOneTouchedUpOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has just been released.
+
+The IsButtonOneTouchedUpOnIndex method is used to determine if the controller button has just been released.
+
+#### IsButtonTwoPressedOnIndex/1
+
+  > `public override bool IsButtonTwoPressedOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button is continually being pressed.
+
+The IsButtonTwoPressedOnIndex method is used to determine if the controller button is being pressed down continually.
+
+#### IsButtonTwoPressedDownOnIndex/1
+
+  > `public override bool IsButtonTwoPressedDownOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has just been pressed down.
+
+The IsButtonTwoPressedDownOnIndex method is used to determine if the controller button has just been pressed down.
+
+#### IsButtonTwoPressedUpOnIndex/1
+
+  > `public override bool IsButtonTwoPressedUpOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has just been released.
+
+The IsButtonTwoPressedUpOnIndex method is used to determine if the controller button has just been released.
+
+#### IsButtonTwoTouchedOnIndex/1
+
+  > `public override bool IsButtonTwoTouchedOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button is continually being touched.
+
+The IsButtonTwoTouchedOnIndex method is used to determine if the controller button is being touched down continually.
+
+#### IsButtonTwoTouchedDownOnIndex/1
+
+  > `public override bool IsButtonTwoTouchedDownOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has just been touched down.
+
+The IsButtonTwoTouchedDownOnIndex method is used to determine if the controller button has just been touched down.
+
+#### IsButtonTwoTouchedUpOnIndex/1
+
+  > `public override bool IsButtonTwoTouchedUpOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has just been released.
+
+The IsButtonTwoTouchedUpOnIndex method is used to determine if the controller button has just been released.
+
+#### IsStartMenuPressedOnIndex/1
+
+  > `public override bool IsStartMenuPressedOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button is continually being pressed.
+
+The IsStartMenuPressedOnIndex method is used to determine if the controller button is being pressed down continually.
+
+#### IsStartMenuPressedDownOnIndex/1
+
+  > `public override bool IsStartMenuPressedDownOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has just been pressed down.
+
+The IsStartMenuPressedDownOnIndex method is used to determine if the controller button has just been pressed down.
+
+#### IsStartMenuPressedUpOnIndex/1
+
+  > `public override bool IsStartMenuPressedUpOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has just been released.
+
+The IsStartMenuPressedUpOnIndex method is used to determine if the controller button has just been released.
+
+#### IsStartMenuTouchedOnIndex/1
+
+  > `public override bool IsStartMenuTouchedOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button is continually being touched.
+
+The IsStartMenuTouchedOnIndex method is used to determine if the controller button is being touched down continually.
+
+#### IsStartMenuTouchedDownOnIndex/1
+
+  > `public override bool IsStartMenuTouchedDownOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has just been touched down.
+
+The IsStartMenuTouchedDownOnIndex method is used to determine if the controller button has just been touched down.
+
+#### IsStartMenuTouchedUpOnIndex/1
+
+  > `public override bool IsStartMenuTouchedUpOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has just been released.
+
+The IsStartMenuTouchedUpOnIndex method is used to determine if the controller button has just been released.
+
+---
+
+## OculusVR Boundaries (SDK_OculusVRBoundaries)
+
+### Overview
+
+The OculusVR Boundaries SDK script provides a bridge to the OculusVR SDK play area.
+
+### Class Methods
+
+#### InitBoundaries/0
+
+  > `public override void InitBoundaries()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * _none_
+
+The InitBoundaries method is run on start of scene and can be used to initialse anything on game start.
+
+#### GetPlayArea/0
+
+  > `public override Transform GetPlayArea()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * `Transform` - A transform of the object representing the play area in the scene.
+
+The GetPlayArea method returns the Transform of the object that is used to represent the play area in the scene.
+
+#### GetPlayAreaVertices/1
+
+  > `public override Vector3[] GetPlayAreaVertices(GameObject playArea)`
+
+  * Parameters
+   * `GameObject playArea` - The GameObject containing the play area representation.
+  * Returns
+   * `Vector3[]` - A Vector3 array of the points in the scene that represent the play area boundaries.
+
+The GetPlayAreaVertices method returns the points of the play area boundaries.
+
+#### GetPlayAreaBorderThickness/1
+
+  > `public override float GetPlayAreaBorderThickness(GameObject playArea)`
+
+  * Parameters
+   * `GameObject playArea` - The GameObject containing the play area representation.
+  * Returns
+   * `float` - The thickness of the drawn border.
+
+The GetPlayAreaBorderThickness returns the thickness of the drawn border for the given play area.
+
+#### IsPlayAreaSizeCalibrated/1
+
+  > `public override bool IsPlayAreaSizeCalibrated(GameObject playArea)`
+
+  * Parameters
+   * `GameObject playArea` - The GameObject containing the play area representation.
+  * Returns
+   * `bool` - Returns true if the play area size has been auto calibrated and set by external sensors.
+
+The IsPlayAreaSizeCalibrated method returns whether the given play area size has been auto calibrated by external sensors.
+
+#### GetAvatar/0
+
+  > `public virtual OvrAvatar GetAvatar()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * `OvrAvatar` - The OvrAvatar script for managing the Oculus Avatar.
+
+The GetAvatar method is used to retrieve the Oculus Avatar object if it exists in the scene. This method is only available if the Oculus Avatar package is installed.
+
+---
+
+# Daydream SDK (VRTK/SDK/Daydream)
+
+The scripts used to utilise the Google VR SDK for Unity.
+
+ * [Daydream Defines](#daydream-defines-sdk_daydreamdefines)
+ * [Daydream System](#daydream-system-sdk_daydreamsystem)
+ * [Daydream Headset](#daydream-headset-sdk_daydreamheadset)
+ * [Daydream Controller](#daydream-controller-sdk_daydreamcontroller)
+ * [Daydream Boundaries](#daydream-boundaries-sdk_daydreamboundaries)
+
+---
+
+## Daydream Defines (SDK_DaydreamDefines)
+
+### Overview
+
+Handles all the scripting define symbols for the Daydream SDK.
+
+### Class Variables
+
+ * `public const string ScriptingDefineSymbol` - The scripting define symbol for the Daydream SDK. Default: `SDK_ScriptingDefineSymbolPredicateAttribute.RemovableSymbolPrefix + "SDK_DAYDREAM"`
+
+---
+
+## Daydream System (SDK_DaydreamSystem)
+
+### Overview
+
+The Daydream System SDK script provides dummy functions for system functions.
+
+### Class Methods
+
+#### IsDisplayOnDesktop/0
+
+  > `public override bool IsDisplayOnDesktop()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * `bool` - Returns true if the display is extending the desktop
+
+The IsDisplayOnDesktop method returns true if the display is extending the desktop.
+
+#### ShouldAppRenderWithLowResources/0
+
+  > `public override bool ShouldAppRenderWithLowResources()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * `bool` - Returns true if the Unity app should render with low resources.
+
+The ShouldAppRenderWithLowResources method is used to determine if the Unity app should use low resource mode. Typically true when the dashboard is showing.
+
+#### ForceInterleavedReprojectionOn/1
+
+  > `public override void ForceInterleavedReprojectionOn(bool force)`
+
+  * Parameters
+   * `bool force` - If true then Interleaved Reprojection will be forced on, if false it will not be forced on.
+  * Returns
+   * _none_
+
+The ForceInterleavedReprojectionOn method determines whether Interleaved Reprojection should be forced on or off.
+
+---
+
+## Daydream Headset (SDK_DaydreamHeadset)
+
+### Overview
+
+The Daydream Headset SDK script provides dummy functions for the headset.
+
+### Class Methods
+
+#### ProcessUpdate/1
+
+  > `public override void ProcessUpdate(Dictionary<string, object> options)`
+
+  * Parameters
+   * `Dictionary<string, object> options` - A dictionary of generic options that can be used to within the update.
+  * Returns
+   * _none_
+
+The ProcessUpdate method enables an SDK to run logic for every Unity Update
+
+#### ProcessFixedUpdate/1
+
+  > `public override void ProcessFixedUpdate(Dictionary<string, object> options)`
+
+  * Parameters
+   * `Dictionary<string, object> options` - A dictionary of generic options that can be used to within the fixed update.
+  * Returns
+   * _none_
+
+The ProcessFixedUpdate method enables an SDK to run logic for every Unity FixedUpdate
+
+#### GetHeadset/0
+
+  > `public override Transform GetHeadset()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * `Transform` - A transform of the object representing the headset in the scene.
+
+The GetHeadset method returns the Transform of the object that is used to represent the headset in the scene.
+
+#### GetHeadsetCamera/0
+
+  > `public override Transform GetHeadsetCamera()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * `Transform` - A transform of the object holding the headset camera in the scene.
+
+The GetHeadsetCamera/0 method returns the Transform of the object that is used to hold the headset camera in the scene.
+
+#### GetHeadsetVelocity/0
+
+  > `public override Vector3 GetHeadsetVelocity()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * `Vector3` - A Vector3 containing the current velocity of the headset.
+
+The GetHeadsetVelocity method is used to determine the current velocity of the headset.
+
+#### GetHeadsetAngularVelocity/0
+
+  > `public override Vector3 GetHeadsetAngularVelocity()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * `Vector3` - A Vector3 containing the current angular velocity of the headset.
+
+The GetHeadsetAngularVelocity method is used to determine the current angular velocity of the headset.
+
+#### HeadsetFade/3
+
+  > `public override void HeadsetFade(Color color, float duration, bool fadeOverlay = false)`
+
+  * Parameters
+   * `Color color` - The colour to fade to.
+   * `float duration` - The amount of time the fade should take to reach the given colour.
+   * `bool fadeOverlay` - Determines whether to use an overlay on the fade.
+  * Returns
+   * _none_
+
+The HeadsetFade method is used to apply a fade to the headset camera to progressively change the colour.
+
+#### HasHeadsetFade/1
+
+  > `public override bool HasHeadsetFade(Transform obj)`
+
+  * Parameters
+   * `Transform obj` - The Transform to check to see if a camera fade is available on.
+  * Returns
+   * `bool` - Returns true if the headset has fade functionality on it.
+
+The HasHeadsetFade method checks to see if the given game object (usually the camera) has the ability to fade the viewpoint.
+
+#### AddHeadsetFade/1
+
+  > `public override void AddHeadsetFade(Transform camera)`
+
+  * Parameters
+   * `Transform camera` - The Transform to with the camera on to add the fade functionality to.
+  * Returns
+   * _none_
+
+The AddHeadsetFade method attempts to add the fade functionality to the game object with the camera on it.
+
+---
+
+## Daydream Controller (SDK_DaydreamController)
+
+### Overview
+
+The Daydream Controller SDK script provides a bridge to SDK methods that deal with the input devices.
+
+### Class Methods
+
+#### ProcessUpdate/2
+
+  > `public override void ProcessUpdate(uint index, Dictionary<string, object> options)`
+
+  * Parameters
+   * `uint index` - The index of the controller.
+   * `Dictionary<string, object> options` - A dictionary of generic options that can be used to within the update.
+  * Returns
+   * _none_
+
+The ProcessUpdate method enables an SDK to run logic for every Unity Update
+
+#### ProcessFixedUpdate/2
+
+  > `public override void ProcessFixedUpdate(uint index, Dictionary<string, object> options)`
+
+  * Parameters
+   * `uint index` - The index of the controller.
+   * `Dictionary<string, object> options` - A dictionary of generic options that can be used to within the fixed update.
+  * Returns
+   * _none_
+
+The ProcessFixedUpdate method enables an SDK to run logic for every Unity FixedUpdate
 
 #### GetControllerDefaultColliderPath/1
 
@@ -10640,12 +12554,11 @@ The IsStartMenuTouchedUpOnIndex method is used to determine if the controller bu
 
 ---
 
-## OculusVR Boundaries (SDK_OculusVRBoundaries)
- > extends [SDK_BaseBoundaries](#base-boundaries-sdk_baseboundaries)
+## Daydream Boundaries (SDK_DaydreamBoundaries)
 
 ### Overview
 
-The OculusVR Boundaries SDK script provides a bridge to the OculusVR SDK play area.
+The Daydream Boundaries SDK script provides dummy functions for the play area boundaries.
 
 ### Class Methods
 
@@ -10704,36 +12617,37 @@ The GetPlayAreaBorderThickness returns the thickness of the drawn border for the
 
 The IsPlayAreaSizeCalibrated method returns whether the given play area size has been auto calibrated by external sensors.
 
-#### GetAvatar/0
+---
 
-  > `public virtual OvrAvatar GetAvatar()`
+# XimmerseVR SDK (VRTK/SDK/Ximmerse)
 
-  * Parameters
-   * _none_
-  * Returns
-   * `OvrAvatar` - The OvrAvatar script for managing the Oculus Avatar.
+The scripts used to utilise the Ximmerse SDK for Unity.
 
-The GetAvatar method is used to retrieve the Oculus Avatar object if it exists in the scene. This method is only available if the Oculus Avatar package is installed.
+ * [XimmerseVR Defines](#ximmersevr-defines-sdk_ximmersevrdefines)
+ * [XimmerseVR System](#ximmersevr-system-sdk_ximmersevrsystem)
+ * [XimmerseVR Headset](#ximmersevr-headset-sdk_ximmersevrheadset)
+ * [XimmerseVR Controller](#ximmersevr-controller-sdk_ximmersevrcontroller)
+ * [XimmerseVR Boundaries](#ximmersevr-boundaries-sdk_ximmersevrboundaries)
 
 ---
 
-# Daydream SDK (VRTK/SDK/Daydream)
-
-The scripts used to utilise the Google VR SDK for Unity SDK.
-
- * [Daydream System](#daydream-system-sdk_daydreamsystem)
- * [Daydream Headset](#daydream-headset-sdk_daydreamheadset)
- * [Daydream Controller](#daydream-controller-sdk_daydreamcontroller)
- * [Daydream Boundaries](#daydream-boundaries-sdk_daydreamboundaries)
-
----
-
-## Daydream System (SDK_DaydreamSystem)
- > extends [SDK_BaseSystem](#base-system-sdk_basesystem)
+## XimmerseVR Defines (SDK_XimmerseVRDefines)
 
 ### Overview
 
-The Daydream System SDK script provides dummy functions for system functions.
+Handles all the scripting define symbols for the XimmerseVR SDK.
+
+### Class Variables
+
+ * `public const string ScriptingDefineSymbol` - The scripting define symbol for the XimmerseVR SDK. Default: `SDK_ScriptingDefineSymbolPredicateAttribute.RemovableSymbolPrefix + "SDK_XIMMERSEVR"`
+
+---
+
+## XimmerseVR System (SDK_XimmerseVRSystem)
+
+### Overview
+
+The XimmerseVR System SDK script provides a bridge to the XimmerseVR SDK.
 
 ### Class Methods
 
@@ -10772,12 +12686,11 @@ The ForceInterleavedReprojectionOn method determines whether Interleaved Reproje
 
 ---
 
-## Daydream Headset (SDK_DaydreamHeadset)
- > extends [SDK_BaseHeadset](#base-headset-sdk_baseheadset)
+## XimmerseVR Headset (SDK_XimmerseVRHeadset)
 
 ### Overview
 
-The Daydream Headset SDK script  provides dummy functions for the headset.
+The XimmerseVR Headset SDK script provides a bridge to the XimmerseVR SDK.
 
 ### Class Methods
 
@@ -10792,27 +12705,16 @@ The Daydream Headset SDK script  provides dummy functions for the headset.
 
 The ProcessUpdate method enables an SDK to run logic for every Unity Update
 
-#### GetHeadset/0
+#### ProcessFixedUpdate/1
 
-  > `public override Transform GetHeadset()`
-
-  * Parameters
-   * _none_
-  * Returns
-   * `Transform` - A transform of the object representing the headset in the scene.
-
-The GetHeadset method returns the Transform of the object that is used to represent the headset in the scene.
-
-#### GetHeadsetCamera/0
-
-  > `public override Transform GetHeadsetCamera()`
+  > `public override void ProcessFixedUpdate(Dictionary<string, object> options)`
 
   * Parameters
-   * _none_
+   * `Dictionary<string, object> options` - A dictionary of generic options that can be used to within the fixed update.
   * Returns
-   * `Transform` - A transform of the object holding the headset camera in the scene.
+   * _none_
 
-The GetHeadsetCamera/0 method returns the Transform of the object that is used to hold the headset camera in the scene.
+The ProcessFixedUpdate method enables an SDK to run logic for every Unity FixedUpdate
 
 #### GetHeadsetVelocity/0
 
@@ -10835,6 +12737,28 @@ The GetHeadsetVelocity method is used to determine the current velocity of the h
    * `Vector3` - A Vector3 containing the current angular velocity of the headset.
 
 The GetHeadsetAngularVelocity method is used to determine the current angular velocity of the headset.
+
+#### GetHeadset/0
+
+  > `public override Transform GetHeadset()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * `Transform` - A transform of the object representing the headset in the scene.
+
+The GetHeadset method returns the Transform of the object that is used to represent the headset in the scene.
+
+#### GetHeadsetCamera/0
+
+  > `public override Transform GetHeadsetCamera()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * `Transform` - A transform of the object holding the headset camera in the scene.
+
+The GetHeadsetCamera method returns the Transform of the object that is used to hold the headset camera in the scene.
 
 #### HeadsetFade/3
 
@@ -10873,12 +12797,11 @@ The AddHeadsetFade method attempts to add the fade functionality to the game obj
 
 ---
 
-## Daydream Controller (SDK_DaydreamController)
- > extends [SDK_FallbackController](#fallback-controller-sdk_fallbackcontroller)
+## XimmerseVR Controller (SDK_XimmerseVRController)
 
 ### Overview
 
-The Daydream Controller SDK script provides a bridge to SDK methods that deal with the input devices.
+The XimmerseVR Controller SDK script provides a bridge to SDK methods that deal with the input devices.
 
 ### Class Methods
 
@@ -10893,6 +12816,18 @@ The Daydream Controller SDK script provides a bridge to SDK methods that deal wi
    * _none_
 
 The ProcessUpdate method enables an SDK to run logic for every Unity Update
+
+#### ProcessFixedUpdate/2
+
+  > `public override void ProcessFixedUpdate(uint index, Dictionary<string, object> options)`
+
+  * Parameters
+   * `uint index` - The index of the controller.
+   * `Dictionary<string, object> options` - A dictionary of generic options that can be used to within the fixed update.
+  * Returns
+   * _none_
+
+The ProcessFixedUpdate method enables an SDK to run logic for every Unity FixedUpdate
 
 #### GetControllerDefaultColliderPath/1
 
@@ -10937,7 +12872,7 @@ The GetControllerIndex method returns the index of the given controller.
    * `uint index` - The index of the controller to find.
    * `bool actual` - If true it will return the actual controller, if false it will return the script alias controller GameObject.
   * Returns
-   * `GameObject` - The GameObject of the controller
+   * `GameObject` -
 
 The GetControllerByIndex method returns the GameObject of a controller with a specific index.
 
@@ -10952,6 +12887,28 @@ The GetControllerByIndex method returns the GameObject of a controller with a sp
 
 The GetControllerOrigin method returns the origin of the given controller.
 
+#### GenerateControllerPointerOrigin/1
+
+  > `public override Transform GenerateControllerPointerOrigin(GameObject parent)`
+
+  * Parameters
+   * _none_
+  * Returns
+   * `Transform` - A generated Transform that contains the custom pointer origin.
+
+The GenerateControllerPointerOrigin method can create a custom pointer origin Transform to represent the pointer position and forward.
+
+#### GetControllerLeftHand/1
+
+  > `public override GameObject GetControllerLeftHand(bool actual = false)`
+
+  * Parameters
+   * `bool actual` - If true it will return the actual controller, if false it will return the script alias controller GameObject.
+  * Returns
+   * `GameObject` - The GameObject containing the left hand controller.
+
+The GetControllerLeftHand method returns the GameObject containing the representation of the left hand controller.
+
 #### GetControllerRightHand/1
 
   > `public override GameObject GetControllerRightHand(bool actual = false)`
@@ -10963,6 +12920,17 @@ The GetControllerOrigin method returns the origin of the given controller.
 
 The GetControllerRightHand method returns the GameObject containing the representation of the right hand controller.
 
+#### IsControllerLeftHand/1
+
+  > `public override bool IsControllerLeftHand(GameObject controller)`
+
+  * Parameters
+   * `GameObject controller` - The GameObject to check.
+  * Returns
+   * `bool` - Returns true if the given controller is the left hand controller.
+
+The IsControllerLeftHand/1 method is used to check if the given controller is the the left hand controller.
+
 #### IsControllerRightHand/1
 
   > `public override bool IsControllerRightHand(GameObject controller)`
@@ -10973,6 +12941,18 @@ The GetControllerRightHand method returns the GameObject containing the represen
    * `bool` - Returns true if the given controller is the right hand controller.
 
 The IsControllerRightHand/1 method is used to check if the given controller is the the right hand controller.
+
+#### IsControllerLeftHand/2
+
+  > `public override bool IsControllerLeftHand(GameObject controller, bool actual)`
+
+  * Parameters
+   * `GameObject controller` - The GameObject to check.
+   * `bool actual` - If true it will check the actual controller, if false it will check the script alias controller.
+  * Returns
+   * `bool` - Returns true if the given controller is the left hand controller.
+
+The IsControllerLeftHand/2 method is used to check if the given controller is the the left hand controller.
 
 #### IsControllerRightHand/2
 
@@ -11019,6 +12999,41 @@ The GetControllerModel method returns the model alias for the given controller h
 
 The GetControllerRenderModel method gets the game object that contains the given controller's render model.
 
+#### SetControllerRenderModelWheel/2
+
+  > `public override void SetControllerRenderModelWheel(GameObject renderModel, bool state)`
+
+  * Parameters
+   * `GameObject renderModel` - The GameObject containing the controller render model.
+   * `bool state` - If true and the render model has a scroll wheen then it will be displayed, if false then the scroll wheel will be hidden.
+  * Returns
+   * _none_
+
+The SetControllerRenderModelWheel method sets the state of the scroll wheel on the controller render model.
+
+#### HapticPulseOnIndex/2
+
+  > `public override void HapticPulseOnIndex(uint index, float strength = 0.5f)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to initiate the haptic pulse on.
+   * `float strength` - The intensity of the rumble of the controller motor. `0` to `1`.
+  * Returns
+   * _none_
+
+The HapticPulseOnIndex method is used to initiate a simple haptic pulse on the tracked object of the given index.
+
+#### GetHapticModifiers/0
+
+  > `public override SDK_ControllerHapticModifiers GetHapticModifiers()`
+
+  * Parameters
+   * _none_
+  * Returns
+   * `SDK_ControllerHapticModifiers` - An SDK_ControllerHapticModifiers object with a given `durationModifier` and an `intervalModifier`.
+
+The GetHapticModifiers method is used to return modifiers for the duration and interval if the SDK handles it slightly differently.
+
 #### GetVelocityOnIndex/1
 
   > `public override Vector3 GetVelocityOnIndex(uint index)`
@@ -11051,6 +13066,226 @@ The GetAngularVelocityOnIndex method is used to determine the current angular ve
    * `Vector2` - A Vector2 containing the current x,y position of where the touchpad is being touched.
 
 The GetTouchpadAxisOnIndex method is used to get the current touch position on the controller touchpad.
+
+#### GetTriggerAxisOnIndex/1
+
+  > `public override Vector2 GetTriggerAxisOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `Vector2` - A Vector2 containing the current position of the trigger.
+
+The GetTriggerAxisOnIndex method is used to get the current trigger position on the controller.
+
+#### GetGripAxisOnIndex/1
+
+  > `public override Vector2 GetGripAxisOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `Vector2` - A Vector2 containing the current position of the grip.
+
+The GetGripAxisOnIndex method is used to get the current grip position on the controller.
+
+#### GetTriggerHairlineDeltaOnIndex/1
+
+  > `public override float GetTriggerHairlineDeltaOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `float` - The delta between the trigger presses.
+
+The GetTriggerHairlineDeltaOnIndex method is used to get the difference between the current trigger press and the previous frame trigger press.
+
+#### GetGripHairlineDeltaOnIndex/1
+
+  > `public override float GetGripHairlineDeltaOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `float` - The delta between the grip presses.
+
+The GetGripHairlineDeltaOnIndex method is used to get the difference between the current grip press and the previous frame grip press.
+
+#### IsTriggerPressedOnIndex/1
+
+  > `public override bool IsTriggerPressedOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button is continually being pressed.
+
+The IsTriggerPressedOnIndex method is used to determine if the controller button is being pressed down continually.
+
+#### IsTriggerPressedDownOnIndex/1
+
+  > `public override bool IsTriggerPressedDownOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has just been pressed down.
+
+The IsTriggerPressedDownOnIndex method is used to determine if the controller button has just been pressed down.
+
+#### IsTriggerPressedUpOnIndex/1
+
+  > `public override bool IsTriggerPressedUpOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has just been released.
+
+The IsTriggerPressedUpOnIndex method is used to determine if the controller button has just been released.
+
+#### IsTriggerTouchedOnIndex/1
+
+  > `public override bool IsTriggerTouchedOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button is continually being touched.
+
+The IsTriggerTouchedOnIndex method is used to determine if the controller button is being touched down continually.
+
+#### IsTriggerTouchedDownOnIndex/1
+
+  > `public override bool IsTriggerTouchedDownOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has just been touched down.
+
+The IsTriggerTouchedDownOnIndex method is used to determine if the controller button has just been touched down.
+
+#### IsTriggerTouchedUpOnIndex/1
+
+  > `public override bool IsTriggerTouchedUpOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has just been released.
+
+The IsTriggerTouchedUpOnIndex method is used to determine if the controller button has just been released.
+
+#### IsHairTriggerDownOnIndex/1
+
+  > `public override bool IsHairTriggerDownOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has passed it's press threshold.
+
+The IsHairTriggerDownOnIndex method is used to determine if the controller button has passed it's press threshold.
+
+#### IsHairTriggerUpOnIndex/1
+
+  > `public override bool IsHairTriggerUpOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has just been released from it's press threshold.
+
+The IsHairTriggerUpOnIndex method is used to determine if the controller button has been released from it's press threshold.
+
+#### IsGripPressedOnIndex/1
+
+  > `public override bool IsGripPressedOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button is continually being pressed.
+
+The IsGripPressedOnIndex method is used to determine if the controller button is being pressed down continually.
+
+#### IsGripPressedDownOnIndex/1
+
+  > `public override bool IsGripPressedDownOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has just been pressed down.
+
+The IsGripPressedDownOnIndex method is used to determine if the controller button has just been pressed down.
+
+#### IsGripPressedUpOnIndex/1
+
+  > `public override bool IsGripPressedUpOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has just been released.
+
+The IsGripPressedUpOnIndex method is used to determine if the controller button has just been released.
+
+#### IsGripTouchedOnIndex/1
+
+  > `public override bool IsGripTouchedOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button is continually being touched.
+
+The IsGripTouchedOnIndex method is used to determine if the controller button is being touched down continually.
+
+#### IsGripTouchedDownOnIndex/1
+
+  > `public override bool IsGripTouchedDownOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has just been touched down.
+
+The IsGripTouchedDownOnIndex method is used to determine if the controller button has just been touched down.
+
+#### IsGripTouchedUpOnIndex/1
+
+  > `public override bool IsGripTouchedUpOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has just been released.
+
+The IsGripTouchedUpOnIndex method is used to determine if the controller button has just been released.
+
+#### IsHairGripDownOnIndex/1
+
+  > `public override bool IsHairGripDownOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has passed it's press threshold.
+
+The IsHairGripDownOnIndex method is used to determine if the controller button has passed it's press threshold.
+
+#### IsHairGripUpOnIndex/1
+
+  > `public override bool IsHairGripUpOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has just been released from it's press threshold.
+
+The IsHairGripUpOnIndex method is used to determine if the controller button has been released from it's press threshold.
 
 #### IsTouchpadPressedOnIndex/1
 
@@ -11151,14 +13386,178 @@ The IsButtonOnePressedDownOnIndex method is used to determine if the controller 
 
 The IsButtonOnePressedUpOnIndex method is used to determine if the controller button has just been released.
 
+#### IsButtonOneTouchedOnIndex/1
+
+  > `public override bool IsButtonOneTouchedOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button is continually being touched.
+
+The IsButtonOneTouchedOnIndex method is used to determine if the controller button is being touched down continually.
+
+#### IsButtonOneTouchedDownOnIndex/1
+
+  > `public override bool IsButtonOneTouchedDownOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has just been touched down.
+
+The IsButtonOneTouchedDownOnIndex method is used to determine if the controller button has just been touched down.
+
+#### IsButtonOneTouchedUpOnIndex/1
+
+  > `public override bool IsButtonOneTouchedUpOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has just been released.
+
+The IsButtonOneTouchedUpOnIndex method is used to determine if the controller button has just been released.
+
+#### IsButtonTwoPressedOnIndex/1
+
+  > `public override bool IsButtonTwoPressedOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button is continually being pressed.
+
+The IsButtonTwoPressedOnIndex method is used to determine if the controller button is being pressed down continually.
+
+#### IsButtonTwoPressedDownOnIndex/1
+
+  > `public override bool IsButtonTwoPressedDownOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has just been pressed down.
+
+The IsButtonTwoPressedDownOnIndex method is used to determine if the controller button has just been pressed down.
+
+#### IsButtonTwoPressedUpOnIndex/1
+
+  > `public override bool IsButtonTwoPressedUpOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has just been released.
+
+The IsButtonTwoPressedUpOnIndex method is used to determine if the controller button has just been released.
+
+#### IsButtonTwoTouchedOnIndex/1
+
+  > `public override bool IsButtonTwoTouchedOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button is continually being touched.
+
+The IsButtonTwoTouchedOnIndex method is used to determine if the controller button is being touched down continually.
+
+#### IsButtonTwoTouchedDownOnIndex/1
+
+  > `public override bool IsButtonTwoTouchedDownOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has just been touched down.
+
+The IsButtonTwoTouchedDownOnIndex method is used to determine if the controller button has just been touched down.
+
+#### IsButtonTwoTouchedUpOnIndex/1
+
+  > `public override bool IsButtonTwoTouchedUpOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has just been released.
+
+The IsButtonTwoTouchedUpOnIndex method is used to determine if the controller button has just been released.
+
+#### IsStartMenuPressedOnIndex/1
+
+  > `public override bool IsStartMenuPressedOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button is continually being pressed.
+
+The IsStartMenuPressedOnIndex method is used to determine if the controller button is being pressed down continually.
+
+#### IsStartMenuPressedDownOnIndex/1
+
+  > `public override bool IsStartMenuPressedDownOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has just been pressed down.
+
+The IsStartMenuPressedDownOnIndex method is used to determine if the controller button has just been pressed down.
+
+#### IsStartMenuPressedUpOnIndex/1
+
+  > `public override bool IsStartMenuPressedUpOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has just been released.
+
+The IsStartMenuPressedUpOnIndex method is used to determine if the controller button has just been released.
+
+#### IsStartMenuTouchedOnIndex/1
+
+  > `public override bool IsStartMenuTouchedOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button is continually being touched.
+
+The IsStartMenuTouchedOnIndex method is used to determine if the controller button is being touched down continually.
+
+#### IsStartMenuTouchedDownOnIndex/1
+
+  > `public override bool IsStartMenuTouchedDownOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has just been touched down.
+
+The IsStartMenuTouchedDownOnIndex method is used to determine if the controller button has just been touched down.
+
+#### IsStartMenuTouchedUpOnIndex/1
+
+  > `public override bool IsStartMenuTouchedUpOnIndex(uint index)`
+
+  * Parameters
+   * `uint index` - The index of the tracked object to check for.
+  * Returns
+   * `bool` - Returns true if the button has just been released.
+
+The IsStartMenuTouchedUpOnIndex method is used to determine if the controller button has just been released.
+
 ---
 
-## Daydream Boundaries (SDK_DaydreamBoundaries)
- > extends [SDK_BaseBoundaries](#base-boundaries-sdk_baseboundaries)
+## XimmerseVR Boundaries (SDK_XimmerseVRBoundaries)
 
 ### Overview
 
-The Daydream Boundaries SDK script provides dummy functions for the play area bounderies.
+The XimmerseVR Boundaries SDK script provides a bridge to the XimmerseVR SDK play area.
 
 ### Class Methods
 
