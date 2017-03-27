@@ -195,11 +195,28 @@ namespace VRTK
 
             if (activeEnabled)
             {
+#if false
+                // We're done with the exceptions generated in here.
                 storedBeamState = pointerBeam.GetComponentInChildren<Renderer>().enabled;
                 storedTipState = pointerTip.GetComponentInChildren<Renderer>().enabled;
 
                 pointerBeam.GetComponentInChildren<Renderer>().enabled = false;
                 pointerTip.GetComponentInChildren<Renderer>().enabled = false;
+#else
+                // Strata (need to test for destroyed? or is null enough? null tests got us this far)
+                var beamRenderer = (pointerBeam ? pointerBeam.GetComponentInChildren<Renderer>() : null);
+                if (beamRenderer)
+                {
+                    storedBeamState = beamRenderer.enabled;
+                    beamRenderer.enabled = false;
+                }
+                var tipRenderer = (pointerTip ? pointerTip.GetComponentInChildren<Renderer>() : null);
+                if (tipRenderer)
+                {
+                    storedTipState = tipRenderer.enabled;
+                    tipRenderer.enabled = false;
+                }
+#endif
             }
 
             ResizeObjectInteractor();
